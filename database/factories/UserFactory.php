@@ -41,7 +41,8 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'phone' => fake() -> phoneNumber(),
             'address' => fake() -> address(),
-            'avatar' => fake() -> imageUrl(),
+            'avatar' => "https://picsum.photos/".fake()->numberBetween(700, 1000),
+            // https://picsum.photos/width/height
         ];
     }
 
