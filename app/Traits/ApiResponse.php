@@ -37,6 +37,12 @@ trait ApiResponse
         return $this->success($msg, 201, $data);
     }
 
+    // 204 (No content) thường dùng khi xóa tài nguyên, chắc thế
+    protected function no_content()
+    {
+        return response()->json(null, 204);
+    }
+    
     // 404 (Not found) tài nguyên/endpoint ko tồn tại
     protected function not_found($msg)
     {
