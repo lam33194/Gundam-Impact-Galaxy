@@ -29,7 +29,7 @@ class LoginRequest extends FormRequest
         // avatar
         // role
         return [
-            'email'     => 'required|email|unique:users,email',
+            'email'     => 'required|email',
             'password'  => 'required'
         ];
     }

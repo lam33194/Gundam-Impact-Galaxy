@@ -39,5 +39,10 @@ class AuthController extends Controller
             'token' => $user->createToken('token-login')->plainTextToken
         ]);
     }
-    public function logout() {}
+    public function logout()
+    {
+        request()->user()->currentAccessToken()->delete();
+
+        return $this->ok('Đăng xuất thành công');
+    }
 }
