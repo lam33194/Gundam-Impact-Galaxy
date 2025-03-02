@@ -3,12 +3,17 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\UserStoreRequest;
+use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
+    use ApiResponse;
     /**
      * Display a listing of the resource.
      */
@@ -16,21 +21,28 @@ class UserController extends Controller
     {
         $users = User::paginate(10);
 
-        return response()->json([
-            'message' => 'OK',
-            'status' => 200,
-            'data' => [
-                'users' => UserResource::collection($users)
-            ],
+        return $this->ok("Lấy danh sách người dùng thành công", [
+            'users' => UserResource::collection($users)
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        //
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars');
+            $validatedData['avatar'] = $avatarPath;
+        }
+
+        $user = User::create($validatedData);
+
+        return $this->created("Tạo người dùng thành công", [
+            'user' => new UserResource($user),
+        ]);
     }
 
     /**
@@ -40,28 +52,34 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found',
-                'status' => 404,
-            ], 404);
-        }
-
-        return response()->json([
-            'message' => 'OK',
-            'status' => 200,
-            'data' => [
+        return (!$user)
+            ? $this->not_found("Người dùng không tồn tại")
+            : $this->ok("Lấy thông tin người dùng thành công", [
                 'user' => new UserResource($user),
-            ]
-        ]);
+            ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserUpdateRequest $request, string $id)
     {
-        //
+        // tìm user
+        $user = User::find($id);
+        if (!$user) return $this->not_found("Người dùng không tồn tại");
+
+        // validated data
+        $validatedData = $request->validated();
+
+        // Xử lý upload ảnh
+        // ...
+
+        $user->update($validatedData);
+
+        return $this->ok("Cập nhật thành công",[
+            'user' => new UserResource($user),
+            'data' => $validatedData
+        ]);
     }
 
     /**
@@ -71,17 +89,10 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'User not found',
-                'status' => 404,
-            ], 404);
-        }
- 
+        if (!$user) return $this->not_found("Người dùng không tồn tại");
+
         $user->delete();
-         
-        return response()->json([
-            'message' => 'User deleted successfully',
-        ], 204);
+
+        return $this->no_content();
     }
 }
