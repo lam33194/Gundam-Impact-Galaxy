@@ -19,11 +19,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v1/auth') -> group(function() {
-    Route::post('login'   , [AuthController::class, 'login']);
+Route::prefix('v1/auth')->group(function () {
+    // Đăng ký, đăng nhập
+    Route::post('login',    [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
-    
-    Route::middleware('auth:sanctum') -> group(function() {
+
+    // Quên mật khẩu
+    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        // Đăng xuất
         Route::post('logout', [AuthController::class, 'logout']);
     });
 });
