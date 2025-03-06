@@ -22,7 +22,7 @@ class UserController extends Controller
         $users = User::paginate(10);
 
         return $this->ok("Lấy danh sách người dùng thành công", [
-            'users' => UserResource::collection($users)
+            'users' => UserResource::collection($users->getCollection())
         ]);
     }
 
@@ -34,6 +34,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('avatar')) {
+            // upload file vào public disk
             $avatarPath = $request->file('avatar')->store('avatars');
             $validatedData['avatar'] = $avatarPath;
         }
@@ -71,14 +72,18 @@ class UserController extends Controller
         // validated data
         $validatedData = $request->validated();
 
-        // Xử lý upload ảnh
-        // ...
+        if ($request->hasFile('avatar')) {
+            $this->deleteAvatar($user);
+
+            // upload file vào public disk
+            $avatarPath = $request->file('avatar')->store('avatars');
+            $validatedData['avatar'] = $avatarPath;
+        }
 
         $user->update($validatedData);
 
-        return $this->ok("Cập nhật thành công",[
+        return $this->ok("Cập nhật thành công", [
             'user' => new UserResource($user),
-            'data' => $validatedData
         ]);
     }
 
@@ -91,8 +96,20 @@ class UserController extends Controller
 
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
+        $this->deleteAvatar($user); 
+
         $user->delete();
 
         return $this->no_content();
+    }
+
+    /**
+     * Xóa avatar của người dùng trên disk
+     */
+    protected function deleteAvatar(User $user): void
+    {
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
     }
 }

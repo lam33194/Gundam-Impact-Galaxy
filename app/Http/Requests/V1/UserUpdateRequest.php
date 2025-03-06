@@ -23,8 +23,6 @@ class UserUpdateRequest extends FormRequest
     {
         return [
             'name'     => 'required | string | max:255',
-            'email'    => 'required | string | max:255 | email | unique:users,email,' . $this->id,
-            'password' => 'required | min:8',
             'phone'    => 'required | string | max:16',
             'address'  => 'required | string | max:255',
             'avatar'   => 'nullable | image  | mimes:png,jpg,gif,jpeg | max:10240',
@@ -37,13 +35,6 @@ class UserUpdateRequest extends FormRequest
         return [
             'name.required'     => 'Trường tên là bắt buộc',
             'name.max'          => 'Tên không được vượt quá 255 ký tự',
-
-            'email.required'    => 'Trường email là bắt buộc',
-            'email.email'       => 'Email không hợp lệ',
-            'email.unique'      => 'Email đã tồn tại',
-
-            'password.required' => 'Mật khẩu là bắt buộc',
-            'password.min'      => 'Mật khẩu phải có ít nhất 8 ký tự',
 
             'phone.required'    => 'Vui lòng nhập số điện thoại',
             'phone.max'         => 'Số điện thoại không được vượt quá 16 ký tự',
