@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\LoginRequest;
 use App\Http\Requests\V1\RegisterRequest;
+use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class AuthController extends Controller
         $user = User::create($validatedData);
 
         return $this->created('Đăng ký thành công', [
-            'user'  => $user,
+            'user'  => new UserResource($user),
             'token' => $user->createToken('token-register')->plainTextToken
         ]);
     }
@@ -34,13 +35,13 @@ class AuthController extends Controller
         $credential = $request->only(['email', 'password']);
 
         if (!Auth::attempt($credential)) {
-            return $this->unauthorize('Thông tin đăng nhập không chính xác');
+            return $this->unauthenticated('Thông tin đăng nhập không chính xác');
         }
 
         $user = User::where('email', $request->email)->first();
 
         return $this->ok('Đăng nhập thành công', [
-            'user'  => $user,
+            'user'  => new UserResource($user),
             'token' => $user->createToken('token-login')->plainTextToken
         ]);
     }
@@ -70,7 +71,7 @@ class AuthController extends Controller
 
     public function resetPassword(ResetPasswordRequest $request)
     {
-        $validatedData = $request->validated();
+        $request->validated();
 
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
@@ -84,8 +85,31 @@ class AuthController extends Controller
             }
         );
 
-        return ($status === Password::PASSWORD_RESET)
-            ? $this->ok('Mật khẩu đã được đặt lại thành công')
-            : $this->error('Có lỗi xảy ra khi đặt lại mật khẩu', 400);
+        return match ($status) {
+            Password::PASSWORD_RESET => $this->ok('Mật khẩu đã được đặt lại thành công'),
+            Password::INVALID_TOKEN  => $this->error('Token không hợp lệ hoặc đã hết hạn', 400),
+            default                  => $this->error('Có lỗi xảy ra khi đặt lại mật khẩu', 400),
+        };
+    }
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+                'current_password' => 'required | current_password',
+                'password'         => 'required | confirmed | min:8',
+            ],
+            [
+                'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại',
+                'current_password.current_password' => 'Sai mật khẩu',
+
+                'password.required'   => 'Vui lòng nhập mật khẩu',
+                'password.confirmed'  => 'Mật khẩu xác nhận không khớp',
+                'password.min'        => 'Mật khẩu phải có ít nhất 8 kí tự',
+            ]
+        );
+
+        auth()->user()->update(['password' => $request->get('password')]);
+
+        return $this->ok(['Đổi mật khẩu thành công']);
     }
 }
