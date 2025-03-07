@@ -49,14 +49,14 @@ trait ApiResponse
         return $this->error($msg, 404);
     }
 
-    // 403 (Forbidden) ko có quyền truy cập tài nguyên
+    // 403 (Forbidden/Unauthorized) ko có quyền truy cập tài nguyên
     protected function forbidden($msg)
     {
         return $this->error($msg, 403);
     }
 
-    // 401 (Unauthorized): Dùng khi xác thực thất bại (sai email/password).
-    protected function unauthorize($msg)
+    // 401 (Unauthenticated): Dùng khi chưa hoặc xác thực thất bại (sai email/password).
+    protected function unauthenticated($msg)
     {
         return $this->error($msg, 401);
     }
