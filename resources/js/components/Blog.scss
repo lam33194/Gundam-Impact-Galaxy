@@ -1,0 +1,28 @@
+.content, .title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.content{
+    -webkit-line-clamp: 2;
+}
+
+.title{
+    -webkit-line-clamp: 1;
+}
+
+img{
+    border-radius: 12px;
+}
+.date{
+    font-size: 0.85rem;
+}
+
+.blog-image{
+    background-size: con; // Đảm bảo hình ảnh phủ kín
+    background-position: center; // Đặt hình ảnh ở giữa
+    width: 100%; // Chiếm toàn bộ chiều rộng
+    border-radius: 10px;
+}

@@ -1,3 +1,11 @@
+1. route
+Route::get('/{any}', function () {
+    return view('index');
+})->where('any', '.*');
+
+2. copy toàn bộ src/ -> resources/js/
+
+3. copy package.json
 {
     "name": "gundam-impact-galaxy",
     "private": true,
@@ -42,3 +50,24 @@
         "swiper": "^11.2.4"
     }
 }
+
+4. npm install
+
+5. View 
+<!-- resources\views\index.blade.php
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel React</title>
+    @viteReactRefresh
+    @vite(['resources/js/main.tsx'])
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html> 
+-->
+
+6. npm run dev / php artisan ser
