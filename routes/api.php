@@ -45,13 +45,15 @@ Route::prefix('v1')->group(function () {
         Route::post('login',    [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
     
-        // Quên mật khẩu
-        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-        Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');
-    
         Route::middleware('auth:sanctum')->group(function () {
             // Đăng xuất
             Route::post('logout', [AuthController::class, 'logout']);
+            // Đổi mật khẩu
+            Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Quên mật khẩu
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');    
     });
 });
