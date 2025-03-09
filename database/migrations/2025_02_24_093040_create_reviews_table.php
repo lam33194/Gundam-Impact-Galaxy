@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class) -> constrained() -> cascadeOnDelete();
             $table->foreignIdFor(Product::class) -> constrained() -> cascadeOnDelete();
             $table->text('comment') -> nullable();
-            $table->unsignedTinyInteger('rating') -> check('rating >= 1 AND rating <= 10') -> nullable(); // (1 -> 5 hoặc 10⭐)
+            $table->unsignedTinyInteger('rating') -> check('rating >= 1 AND rating <= 10') -> nullable(); // (1 -> 10⭐)
             $table->string('is_hidden')->default(false);
             $table->timestamps();
         });
