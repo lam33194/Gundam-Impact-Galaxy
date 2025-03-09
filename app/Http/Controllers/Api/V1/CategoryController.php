@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\CategoryStoreRequest;
+use App\Http\Requests\V1\CategoryUpdateRequest;
 use App\Http\Resources\V1\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
@@ -34,7 +35,7 @@ class CategoryController extends Controller
         $category = Category::create($validatedData);
 
         return $this->created("Tạo danh mục thành công", [
-            'category' => new CategoryResource($category),
+            'category' => new CategoryResource($category->loadMissing(['parent','children'])),
         ]);
     }
 
@@ -55,9 +56,19 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryUpdateRequest $request, string $slug)
     {
-        //
+        $category = Category::whereSlug($slug)->first();
+
+        if (!$category) return $this->not_found("Danh mục không tồn tại");
+
+        $data = $request -> validated();
+
+        $category->update($data);
+
+        return $this->ok("Cập nhật thành công", [
+            'category' => new CategoryResource($category->loadMissing(['parent','children'])),
+        ]);
     }
 
     /**

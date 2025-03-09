@@ -28,7 +28,7 @@ class CategoryStoreRequest extends FormRequest
         return [
             'name'      => 'required',
             'slug'      => 'required | unique:categories',
-            'parent_id' => 'nullable',
+            'parent_id' => 'nullable | exists:categories,id',
         ];
     }
 
@@ -39,6 +39,8 @@ class CategoryStoreRequest extends FormRequest
 
             'slug.required' => 'Slug là bắt buộc',
             'slug.unique'   => 'Slug đã tồn tại',
+            
+            'parent_id'     => 'Danh mục cha không tồn tại',
         ];
     }
 }

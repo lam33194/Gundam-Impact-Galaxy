@@ -17,6 +17,11 @@ class Category extends Model
         'parent_id'
     ];
 
+    // mutator: set slug về dạng lowercase trước khi lưu vào db
+    public function setSlugAttribute($value) {
+        $this -> attributes['slug'] = strtolower($value);
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);
