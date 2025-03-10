@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\SocialAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +45,10 @@ Route::prefix('v1')->group(function () {
         // Đăng ký, đăng nhập
         Route::post('login',    [AuthController::class, 'login']);
         Route::post('register', [AuthController::class, 'register']);
+        
+        // Đăng nhập bên thứ 3
+        Route::get('google-login',    [SocialAuthController::class, 'googleLogin']) ;
+        Route::get('google-callback', [SocialAuthController::class, 'googleCallback']) ;
     
         Route::middleware('auth:sanctum')->group(function () {
             // Đăng xuất
