@@ -46,6 +46,9 @@ return [
     |
     */
 
+    // thời gian hết hạn personal_access_token
+    // 1440 mins  = 1 day
+    // 43200 mins = 30 days
     'expiration' => null,
 
     /*

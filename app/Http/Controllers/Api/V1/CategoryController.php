@@ -18,11 +18,15 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with(['parent','children'])->paginate(10);
+        $categories = Category::with(['parent','children']);
 
-        return $this->ok('Lấy danh sách danh mục thành công', [
-            'categories' => CategoryResource::collection($categories)
-        ]);
+        if ($categories->count()) {
+            return $this->ok('Lấy danh sách danh mục thành công', [
+                'categories' => CategoryResource::collection($categories->paginate(10))
+            ]);
+        }
+
+        return $this->not_found('Không có bản ghi');
     }
 
     /**

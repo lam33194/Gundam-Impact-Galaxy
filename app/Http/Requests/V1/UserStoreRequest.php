@@ -38,7 +38,7 @@ class UserStoreRequest extends FormRequest
             'password' => 'required | min:8',
             'phone'    => 'required | string | max:16',
             'address'  => 'required | string | max:255',
-            'avatar'   => 'nullable | image  | mimes:png,jpg,gif,jpeg | max:10240',
+            'avatar'   => 'nullable | image  | mimes:png,jpg,gif,jpeg | max:4096',
             'role'     => 'required | in:user,admin',
         ];
     }

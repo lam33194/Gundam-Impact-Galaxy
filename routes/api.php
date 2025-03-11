@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\SocialAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,15 @@ Route::prefix('v1')->group(function () {
         Route::post  ('categories',        'store');
         Route::put   ('categories/{slug}', 'update');
         Route::delete('categories/{slug}', 'destroy');
+    });
+
+    // Product API
+    Route::controller(ProductController::class)->group(function () {
+        Route::get   ('products',        'index');
+        Route::get   ('products/{slug}', 'show');
+        Route::post  ('products',        'store');
+        Route::put   ('products/{slug}', 'update');
+        Route::delete('products/{slug}', 'destroy');
     });
 
     Route::prefix('auth')->group(function () {
