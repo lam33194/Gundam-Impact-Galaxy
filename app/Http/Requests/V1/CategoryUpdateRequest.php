@@ -21,14 +21,12 @@ class CategoryUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        // name
-        // slug
-        // parent_id
+        $category = \App\Models\Category::whereSlug($this->route('slug'))->first();
 
         return [
             'name'      => 'required',
-            'slug'      => 'required | unique:categories,slug,'.$this->slug.',slug',
-            'parent_id' => 'nullable | exists:categories,id',
+            'slug'      => 'required|unique:categories,slug,'.$category->id ?? null,
+            'parent_id' => 'nullable|exists:categories,id',
         ];
     }
 

@@ -4,7 +4,7 @@ namespace App\Http\Requests\V1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ProductStoreRequest extends FormRequest
+class ProductUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,14 +27,16 @@ class ProductStoreRequest extends FormRequest
         // price
         // thumbnail
         // description
-        
+
+        $product = \App\Models\Product::whereSlug($this->route('slug'))->first();
+
         return [
             'name'        => 'required | string | max:255',
             'category_id' => 'required | exists:categories,id',
-            'slug'        => 'required | string | unique:products',
+            'slug'        => 'required | string | unique:products,slug,'.$product->id ?? null,
             'price'       => 'required | numeric | min:0 | max:999999999.99',
             'description' => 'required | string',
-            'thumbnail'   => 'required | image | mimes:jpeg,png,jpg,gif | max:4096',
+            'thumbnail'   => 'nullable | image | mimes:jpeg,png,jpg,gif | max:4096',
 
             'product_images'   => 'nullable | array',
             'product_images.*' => 'image | mimes:jpeg,png,jpg,gif | max:4096',
@@ -58,7 +60,6 @@ class ProductStoreRequest extends FormRequest
             'description.required' => 'Vui lòng nhập mô tả',
             'description.string'   => 'Mô tả không hợp lệ',
 
-            'thumbnail.required'   => 'Vui lòng tải lên ít nhất 1 file',
             'thumbnail.image'      => 'Ảnh thumbnail không hợp lệ',
             'thumbnail.max'        => 'Vui lòng chọn ảnh có kích thước < :max',
             'thumbnail.mimes'      => 'Ảnh phải là tệp có định dạng: :values',

@@ -17,18 +17,19 @@ class ProductResource extends JsonResource
     {
         return [
             // 'id'          => $this->id,
-            // 'category_id' => $this->category_id,
             'name'        => $this->name,
             'slug'        => $this->slug,
             'price'       => number_format($this->price, 0, ',', '.') . ' VND',
             'thumbnail'   => $this->thumbnail,
             'description' => $this->description,
 
-            'category'       => new CategoryResource($this->whenLoaded('category')),
-            // 'variants'       => VariantResource::collection($this->whenLoaded('variants')),
-            // 'product_images' => ProductImagesResource::collection($this->whenLoaded('product_images')),
+            'relation'    => [
+                'category'       => new CategoryResource($this->whenLoaded('category')),
+                'productImages' => ProductImageResource::collection($this->whenLoaded('productImages')),
+                // 'variants'       => VariantResource::collection($this->whenLoaded('variants')),
+                // 'reviews'        => ReviewResource::collection($this->whenLoaded('reviews')),
+            ]
         ];
-
         // id
         // category_id
         // name

@@ -34,7 +34,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('avatar')) {
-            // upload file vào public disk
+            // upload file vào storage
             $avatarPath = $request->file('avatar')->store('avatars');
             $validatedData['avatar'] = $avatarPath;
         }
@@ -53,11 +53,11 @@ class UserController extends Controller
     {
         $user = User::find($id);
 
-        return (!$user)
-            ? $this->not_found("Người dùng không tồn tại")
-            : $this->ok("Lấy thông tin người dùng thành công", [
-                'user' => new UserResource($user),
-            ]);
+        if (!$user) return $this->not_found("Người dùng không tồn tại");
+
+        return $this->ok("Lấy thông tin người dùng thành công", [
+            'user' => new UserResource($user),
+        ]);
     }
 
     /**
@@ -65,8 +65,8 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, string $id)
     {
-        // tìm user
         $user = User::find($id);
+
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
         // validated data
@@ -75,7 +75,7 @@ class UserController extends Controller
         if ($request->hasFile('avatar')) {
             $this->deleteAvatar($user);
 
-            // upload file vào public disk
+            // upload file vào storage
             $avatarPath = $request->file('avatar')->store('avatars');
             $validatedData['avatar'] = $avatarPath;
         }
@@ -96,7 +96,7 @@ class UserController extends Controller
 
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
-        $this->deleteAvatar($user); 
+        $this->deleteStorageAvatar($user);
 
         $user->delete();
 
@@ -104,9 +104,9 @@ class UserController extends Controller
     }
 
     /**
-     * Xóa avatar của người dùng trên disk
+     * Xóa avatar của người dùng trên storage
      */
-    protected function deleteAvatar(User $user): void
+    protected function deleteStorageAvatar(User $user): void
     {
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
