@@ -20,7 +20,7 @@ class ProductImageResource extends JsonResource
             'image_url'  => $this->image_url,
             'is_primary' => $this->is_primary,
 
-            'relation' => [
+            'relations'  => [
                 'product'  => new ProductResource($this->whenLoaded('product')),
                 // 'variant'  => new VariantResourec($this->whenLoaded('variant'))            
             ]

@@ -7,19 +7,20 @@ use App\Http\Requests\V1\ProductStoreRequest;
 use App\Http\Requests\V1\ProductUpdateRequest;
 use App\Http\Resources\V1\ProductResource;
 use App\Models\Product;
+use App\Models\ProductImage;
 use App\Traits\ApiResponse;
+use App\Traits\LoadRelations;
+use App\Traits\StorageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, StorageFile, LoadRelations;
 
     // tên quan hệ hợp lệ (check trên url)
     protected $validRelations = [
         'category',
-        'category.parent',
-        'category.children',
         'variants',
         'productImages',
         'reviews',
@@ -42,7 +43,7 @@ class ProductController extends Controller
         $this->applyFilters($products, $request);
 
         return $this->ok('Lấy danh sách sản phẩm thành công', [
-            'products' => ProductResource::collection($products->paginate(10)),
+            'products' => ProductResource::collection($products->get()),
         ]);
     }
 
@@ -99,7 +100,7 @@ class ProductController extends Controller
         if ($request->hasFile('thumbnail')) {
 
             // Xóa thumbnail hiện tại trên storage
-            $this->deleteStorageThumbnail($product);
+            $this->delete_storage_file($product, 'thumbnail');
 
             // upload thumbnail mới lên storage
             $validatedData['thumbnail'] = $request->file('thumbnail')->store('product_thumbnails');
@@ -112,7 +113,7 @@ class ProductController extends Controller
         if ($request->hasFile('product_images')) {
 
             // Xóa ảnh cũ trong db vàstorage 
-            $this->deleteStorageProductImage($product);
+            $this->delete_storage_product_images($product);
 
             // upload ảnh mới lên storage
             foreach ($request->file('product_images') as $file) {
@@ -129,43 +130,61 @@ class ProductController extends Controller
         ]);
     }
 
+    public function update_single_product_image(Request $request, string $slug, $id)
+    {
+        $product = Product::whereSlug($slug)->first();
+
+        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
+
+        // Kiểm tra nếu ảnh được chọn thuộc product vừa lấy
+        $image = ProductImage::where([
+            'id'         => $id,
+            'product_id' => $product->id,
+        ])->first();
+        
+        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm ' . $product->name);
+
+        // validate
+        $validatedData = $request->validate([
+            'image_url' => 'required | image | mimes:jpeg,png,jpg,gif | max:4096',
+        ],
+        [
+            'image_url.required' => 'Ảnh sản phẩm là bắt buộc',
+            'image_url.image'    => 'Ảnh sản phẩm không hợp lệ',
+            'image_url.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
+            'image_url.mimes'    => 'Ảnh phải là tệp có định dạng: :values',
+        ]);
+
+        if ($request->hasFile('image_url')) {
+            // xóa file trên storage
+            $this->delete_storage_file($image, 'image_url');
+            // upload ảnh mới lên storage
+            $validatedData['image_url'] = $request->file('image_url')->store('product_images');
+        }
+        // thêm path vào db
+        $image->update($validatedData);
+
+        $product->load('productImages');
+
+        return $this->ok("Cập nhật thành công", [
+            'product' => new ProductResource($product),
+        ]);
+    }
+
     public function destroy(string $slug)
     {
         $product = Product::whereSlug($slug)->first();
 
         if (!$product) return $this->not_found("Sản phẩm không tồn tại");
 
-        $this->deleteStorageThumbnail($product);
+        $this->delete_storage_file($product, 'thumbnail');
 
-        $this->deleteStorageProductImage($product);
-        
+        $this->delete_storage_product_images($product);
+
         $product->delete();
         // ⬆️ đồng thời xóa luôn variants, productImages, reviews
-        
+
         return $this->no_content();
-    }
-
-    private function loadRelations($query, Request $request, $loadMissing = false)
-    {
-        // eager load relations nếu có param 'include' trên url
-        if ($request->has('include')) {
-
-            // gộp chuỗi thành mảng (vd: ?include=reviews,abc => ['reviews','abc'])
-            $queryRelations = explode(',', $request->query('include'));
-
-            foreach ($queryRelations as $relation) {
-                // nếu nhập tên quan hệ không hợp lệ, chuyển đến vòng lặp tiếp theo
-                if (!in_array($relation, $this->validRelations))
-                    continue;
-
-                if ($loadMissing) {
-                    $query->loadMissing($relation);
-                } else {
-                    // eager load 
-                    $query->with($relation);
-                }
-            }
-        }
     }
 
     private function applyFilters($query, Request $request)
@@ -186,24 +205,13 @@ class ProductController extends Controller
         }
     }
 
-    protected function deleteStorageThumbnail(Product $product): void
+    protected function delete_storage_product_images(Product $product)
     {
-        $path = $product->thumbnail;
-
-        if ($path && Storage::disk('public')->exists($path)) {
-            Storage::disk('public')->delete($path);
-        }
-    }
-
-    protected function deleteStorageProductImage(Product $product)
-    {
+        $product -> loadMissing('productImages');
+        
         foreach ($product->productImages as $image) {
 
-            $path = $image->image_url;
-
-            if ($path && Storage::disk('public')->exists($path)) {
-                Storage::disk('public')->delete($path);
-            }
+            $this->delete_storage_file($image,'image_url');
 
             $image->delete();
         }

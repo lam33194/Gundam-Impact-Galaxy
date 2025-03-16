@@ -24,9 +24,11 @@ class UserResource extends JsonResource
             'avatar'   => $this->avatar,
             'role'     => $this->role,
 
-            // 'reviews'    => ReviewResource::collection($this->whenLoaded('reviews')),
-            // 'cart_items' => CartItemResource::collection($this->whenLoaded('cart_items')),
-            // 'orders'     => OrderResource::collection($this->whenLoaded('orders')),
+            'relations' => [
+                // 'reviews'    => ReviewResource::collection($this->whenLoaded('reviews')),
+                // 'cartItems'  => CartItemResource::collection($this->whenLoaded('cartItems')),
+                // 'orders'     => OrderResource::collection($this->whenLoaded('orders')),
+            ],
 
             // 'created_at'     => $this->created_at,
             // 'updated_at'     => $this->updated_at,
@@ -44,12 +46,5 @@ class UserResource extends JsonResource
             // avatar
             // role
             // remember_token
-            // created_at
-            // updated_at
-
-        // Relations
-            // orders
-            // reviews
-            // cart_items
     }
 }

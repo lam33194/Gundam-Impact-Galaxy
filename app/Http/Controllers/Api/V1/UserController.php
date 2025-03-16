@@ -8,27 +8,23 @@ use App\Http\Requests\V1\UserUpdateRequest;
 use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use App\Traits\StorageFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    use ApiResponse;
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ApiResponse, StorageFile;
+
+    public function index(Request $request)
     {
-        $users = User::paginate(10);
+        $users = User::query();
 
         return $this->ok("Lấy danh sách người dùng thành công", [
-            'users' => UserResource::collection($users->getCollection())
+            'users' => UserResource::collection($users->get())
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(UserStoreRequest $request)
     {
         $validatedData = $request->validated();
@@ -46,9 +42,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $user = User::find($id);
@@ -60,9 +53,6 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UserUpdateRequest $request, string $id)
     {
         $user = User::find($id);
@@ -87,29 +77,16 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $user = User::find($id);
 
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
-        $this->deleteStorageAvatar($user);
+        $this->delete_storage_file($user,'avatar');
 
         $user->delete();
 
         return $this->no_content();
-    }
-
-    /**
-     * Xóa avatar của người dùng trên storage
-     */
-    protected function deleteStorageAvatar(User $user): void
-    {
-        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
-            Storage::disk('public')->delete($user->avatar);
-        }
     }
 }

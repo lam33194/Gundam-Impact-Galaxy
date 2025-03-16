@@ -25,7 +25,7 @@ class CategoryUpdateRequest extends FormRequest
 
         return [
             'name'      => 'required',
-            'slug'      => 'required|unique:categories,slug,'.$category->id ?? null,
+            'slug'      => 'required|unique:categories,slug,' . ($category ? $category->id : null),
             'parent_id' => 'nullable|exists:categories,id',
         ];
     }
@@ -37,7 +37,7 @@ class CategoryUpdateRequest extends FormRequest
 
             'slug.required' => 'Slug là bắt buộc',
             'slug.unique'   => 'Slug đã tồn tại',
-            
+
             'parent_id'     => 'Danh mục cha không tồn tại',
         ];
     }

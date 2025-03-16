@@ -33,7 +33,7 @@ class ProductUpdateRequest extends FormRequest
         return [
             'name'        => 'required | string | max:255',
             'category_id' => 'required | exists:categories,id',
-            'slug'        => 'required | string | unique:products,slug,'.$product->id ?? null,
+            'slug'        => 'required | string | unique:products,slug,' . ($product ? $product->id : null),
             'price'       => 'required | numeric | min:0 | max:999999999.99',
             'description' => 'required | string',
             'thumbnail'   => 'nullable | image | mimes:jpeg,png,jpg,gif | max:4096',
@@ -43,7 +43,8 @@ class ProductUpdateRequest extends FormRequest
         ];
     }
 
-    public function messages(): array {
+    public function messages(): array
+    {
         return [
             'name.required'        => 'Trường tên là bắt buộc',
             'name.string'          => 'Tên không hợp lệ',

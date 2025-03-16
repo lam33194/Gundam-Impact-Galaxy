@@ -8,30 +8,30 @@ use App\Http\Requests\V1\CategoryUpdateRequest;
 use App\Http\Resources\V1\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
+use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    use ApiResponse;
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    use ApiResponse, LoadRelations;
+
+    protected $validRelations = [
+        'products',
+        'parent',
+        'children'
+    ];
+
+    public function index(Request $request)
     {
-        $categories = Category::with(['parent','children']);
+        $categories = Category::query();
 
-        if ($categories->count()) {
-            return $this->ok('Lấy danh sách danh mục thành công', [
-                'categories' => CategoryResource::collection($categories->paginate(10))
-            ]);
-        }
+        $this->loadRelations($categories, $request);
 
-        return $this->not_found('Không có bản ghi');
+        return $this->ok('Lấy danh sách danh mục thành công', [
+            'categories' => CategoryResource::collection($categories->get()),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(CategoryStoreRequest $request)
     {
         $validatedData = $request->validated();
@@ -43,23 +43,19 @@ class CategoryController extends Controller
         ]);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $slug)
     {
-        $category = Category::whereSlug($slug)->with(['parent','children'])->first();
+        $category = Category::whereSlug($slug)->first();
+        
+        if (!$category) return $this->not_found("Danh mục không tồn tại");
 
-        return (!$category)
-            ? $this->not_found("Danh mục không tồn tại")
-            : $this->ok("Lấy thông tin danh mục thành công", [
-                'category' => new CategoryResource($category),
-            ]);
+        $this->loadRelations($category, request(), true);
+
+        return $this->ok("Lấy thông tin danh mục thành công", [
+            'category' => new CategoryResource($category),
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(CategoryUpdateRequest $request, string $slug)
     {
         $category = Category::whereSlug($slug)->first();
@@ -71,13 +67,10 @@ class CategoryController extends Controller
         $category->update($data);
 
         return $this->ok("Cập nhật thành công", [
-            'category' => new CategoryResource($category->loadMissing(['parent','children'])),
+            'category' => new CategoryResource($category),
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $slug)
     {
         $category = Category::whereSlug($slug)->first();

@@ -23,9 +23,9 @@ class ProductResource extends JsonResource
             'thumbnail'   => $this->thumbnail,
             'description' => $this->description,
 
-            'relation'    => [
+            'relations'    => [
                 'category'       => new CategoryResource($this->whenLoaded('category')),
-                'productImages' => ProductImageResource::collection($this->whenLoaded('productImages')),
+                'productImages'  => ProductImageResource::collection($this->whenLoaded('productImages')),
                 // 'variants'       => VariantResource::collection($this->whenLoaded('variants')),
                 // 'reviews'        => ReviewResource::collection($this->whenLoaded('reviews')),
             ]
