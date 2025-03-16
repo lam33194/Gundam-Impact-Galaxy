@@ -72,6 +72,15 @@ Route::prefix('v1')->group(function () {
         Route::put   ('variant-attributes/{attribute_id}/values/{value_id}', 'update');
         Route::delete('variant-attributes/{attribute_id}/values/{value_id}', 'destroy');
     });
+        
+    // Variant API
+    Route::controller(VariantController::class)->group(function () {
+        Route::get   ('products/{slug}/variants',       'index');
+        Route::get   ('products/{slug}/variants/{sku}', 'show');
+        Route::post  ('products/{slug}/variants',       'store');
+        Route::put   ('products/{slug}/variants/{sku}', 'update');
+        Route::delete('products/{slug}/variants/{sku}', 'destroy');
+    });
 
     Route::prefix('auth')->group(function () {
         // Đăng ký, đăng nhập

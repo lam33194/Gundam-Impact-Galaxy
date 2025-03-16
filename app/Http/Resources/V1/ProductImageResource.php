@@ -17,12 +17,13 @@ class ProductImageResource extends JsonResource
         // return parent::toArray($request);
 
         return [
+            'variant_id' => $this->variant_id,
             'image_url'  => $this->image_url,
             'is_primary' => $this->is_primary,
 
             'relations'  => [
                 'product'  => new ProductResource($this->whenLoaded('product')),
-                // 'variant'  => new VariantResourec($this->whenLoaded('variant'))            
+                'variant'  => new VariantResource($this->whenLoaded('variant'))            
             ]
         ];
         // product_id

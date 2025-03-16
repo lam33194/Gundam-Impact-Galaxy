@@ -60,4 +60,10 @@ trait ApiResponse
     {
         return $this->error($msg, 401);
     }
+
+    // 409 (Conflict): Xảy ra khi xóa tài nguyên đang được sử dụng, ... 
+    protected function conflict($msg)
+    {
+        return $this->error($msg, 409);
+    }
 }

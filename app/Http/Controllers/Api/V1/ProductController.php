@@ -23,6 +23,7 @@ class ProductController extends Controller
         'category',
         'variants',
         'variants.productImages',
+        'variants.variantValues',
         'productImages',
         'reviews',
         'reviews.user'
@@ -85,7 +86,7 @@ class ProductController extends Controller
 
         $this->loadRelations($product, $request, true);
 
-        return $this->ok('Lấy danh sách sản phẩm thành công', [
+        return $this->ok('Lấy chi tiết sản phẩm thành công', [
             'product' => new ProductResource($product),
         ]);
     }

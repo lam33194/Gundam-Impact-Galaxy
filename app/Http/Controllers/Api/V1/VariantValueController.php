@@ -103,6 +103,8 @@ class VariantValueController extends Controller
 
         if (!$attributeValue) return $this->not_found("Giá trị không tồn tại hoặc không thuộc về thuộc tính này");
 
+        if ($attributeValue->variants()->count()) return $this->conflict('Không thể xóa vì có biến thể chứa thuộc tính này');
+
         $attributeValue->delete();
 
         return $this->no_content();
