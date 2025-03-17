@@ -22,6 +22,7 @@ class ProductController extends Controller
     protected $validRelations = [
         'category',
         'variants',
+        'variants.productImages',
         'productImages',
         'reviews',
         'reviews.user'
@@ -55,6 +56,7 @@ class ProductController extends Controller
         if ($request->hasFile('thumbnail')) {
             $validatedData['thumbnail'] = $request->file('thumbnail')->store('product_thumbnails');
         }
+
         $product = Product::create($validatedData);
 
         // Xử lí upload file cho bảng product image
@@ -71,7 +73,7 @@ class ProductController extends Controller
         $product->load('productImages');
 
         return $this->created("Tạo sản phẩm thành công", [
-            'user' => new ProductResource($product),
+            'product' => new ProductResource($product),
         ]);
     }
 
@@ -142,7 +144,7 @@ class ProductController extends Controller
             'product_id' => $product->id,
         ])->first();
         
-        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm ' . $product->name);
+        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
 
         // validate
         $validatedData = $request->validate([

@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\SocialAuthController;
+use App\Http\Controllers\Api\V1\VariantAttributeController;
+use App\Http\Controllers\Api\V1\VariantController;
+use App\Http\Controllers\Api\V1\VariantValueController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +53,24 @@ Route::prefix('v1')->group(function () {
         Route::put   ('products/{slug}', 'update');
         Route::delete('products/{slug}', 'destroy');
         Route::put   ('products/{slug}/image/{id}', 'update_single_product_image');
+    });
+
+    // Variant Attributes Api
+    Route::controller(VariantAttributeController::class)->group(function () {
+        Route::get   ('variant-attributes',      'index');
+        Route::get   ('variant-attributes/{id}', 'show');
+        Route::post  ('variant-attributes',      'store');
+        Route::put   ('variant-attributes/{id}', 'update');
+        Route::delete('variant-attributes/{id}', 'destroy');
+    });
+
+    // Variant Value Api
+    Route::controller(VariantValueController::class)->group(function () {
+        Route::get   ('variant-attributes/{attribute_id}/values',            'index');
+        Route::get   ('variant-attributes/{attribute_id}/values/{value_id}', 'show');
+        Route::post  ('variant-attributes/{attribute_id}/values',            'store');
+        Route::put   ('variant-attributes/{attribute_id}/values/{value_id}', 'update');
+        Route::delete('variant-attributes/{attribute_id}/values/{value_id}', 'destroy');
     });
 
     Route::prefix('auth')->group(function () {

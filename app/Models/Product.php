@@ -37,6 +37,12 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    // Accessor: làm tròn price
+    public function getRoundPriceAttribute()
+    {
+        return round($this->price);
+    }
+
     // ===== Scope =========================
 
     public function scopePriceFilter($query, $min, $max)
