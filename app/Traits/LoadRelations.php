@@ -3,14 +3,16 @@
 namespace App\Traits;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 trait LoadRelations
 {
     /**
      * Load relations based on 'include' query parameter.
      *
-     * @param mixed $model
-     * @param Request $request
+     * @param LengthAwarePaginator | Eloquent\Builder | Eloquent\Model $model
+     * @param \Illuminate\Foundation\Http\FormRequest | Request $request
      * @param bool $loadMissing
      * @return void
      */

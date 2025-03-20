@@ -38,15 +38,17 @@ class CategoryController extends Controller
 
         $category = Category::create($validatedData);
 
+        $this->loadRelations($category, $request, true);
+        
         return $this->created("Tạo danh mục thành công", [
-            'category' => new CategoryResource($category->loadMissing(['parent','children'])),
+            'category' => new CategoryResource($category),
         ]);
     }
 
     public function show(string $slug)
     {
         $category = Category::whereSlug($slug)->first();
-        
+
         if (!$category) return $this->not_found("Danh mục không tồn tại");
 
         $this->loadRelations($category, request(), true);
@@ -62,9 +64,11 @@ class CategoryController extends Controller
 
         if (!$category) return $this->not_found("Danh mục không tồn tại");
 
-        $data = $request -> validated();
+        $data = $request->validated();
 
         $category->update($data);
+
+        $this->loadRelations($category, $request, true);
 
         return $this->ok("Cập nhật thành công", [
             'category' => new CategoryResource($category),

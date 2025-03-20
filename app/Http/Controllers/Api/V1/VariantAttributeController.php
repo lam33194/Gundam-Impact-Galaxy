@@ -7,7 +7,6 @@ use App\Http\Resources\V1\VariantAttributeResource;
 use App\Models\VariantAttribute;
 use Illuminate\Http\Request;
 use App\Traits\ApiResponse;
-use App\Traits\LoadRelations;
 
 class VariantAttributeController extends Controller
 {
@@ -35,6 +34,8 @@ class VariantAttributeController extends Controller
 
         $variantAttribute = VariantAttribute::create($validatedData);
 
+        $variantAttribute->load('variantValues');
+
         return $this->created('Tạo thuộc tính thành công', [
             'variantAttribute' => new VariantAttributeResource($variantAttribute),
         ]);
@@ -42,11 +43,9 @@ class VariantAttributeController extends Controller
 
     public function show(string $id)
     {
-        $variantAttribute = VariantAttribute::find($id);
+        $variantAttribute = VariantAttribute::with('variantValues')->find($id);
 
         if (!$variantAttribute) return $this->not_found("Thuộc tính không tồn tại");
-
-        $variantAttribute->load('variantValues');
 
         return $this->ok("Lấy thông tin thuộc tính thành công", [
             'variantAttribute' => new VariantAttributeResource($variantAttribute),
@@ -68,6 +67,8 @@ class VariantAttributeController extends Controller
         ]);
 
         $variantAttribute->update($validatedData);
+
+        $variantAttribute->load('variantValues');
 
         return $this->ok('Cập nhật thuộc tính thành công', [
             'variantAttribute' => new VariantAttributeResource($variantAttribute),

@@ -7,12 +7,18 @@ use App\Http\Resources\V1\VariantValueResource;
 use App\Models\VariantAttribute;
 use App\Models\VariantValue;
 use App\Traits\ApiResponse;
+use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class VariantValueController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, LoadRelations;
+
+    protected $validRelations = [
+        'variants',
+        'variantAttribute',
+    ];
 
     public function index(Request $request, string $attribute_id)
     {
@@ -21,6 +27,8 @@ class VariantValueController extends Controller
         if (!$variantAttribute) return $this->not_found("Thuộc tính không tồn tại");
 
         $attributeValues = $variantAttribute->variantValues;
+
+        $this->loadRelations($attributeValues, $request, true);
 
         return $this->ok("Danh sách giá trị thuộc tính $variantAttribute->name", [
             'attributeValues' => VariantValueResource::collection($attributeValues),
@@ -44,6 +52,8 @@ class VariantValueController extends Controller
 
         $attributeValue = $variantAttribute->variantValues()->create($validatedData);
 
+        $this->loadRelations($attributeValue, $request, true);
+
         return $this->created('Tạo giá trị thuộc tính thành công', [
             'attributeValue' => new VariantValueResource($attributeValue),
         ]);
@@ -59,6 +69,8 @@ class VariantValueController extends Controller
 
         if (!$attributeValue) return $this->not_found("Giá trị không tồn tại hoặc không thuộc về thuộc tính này");
 
+        $this->loadRelations($attributeValue, $request, true);
+        
         return $this->ok("Lấy thông tin giá trị thuộc tính thành công", [
             'attributeValue' => new VariantValueResource($attributeValue),
         ]);
@@ -87,6 +99,8 @@ class VariantValueController extends Controller
             'variant_attribute_id' => $attribute_id,
             'value' => $request->input('value'),
         ]);
+
+        $this->loadRelations($attributeValue, $request, true);
 
         return $this->ok('Cập nhật giá trị thuộc tính thành công', [
             'attributeValue' => new VariantValueResource($attributeValue),

@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Traits\ApiResponse;
 use App\Traits\StorageFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -63,7 +62,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
 
         if ($request->hasFile('avatar')) {
-            $this->deleteAvatar($user);
+            $this->delete_storage_file($user, 'avatar');
 
             // upload file vào storage
             $avatarPath = $request->file('avatar')->store('avatars');
@@ -83,7 +82,7 @@ class UserController extends Controller
 
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
-        $this->delete_storage_file($user,'avatar');
+        $this->delete_storage_file($user, 'avatar');
 
         $user->delete();
 

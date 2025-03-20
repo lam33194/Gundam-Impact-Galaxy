@@ -70,8 +70,7 @@ class ProductController extends Controller
 
         $product->productImages()->createMany($images);
 
-        // Tùy
-        $product->load('productImages');
+        $this->loadRelations($product, $request, true);
 
         return $this->created("Tạo sản phẩm thành công", [
             'product' => new ProductResource($product),
@@ -126,48 +125,7 @@ class ProductController extends Controller
 
         $product->productImages()->createMany($images);
 
-        $product->load('productImages');
-
-        return $this->ok("Cập nhật thành công", [
-            'product' => new ProductResource($product),
-        ]);
-    }
-
-    public function update_single_product_image(Request $request, string $slug, $id)
-    {
-        $product = Product::whereSlug($slug)->first();
-
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        // Kiểm tra nếu ảnh được chọn thuộc product vừa lấy
-        $image = ProductImage::where([
-            'id'         => $id,
-            'product_id' => $product->id,
-        ])->first();
-        
-        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
-
-        // validate
-        $validatedData = $request->validate([
-            'image_url' => 'required | image | mimes:jpeg,png,jpg,gif | max:4096',
-        ],
-        [
-            'image_url.required' => 'Ảnh sản phẩm là bắt buộc',
-            'image_url.image'    => 'Ảnh sản phẩm không hợp lệ',
-            'image_url.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
-            'image_url.mimes'    => 'Ảnh phải là tệp có định dạng: :values',
-        ]);
-
-        if ($request->hasFile('image_url')) {
-            // xóa file trên storage
-            $this->delete_storage_file($image, 'image_url');
-            // upload ảnh mới lên storage
-            $validatedData['image_url'] = $request->file('image_url')->store('product_images');
-        }
-        // thêm path vào db
-        $image->update($validatedData);
-
-        $product->load('productImages');
+        $this->loadRelations($product, $request, true);
 
         return $this->ok("Cập nhật thành công", [
             'product' => new ProductResource($product),
@@ -190,6 +148,60 @@ class ProductController extends Controller
         return $this->no_content();
     }
 
+    public function update_single_product_image(Request $request, string $slug, $id)
+    {
+        $product = Product::whereSlug($slug)->first();
+
+        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
+
+        $image = $product->productImages()->find($id)->first();
+
+        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
+
+        // validate
+        $validatedData = $request->validate(
+            [
+                'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
+            ],
+            [
+                'image_url.required' => 'Ảnh sản phẩm là bắt buộc',
+                'image_url.image'    => 'Ảnh sản phẩm không hợp lệ',
+                'image_url.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
+                'image_url.mimes'    => 'Ảnh phải là tệp có định dạng: :values',
+            ]
+        );
+
+        if ($request->hasFile('image_url')) {
+            // xóa file trên storage
+            $this->delete_storage_file($image, 'image_url');
+            // upload ảnh mới lên storage
+            $validatedData['image_url'] = $request->file('image_url')->store('product_images');
+        }
+        // thêm path vào db
+        $image->update($validatedData);
+
+        $this->loadRelations($product, $request, true);
+
+        return $this->ok("Cập nhật thành công", [
+            'product' => new ProductResource($product),
+        ]);
+    }
+
+    public function delete_single_product_image(string $slug, $id)
+    {
+        $product = Product::whereSlug($slug)->first();
+
+        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
+
+        $image = $product->productImages()->find($id)->first();
+
+        if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
+
+        $this->delete_storage_file($image,'image_url');
+
+        $image->delete();
+    }
+
     private function applyFilters($query, Request $request)
     {
         // Tìm kiếm theo tên
@@ -210,11 +222,11 @@ class ProductController extends Controller
 
     protected function delete_storage_product_images(Product $product)
     {
-        $product -> loadMissing('productImages');
-        
+        $product->loadMissing('productImages');
+
         foreach ($product->productImages as $image) {
 
-            $this->delete_storage_file($image,'image_url');
+            $this->delete_storage_file($image, 'image_url');
 
             $image->delete();
         }

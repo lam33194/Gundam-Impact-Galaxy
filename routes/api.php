@@ -53,6 +53,7 @@ Route::prefix('v1')->group(function () {
         Route::put   ('products/{slug}', 'update');
         Route::delete('products/{slug}', 'destroy');
         Route::put   ('products/{slug}/image/{id}', 'update_single_product_image');
+        Route::delete('products/{slug}/image/{id}', 'delete_single_product_image');
     });
 
     // Variant Attributes Api
