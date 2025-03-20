@@ -17,15 +17,15 @@ class VariantResource extends JsonResource
         // return parent::toArray($request);
 
         return [
+            'id'           => $this->id,
             'variantName'  => $this->variant_name,
             'sku'          => $this->sku,
             'stock'        => $this->stock,
             'extraPrice'   => $this->extra_price,
-            'relations' => [
-                'product'       => new ProductResource($this->whenLoaded('product')),
-                'productImages' => ProductImageResource::collection($this->whenLoaded('productImages')),
-                'variantValues' => VariantValueResource::collection($this->whenLoaded('variantValues')),
-            ]
+            // relations
+            'product'       => new ProductResource($this->whenLoaded('product')),
+            'productImages' => ProductImageResource::collection($this->whenLoaded('productImages')),
+            'variantValues' => VariantValueResource::collection($this->whenLoaded('variantValues')),
         ];
 
         // id

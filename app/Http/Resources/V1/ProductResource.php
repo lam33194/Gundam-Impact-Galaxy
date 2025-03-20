@@ -16,20 +16,19 @@ class ProductResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            // 'id'          => $this->id,
+            'id'          => $this->id,
             'name'        => $this->name,
             'slug'        => $this->slug,
             'price'       => $this->round_price,
             'thumbnail'   => $this->thumbnail,
             'description' => $this->description,
-
-            'relations'    => [
-                'category'       => new CategoryResource($this->whenLoaded('category')),
-                'productImages'  => ProductImageResource::collection($this->whenLoaded('productImages')),
-                'variants'       => VariantResource::collection($this->whenLoaded('variants')),
-                // 'reviews'        => ReviewResource::collection($this->whenLoaded('reviews')),
-            ]
+            // relations
+            'category'       => new CategoryResource($this->whenLoaded('category')),
+            'productImages'  => ProductImageResource::collection($this->whenLoaded('productImages')),
+            'variants'       => VariantResource::collection($this->whenLoaded('variants')),
+            // 'reviews'        => ReviewResource::collection($this->whenLoaded('reviews')),
         ];
+        
         // id
         // category_id
         // name

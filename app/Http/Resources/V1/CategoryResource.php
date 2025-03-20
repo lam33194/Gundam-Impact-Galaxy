@@ -20,16 +20,14 @@ class CategoryResource extends JsonResource
             'id'        => $this->id,
             'name'      => $this->name,
             'slug'      => $this->slug,
-            // 'productsCount' => $this->products_count,
-
-            'relations' => [
-                'children'  => CategoryResource::collection($this->whenLoaded('children')),
-                'parent'    => new CategoryResource($this->whenLoaded('parent')),
-                'products'  => ProductResource::collection($this->whenLoaded('products')),
-            ],
+            // relations
+            'children'  => CategoryResource::collection($this->whenLoaded('children')),
+            'parent'    => new CategoryResource($this->whenLoaded('parent')),
+            'products'  => ProductResource::collection($this->whenLoaded('products')),
         ];
     }
-    
+
+    // id
     // name
     // slug
     // parent_id

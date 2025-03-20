@@ -16,6 +16,7 @@ class UserResource extends JsonResource
     {
         // return parent::toArray($request);
         return [
+            'id'       => $this->id,
             'name'     => $this->name,
             'email'    => $this->email,
             // 'password' => $this->password,
@@ -23,28 +24,21 @@ class UserResource extends JsonResource
             'address'  => $this->address,
             'avatar'   => $this->avatar,
             'role'     => $this->role,
-
-            'relations' => [
-                // 'reviews'    => ReviewResource::collection($this->whenLoaded('reviews')),
-                // 'cartItems'  => CartItemResource::collection($this->whenLoaded('cartItems')),
-                // 'orders'     => OrderResource::collection($this->whenLoaded('orders')),
-            ],
-
-            // 'created_at'     => $this->created_at,
-            // 'updated_at'     => $this->updated_at,
-            // 'remember_token' => $this->remember_token,
+            // relations
+            // 'reviews'    => ReviewResource::collection($this->whenLoaded('reviews')),
+            // 'cartItems'  => CartItemResource::collection($this->whenLoaded('cartItems')),
+            // 'orders'     => OrderResource::collection($this->whenLoaded('orders')),
         ];
 
-        // Fields
-            // id
-            // name
-            // email
-            // email_verified_at
-            // password
-            // phone
-            // address
-            // avatar
-            // role
-            // remember_token
+        // id
+        // name
+        // email
+        // email_verified_at
+        // password
+        // phone
+        // address
+        // avatar
+        // role
+        // remember_token
     }
 }

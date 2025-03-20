@@ -17,13 +17,13 @@ class VariantAttributeResource extends JsonResource
         // return parent::toArray($request);
 
         return [
-            'id' => $this->id,
-            'name' => $this->name,
+            'id'    => $this->id,
+            'name'  => $this->name,
             // relation
             'variantValues' => VariantValueResource::collection($this->whenLoaded('variantValues')),
         ];
 
         // id
-        // name (unique)
+        // name
     }
 }
