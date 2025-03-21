@@ -29,23 +29,26 @@ class RegisterRequest extends FormRequest
         // avatar
         // role
         return [
-            'name'      => 'required|max:255',
-            'email'     => 'required|email|unique:users,email',
-            'password'  => 'required|confirmed|min:8'
+            'name'     => 'required|string|max:255',
+            'email'    => ['required', 'email', 'unique:users,email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'password' => 'required|confirmed|min:8'
         ];
     }
 
     public function messages(): array {
         return [
-            'name.required'     => 'Trường tên là bắt buộc', 
+            'name.required'      => 'Vui lòng nhập tên người dùng', 
+            'name.string'        => 'Tên người dùng không hợp lệ',
+            'name.max'           => 'Tên người dùng không được vượt quá :max ký tự',
 
-            'email.required'    => 'Trường email là bắt buộc',
-            'email.email'       => 'Email không hợp lệ',  
-            'email.unique'      => 'Email đã được sử dụng',
+            'email.required'     => 'Vui lòng nhập email',
+            'email.email'        => 'Email không hợp lệ',
+            'email.regex'        => 'Email không hợp lệ',
+            'email.unique'       => 'Email này đã được đăng ký',
 
             'password.required'  => 'Vui lòng nhập mật khẩu',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp',
-            'password.min'       => 'Mật khẩu phải có ít nhất 8 kí tự',
+            'password.min'       => 'Mật khẩu phải có ít nhất :min ký tự',
         ];
     }
 }

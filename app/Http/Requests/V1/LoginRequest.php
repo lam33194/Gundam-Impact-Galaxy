@@ -29,15 +29,17 @@ class LoginRequest extends FormRequest
         // avatar
         // role
         return [
-            'email'     => 'required|email',
-            'password'  => 'required'
+            'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'password' => 'required'
         ];
     }
 
     public function messages(): array {
         return [ 
-            'email.required'    => 'Trường email là bắt buộc',
-            'email.email'       => 'Email không hợp lệ',  
+            'email.required'    => 'Vui lòng nhập email',
+            'email.email'       => 'Email không hợp lệ',
+            'email.regex'       => 'Email không hợp lệ',
+
             'password.required' => 'Vui lòng nhập mật khẩu',
         ];
     }

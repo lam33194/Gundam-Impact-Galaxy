@@ -45,9 +45,10 @@ class VariantValueController extends Controller
             'value' => 'required|string|max:50|' .
                 Rule::unique('variant_values', 'value')->where('variant_attribute_id', $attribute_id),
         ], [
-            'value.required' => 'Giá trị không được để trống',
+            'value.required' => 'Vui lòng nhập giá trị thuộc tính',
+            'value.string'   => 'Giá trị thuộc tính không hợp lệ',
             'value.unique'   => 'Giá trị ' . $request->input('name') . ' đã tồn tại',
-            'value.max'      => 'Giá trị quá dài',
+            'value.max'      => 'Giá trị không được vượt quá :max ký tự',
         ]);
 
         $attributeValue = $variantAttribute->variantValues()->create($validatedData);
@@ -90,9 +91,10 @@ class VariantValueController extends Controller
         $request->validate([
             'value' => "required|string|max:50|" . Rule::unique('variant_values', 'value')->where('variant_attribute_id', $attribute_id)->ignore($value_id),
         ], [
-            'value.required' => 'Giá trị không được để trống',
+            'value.required' => 'Vui lòng nhập giá trị thuộc tính',
+            'value.string'   => 'Giá trị thuộc tính không hợp lệ',
+            'value.max'      => 'Giá trị không được vượt quá :max ký tự',
             'value.unique'   => 'Giá trị ' . $request->input('name') . ' đã tồn tại',
-            'value.max'      => 'Giá trị quá dài',
         ]);
 
         $attributeValue->update([

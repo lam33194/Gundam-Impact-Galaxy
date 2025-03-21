@@ -22,37 +22,31 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'     => 'required | string | max:255',
-            'phone'    => 'required | string | max:16',
-            'address'  => 'required | string | max:255',
-            'avatar'   => 'nullable | image  | mimes:png,jpg,gif,jpeg | max:10240',
-            'role'     => 'required | in:user,admin',
+            'name'     => 'required|string|max:255',
+            'phone'    => ['required', 'string', 'regex:/^0[0-9]{9,10}$/'],
+            'address'  => 'required|string|max:255',
+            'avatar'   => 'nullable|image|mimes:png,jpg,gif,jpeg|max:10240',
+            'role'     => 'required|in:user,admin',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required'     => 'Trường tên là bắt buộc',
-            'name.max'          => 'Tên không được vượt quá 255 ký tự',
+            'name.required'     => 'Vui lòng nhập tên người dùng',
+            'name.string'       => 'Tên người dùng không hợp lệ',
+            'name.max'          => 'Tên người dùng không được vượt quá :max ký tự',
 
             'phone.required'    => 'Vui lòng nhập số điện thoại',
-            'phone.max'         => 'Số điện thoại không được vượt quá 16 ký tự',
-            // numeric
-            // unique
-            // digits:10
-            // digits_between:9,11
-            // regex:/^0[0-9]{9}$/
-                // ^0: Bắt đầu bằng số 0.
-                // [0-9]{9}: Theo sau là 9 chữ số bất kỳ.
-                // $: Kết thúc chuỗi.
-            
+            'phone.regex'       => 'Số điện thoại không hợp lệ',
+
             'address.required'  => 'Vui lòng nhập địa chỉ',
-            'address.max'       => 'add.max',
-            
+            'address.max'       => 'Địa chỉ không được vượt quá :max ký tự',
+            'address.string'    => 'Địa chỉ không hợp lệ',
+
             'avatar.image'      => 'Avatar phải là file ảnh',
-            'avatar.mimes'      => 'avatar.mimes',
-            'avatar.max'        => 'Avatar không được vượt quá 10MB',
+            'avatar.mimes'      => 'Ảnh avatar phải là tệp có định dạng: :values',
+            'avatar.max'        => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
 
             'role.in'           => 'Vai trò không hợp lệ',
         ];

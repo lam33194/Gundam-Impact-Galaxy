@@ -26,18 +26,18 @@ class CategoryStoreRequest extends FormRequest
         // parent_id
 
         return [
-            'name'      => 'required',
-            'slug'      => 'required | unique:categories',
-            'parent_id' => 'nullable | exists:categories,id',
+            'name'      => 'required|string|max:255',
+            'slug'      => 'required|unique:categories',
+            'parent_id' => 'nullable|exists:categories,id',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Trường tên là bắt buộc',
+            'name.required' => 'Vui lòng nhập tên danh mục',
 
-            'slug.required' => 'Slug là bắt buộc',
+            'slug.required' => 'Vui lòng nhập slug',
             'slug.unique'   => 'Slug đã tồn tại',
             
             'parent_id'     => 'Danh mục cha không tồn tại',

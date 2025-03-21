@@ -55,7 +55,7 @@ class AuthController extends Controller
     public function forgotPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:users'
+            'email'   => ['required', 'email', 'exists:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
         ], [
             'email.*' => 'Email không hợp lệ',
         ]);
@@ -95,8 +95,8 @@ class AuthController extends Controller
     public function changePassword(Request $request)
     {
         $request->validate([
-                'current_password' => 'required | current_password',
-                'password'         => 'required | confirmed | min:8',
+                'current_password' => 'required|current_password',
+                'password'         => 'required|confirmed|min:8',
             ],
             [
                 'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại',
@@ -104,7 +104,7 @@ class AuthController extends Controller
 
                 'password.required'   => 'Vui lòng nhập mật khẩu',
                 'password.confirmed'  => 'Mật khẩu xác nhận không khớp',
-                'password.min'        => 'Mật khẩu phải có ít nhất 8 kí tự',
+                'password.min'        => 'Mật khẩu phải chứa ít nhất :min ký tự',
             ]
         );
 

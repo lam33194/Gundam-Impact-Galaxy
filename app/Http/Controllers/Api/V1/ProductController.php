@@ -164,7 +164,7 @@ class ProductController extends Controller
                 'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
             ],
             [
-                'image_url.required' => 'Ảnh sản phẩm là bắt buộc',
+                'image_url.required' => 'Vui lòng tải lên ít nhất 1 ảnh sản phẩm',
                 'image_url.image'    => 'Ảnh sản phẩm không hợp lệ',
                 'image_url.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
                 'image_url.mimes'    => 'Ảnh phải là tệp có định dạng: :values',

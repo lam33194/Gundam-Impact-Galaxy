@@ -33,46 +33,41 @@ class UserStoreRequest extends FormRequest
         // role
 
         return [
-            'name'     => 'required | string | max:255',
-            'email'    => 'required | string | max:255 | email | unique:users,email',
-            'password' => 'required | min:8',
-            'phone'    => 'required | string | max:16',
-            'address'  => 'required | string | max:255',
-            'avatar'   => 'nullable | image  | mimes:png,jpg,gif,jpeg | max:4096',
-            'role'     => 'required | in:user,admin',
+            'name'     => 'required|string|max:255',
+            'email'    => ['required', 'email', 'unique:users,email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'password' => 'required|min:8',
+            'phone'    => ['required', 'string', 'regex:/^0[0-9]{9,10}$/'],
+            'address'  => 'required|string|max:255',
+            'avatar'   => 'nullable|image|mimes:png,jpg,gif,jpeg|max:4096',
+            'role'     => 'required|in:user,admin',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required'     => 'Trường tên là bắt buộc',
-            'name.max'          => 'name.max',
+            'name.required'     => 'Vui lòng nhập tên người dùng',
+            'name.string'       => 'Tên người dùng không hợp lệ',
+            'name.max'          => 'Tên người dùng không được vượt quá :max ký tự',
 
-            'email.required'    => 'Trường email là bắt buộc',
+            'email.required'    => 'Vui lòng nhập email',
             'email.email'       => 'Email không hợp lệ',
+            'email.regex'       => 'Email không hợp lệ',
             'email.unique'      => 'Email đã tồn tại',
 
-            'password.required' => 'Mật khẩu là bắt buộc',
-            'password.min'      => 'Mật khẩu phải có ít nhất 8 ký tự',
+            'password.required' => 'Vui lòng nhập mật khẩu',
+            'password.min'      => 'Mật khẩu phải có ít nhất :min ký tự',
 
             'phone.required'    => 'Vui lòng nhập số điện thoại',
-            'phone.max'         => 'Số điện thoại không được vượt quá 16 ký tự',
-            // numeric
-            // unique
-            // digits:10
-            // digits_between:9,11
-            // regex:/^0[0-9]{9}$/
-                // ^0: Bắt đầu bằng số 0.
-                // [0-9]{9}: Theo sau là 9 chữ số bất kỳ.
-                // $: Kết thúc chuỗi.
-            
+            'phone.regex'       => 'Số điện thoại không hợp lệ',
+
             'address.required'  => 'Vui lòng nhập địa chỉ',
-            'address.max'       => 'add.max',
-            
+            'address.max'       => 'Địa chỉ không được vượt quá :max ký tự',
+            'address.string'    => 'Địa chỉ không hợp lệ',
+
             'avatar.image'      => 'Avatar phải là file ảnh',
-            'avatar.mimes'      => 'avatar.mimes',
-            'avatar.max'        => 'Avatar không được vượt quá 10MB',
+            'avatar.mimes'      => 'Ảnh avatar phải là tệp có định dạng: :values',
+            'avatar.max'        => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
 
             'role.in'           => 'Vai trò không hợp lệ',
         ];

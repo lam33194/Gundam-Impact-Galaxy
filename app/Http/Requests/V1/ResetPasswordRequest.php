@@ -23,21 +23,23 @@ class ResetPasswordRequest extends FormRequest
     {
         return [
             'token'    => 'required',
-            'email'    => 'required|email|exists:users',
+            'email'    => ['required', 'email', 'exists:users', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
             'password' => 'required|min:8|confirmed',
         ];
     }
 
     public function messages(): array {
         return [ 
-            'token.*'            => 'Token không hợp lệ',
+            'token.*'           => 'Token không hợp lệ',
 
-            'email.required'     => 'Trường email là bắt buộc',
-            'email.exists'       => 'Email không hợp lệ',
-            'email.email'        => 'Email không hợp lệ',  
+            'email.required'    => 'Vui lòng nhập email',
+            'email.*'           => 'Email không hợp lệ',
+            // 'email.email'
+            // 'email.regex'
+            // 'email.exists'
 
             'password.required'  => 'Vui lòng nhập mật khẩu',
-            'password.min'       => 'Mật khẩu phải có ít nhất 8 kí tự',
+            'password.min'       => 'Mật khẩu phải có ít nhất :min ký tự',
             'password.confirmed' => 'Mật khẩu xác nhận không khớp',
         ];
     }

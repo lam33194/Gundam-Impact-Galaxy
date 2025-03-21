@@ -27,9 +27,10 @@ class VariantAttributeController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:50|unique:variant_attributes'
         ], [
-            'name.required' => 'Tên thuộc tính không được để trống',
+            'name.required' => 'Vui lòng nhập tên thuộc tính',
+            'name.string'   => 'Tên thuộc tính không hợp lệ',
+            'name.max'      => 'Tên thuộc tính không được vượt quá :max ký tự',
             'name.unique'   => 'Thuộc tính ' . $request->input('name') . ' đã tồn tại',
-            'name.max'      => 'Tên thuộc tính quá dài',
         ]);
 
         $variantAttribute = VariantAttribute::create($validatedData);
@@ -61,9 +62,10 @@ class VariantAttributeController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:50|unique:variant_attributes,name,' . $id
         ], [
-            'name.required' => 'Tên thuộc tính không được để trống',
+            'name.required' => 'Vui lòng nhập tên thuộc tính',
+            'name.string'   => 'Tên thuộc tính không hợp lệ',
+            'name.max'      => 'Tên thuộc tính không được vượt quá :max ký tự',
             'name.unique'   => 'Thuộc tính ' . $request->input('name') . ' đã tồn tại',
-            'name.max'      => 'Tên thuộc tính quá dài',
         ]);
 
         $variantAttribute->update($validatedData);

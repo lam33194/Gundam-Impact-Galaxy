@@ -24,7 +24,7 @@ class CategoryUpdateRequest extends FormRequest
         $category = \App\Models\Category::whereSlug($this->route('slug'))->first();
 
         return [
-            'name'      => 'required',
+            'name'      => 'required|string|max:255',
             'slug'      => 'required|unique:categories,slug,' . ($category ? $category->id : null),
             'parent_id' => 'nullable|exists:categories,id',
         ];
@@ -33,9 +33,9 @@ class CategoryUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Trường tên là bắt buộc',
+            'name.required' => 'Vui lòng nhập tên danh mục',
 
-            'slug.required' => 'Slug là bắt buộc',
+            'slug.required' => 'Vui lòng nhập slug',
             'slug.unique'   => 'Slug đã tồn tại',
 
             'parent_id'     => 'Danh mục cha không tồn tại',
