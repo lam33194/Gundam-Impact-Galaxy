@@ -17,6 +17,8 @@ class Product extends Model
         'thumbnail',
         'description',
     ];
+
+    // Relations
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -43,8 +45,7 @@ class Product extends Model
         return round($this->price);
     }
 
-    // ===== Scope =========================
-
+    // Scope
     public function scopePriceFilter($query, $min, $max)
     {
         return $query->whereBetween('price', [$min, $max]);

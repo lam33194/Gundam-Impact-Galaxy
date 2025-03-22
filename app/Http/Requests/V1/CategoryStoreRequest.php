@@ -28,7 +28,7 @@ class CategoryStoreRequest extends FormRequest
         return [
             'name'      => 'required|string|max:255',
             'slug'      => 'required|unique:categories',
-            'parent_id' => 'nullable|exists:categories,id',
+            'parentId'  => 'nullable|exists:categories,id',
         ];
     }
 
@@ -39,8 +39,15 @@ class CategoryStoreRequest extends FormRequest
 
             'slug.required' => 'Vui lòng nhập slug',
             'slug.unique'   => 'Slug đã tồn tại',
-            
-            'parent_id'     => 'Danh mục cha không tồn tại',
+
+            'parentId'      => 'Danh mục cha không tồn tại',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'parent_id' => $this->parentId,
+        ]);
     }
 }

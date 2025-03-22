@@ -7,7 +7,6 @@ use App\Http\Requests\V1\ProductStoreRequest;
 use App\Http\Requests\V1\ProductUpdateRequest;
 use App\Http\Resources\V1\ProductResource;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use App\Traits\StorageFile;
@@ -51,7 +50,7 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
-        $validatedData = $request->validated();
+        $validatedData = $request->toArray();
 
         // Xử lí upload file cho thumbnail của product
         if ($request->hasFile('thumbnail')) {
@@ -62,8 +61,8 @@ class ProductController extends Controller
 
         // Xử lí upload file cho bảng product image
         $images = [];
-        if ($request->hasFile('product_images')) {
-            foreach ($request->file('product_images') as $file) {
+        if ($request->hasFile('productImages')) {
+            foreach ($request->file('productImages') as $file) {
                 $images[] = ['image_url' => $file->store('product_images')];
             }
         }
@@ -92,11 +91,11 @@ class ProductController extends Controller
 
     public function update(ProductUpdateRequest $request, string $slug)
     {
-        $product = Product::with('productImages')->whereSlug($slug)->first();
+        $product = Product::whereSlug($slug)->first();
 
         if (!$product) return $this->not_found("Sản phẩm không tồn tại");
 
-        $validatedData = $request->validated();
+        $validatedData = $request->toArray();
 
         // Xử lí upload file cho thumbnail của product
         if ($request->hasFile('thumbnail')) {
@@ -112,13 +111,13 @@ class ProductController extends Controller
 
         // Xử lí upload file cho bảng product image
         $images = [];
-        if ($request->hasFile('product_images')) {
+        if ($request->hasFile('productImages')) {
 
             // Xóa ảnh cũ trong db vàstorage 
             $this->delete_storage_product_images($product);
 
             // upload ảnh mới lên storage
-            foreach ($request->file('product_images') as $file) {
+            foreach ($request->file('productImages') as $file) {
                 $images[] = ['image_url' => $file->store('product_images')];
             }
         }
@@ -161,21 +160,21 @@ class ProductController extends Controller
         // validate
         $validatedData = $request->validate(
             [
-                'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
+                'imageUrl' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
             ],
             [
-                'image_url.required' => 'Vui lòng tải lên ít nhất 1 ảnh sản phẩm',
-                'image_url.image'    => 'Ảnh sản phẩm không hợp lệ',
-                'image_url.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
-                'image_url.mimes'    => 'Ảnh phải là tệp có định dạng: :values',
+                'imageUrl.required' => 'Vui lòng tải lên ít nhất 1 ảnh sản phẩm',
+                'imageUrl.image'    => 'Ảnh sản phẩm không hợp lệ',
+                'imageUrl.max'      => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
+                'imageUrl.mimes'    => 'Ảnh phải là tệp có định dạng: :values',
             ]
         );
 
-        if ($request->hasFile('image_url')) {
+        if ($request->hasFile('imageUrl')) {
             // xóa file trên storage
             $this->delete_storage_file($image, 'image_url');
             // upload ảnh mới lên storage
-            $validatedData['image_url'] = $request->file('image_url')->store('product_images');
+            $validatedData['imageUrl'] = $request->file('imageUrl')->store('product_images');
         }
         // thêm path vào db
         $image->update($validatedData);
@@ -230,5 +229,7 @@ class ProductController extends Controller
 
             $image->delete();
         }
+
+        $product->unsetRelation('productImages');
     }
 }

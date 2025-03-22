@@ -27,28 +27,29 @@ class VariantStoreRequest extends FormRequest
         // stock
         // extra_price
         return [
-            'product_id'   => 'required|exists:products,id',
-            'variant_name' => 'required|string|max:255',
+            'productId'    => 'required|exists:products,id',
+            'variantName'  => 'required|string|max:255',
             'sku'          => 'required|string|max:50|unique:variants,sku',
             'stock'        => 'required|integer|min:0',
-            'extra_price'  => 'required|numeric|min:0',
+            'extraPrice'  => 'required|numeric|min:0',
 
-            'product_images'   => 'required|array',
-            'product_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
+            'productImages'   => 'required|array',
+            'productImages.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
 
-            'variant_values'   => 'required|array',
-            'variant_values.*' => 'exists:variant_values,id|distinct',
+            'variantValues'   => 'required|array',
+            'variantValues.*' => 'exists:variant_values,id|distinct',
         ];
     }
 
-    public function messages(): array {
+    public function messages(): array
+    {
         return [
-            'product_id.required'   => 'Vui lòng chọn sản phẩm',
-            'product_id.exists'     => 'Sản phẩm không hợp lệ',
+            'productId.required'   => 'Vui lòng chọn sản phẩm',
+            'productId.exists'     => 'Sản phẩm không tồn tại',
 
-            'variant_name.required' => 'Vui lòng nhập tên biến thể',
-            'variant_name.string'   => 'Tên biến thể không hợp lệ',
-            'variant_name.max'      => 'Tên biến thể không được vượt quá :max ký tự',
+            'variantName.required' => 'Vui lòng nhập tên biến thể',
+            'variantName.string'   => 'Tên biến thể không hợp lệ',
+            'variantName.max'      => 'Tên biến thể không được vượt quá :max ký tự',
 
             'sku.required' => 'Vui lòng nhập mã định danh',
             'sku.string'   => 'Mã định danh không hợp lệ',
@@ -59,18 +60,27 @@ class VariantStoreRequest extends FormRequest
             'stock.integer'  => 'Số hàng tồn kho không hợp lệ',
             'stock.min'      => 'Số hàng tồn kho phải lớn hơn :min',
 
-            'extra_price.required' => 'Vui lòng nhập giá bổ sung',
-            'extra_price.numeric'  => 'Giá bổ sung không hợp lệ',
-            'extra_price.min'      => 'Giá bổ sung phải lớn hơn :min',
+            'extraPrice.required' => 'Vui lòng nhập giá bổ sung',
+            'extraPrice.numeric'  => 'Giá bổ sung không hợp lệ',
+            'extraPrice.min'      => 'Giá bổ sung phải lớn hơn :min',
 
-            'product_images.required' => 'Vui lòng tải lên ít nhất 1 ảnh biến thể',
-            'product_images.*.image'  => 'Ảnh sản phẩm không hợp lệ',
-            'product_images.*.mimes'  => 'Ảnh phải là tệp có định dạng: :values',
-            'product_images.*.max'    => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
+            'productImages.required' => 'Vui lòng tải lên ít nhất 1 ảnh biến thể',
+            'productImages.*.image'  => 'Ảnh sản phẩm không hợp lệ',
+            'productImages.*.mimes'  => 'Ảnh phải là tệp có định dạng: :values',
+            'productImages.*.max'    => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
 
-            'variant_values.required'   => 'Vui lòng chọn ít nhất 1 thuộc tính biến thể',
-            'variant_values.*.*'        => 'Thuộc tính không hợp lệ',
-            'variant_values.*.distinct' => 'Không được chọn thuộc tính trùng nhau',
+            'variantValues.required'   => 'Vui lòng chọn ít nhất 1 thuộc tính biến thể',
+            'variantValues.*.exists'   => 'Thuộc tính không tồn tại',
+            'variantValues.*.distinct' => 'Không được chọn thuộc tính trùng nhau',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'product_id'     => $this->productId,
+            'variant_name'   => $this->variantName,
+            'extra_price'    => $this->extraPrice,
+        ]);
     }
 }

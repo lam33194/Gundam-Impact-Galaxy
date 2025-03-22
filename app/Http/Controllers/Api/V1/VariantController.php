@@ -44,14 +44,14 @@ class VariantController extends Controller
 
         if (!$product) return $this->not_found('Sản phẩm không tồn tại');
 
-        $validatedData = $request->validated();
+        $validatedData = $request->toArray();
 
         $variant = $product->variants()->create($validatedData);
 
         // Xử lí upload file
         $images = [];
-        if ($request->hasFile(key: 'product_images')) {
-            foreach ($request->file('product_images') as $file) {
+        if ($request->hasFile(key: 'productImages')) {
+            foreach ($request->file('productImages') as $file) {
                 $images[] = [
                     'variant_id' => $variant->id,
                     'image_url' => $file->store('product_images'),
@@ -61,10 +61,10 @@ class VariantController extends Controller
 
         $product->productImages()->createMany($images);
 
-        $variant->variantValues()->attach($validatedData['variant_values']);
+        $variant->variantValues()->attach($validatedData['variantValues']);
 
         $this->loadRelations($variant, $request, true);
-        
+
         return $this->created("Tạo biến thể thành công", [
             'variant' => new VariantResource($variant),
         ]);
@@ -97,15 +97,17 @@ class VariantController extends Controller
 
         if (!$variant) return $this->not_found('Biến thể không tồn tại hoặc không thuộc sản phẩm này');
 
-        $validatedData = $request->validated();
+        $validatedData = $request->toArray();
+
+        $variant->update($validatedData);
 
         // Xử lí upload file
         $images = [];
-        if ($request->hasFile(key: 'product_images')) {
+        if ($request->hasFile('productImages')) {
 
             $this->delete_storage_product_images($variant);
 
-            foreach ($request->file('product_images') as $file) {
+            foreach ($request->file('productImages') as $file) {
                 $images[] = [
                     'variant_id' => $variant->id,
                     'image_url' => $file->store('product_images'),
@@ -115,14 +117,13 @@ class VariantController extends Controller
 
         $product->productImages()->createMany($images);
 
-        $variant->variantValues()->sync($validatedData['variant_values'], false);
+        if ($request->has('variantValues')) $variant->variantValues()->sync($validatedData['variantValues'], false);
 
         $this->loadRelations($variant, $request, true);
-        
+
         return $this->ok("Cập nhật biến thể thành công", [
             'variant' => new VariantResource($variant),
         ]);
-        
     }
 
     public function destroy(string $slug, string $sku)
@@ -145,13 +146,15 @@ class VariantController extends Controller
 
     protected function delete_storage_product_images(Variant $variant)
     {
-        $variant -> loadMissing('productImages');
-        
+        $variant->loadMissing('productImages');
+
         foreach ($variant->productImages as $image) {
 
-            $this->delete_storage_file($image,'image_url');
+            $this->delete_storage_file($image, 'image_url');
 
             $image->delete();
         }
+
+        $variant->unsetRelation('productImages');
     }
 }

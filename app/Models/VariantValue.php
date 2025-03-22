@@ -14,11 +14,11 @@ class VariantValue extends Model
         'value'
     ];
 
+    // Relations
     public function variants()
     {
         return $this->belongsToMany(Variant::class, 'pivot_vv');
     }
-
     public function variantAttribute()
     {
         return $this->belongsTo(VariantAttribute::class );

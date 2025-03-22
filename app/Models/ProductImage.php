@@ -16,11 +16,13 @@ class ProductImage extends Model
         'is_primary',
     ];
 
-    public function product() {
+    // Relations
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
-
-    public function variant() {
+    public function variant()
+    {
         return $this->belongsTo(Variant::class);
     }
 }

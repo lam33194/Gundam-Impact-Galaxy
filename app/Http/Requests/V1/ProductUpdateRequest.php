@@ -32,14 +32,14 @@ class ProductUpdateRequest extends FormRequest
 
         return [
             'name'        => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
+            'categoryId'  => 'required|exists:categories,id',
             'slug'        => 'required|string|unique:products,slug,' . ($product ? $product->id : null),
             'price'       => 'required|numeric|min:0|max:999999999.99',
             'description' => 'required|string',
             'thumbnail'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:4096',
 
-            'product_images'   => 'nullable|array',
-            'product_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
+            'productImages'   => 'nullable|array',
+            'productImages.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',
         ];
     }
 
@@ -50,8 +50,8 @@ class ProductUpdateRequest extends FormRequest
             'name.string'          => 'Tên sản phẩm không hợp lệ',
             'name.max'             => 'Tên sản phẩm không được vượt quá :max ký tự',
 
-            'category_id.required' => 'Vui lòng chọn danh mục',
-            'category_id.exists'   => 'Danh mục không hợp lệ',
+            'categoryId.required'  => 'Vui lòng chọn danh mục',
+            'categoryId.exists'    => 'Danh mục không hợp lệ',
 
             'slug.required'        => 'Vui lòng nhập slug',
             'slug.unique'          => 'Slug đã tồn tại',
@@ -68,9 +68,16 @@ class ProductUpdateRequest extends FormRequest
             'thumbnail.max'        => 'Vui lòng chọn ảnh có kích thước < :max',
             'thumbnail.mimes'      => 'Ảnh phải là tệp có định dạng: :values',
 
-            'product_images.*.image' => 'Ảnh sản phẩm không hợp lệ',
-            'product_images.*.max'   => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
-            'product_images.*.mimes' => 'Ảnh phải là tệp có định dạng: :values',
+            'productImages.*.image' => 'Ảnh sản phẩm không hợp lệ',
+            'productImages.*.max'   => 'Vui lòng chọn ảnh sản phẩm có kích thước < :max',
+            'productImages.*.mimes' => 'Ảnh phải là tệp có định dạng: :values',
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'category_id' => $this->categoryId,
+        ]);
     }
 }

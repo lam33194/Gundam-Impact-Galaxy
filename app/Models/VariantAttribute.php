@@ -13,6 +13,7 @@ class VariantAttribute extends Model
         'name',
     ];
 
+    // Relations
     public function variantValues()
     {
         return $this->hasMany(VariantValue::class);

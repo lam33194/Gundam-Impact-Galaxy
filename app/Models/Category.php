@@ -15,25 +15,23 @@ class Category extends Model
         'parent_id'
     ];
 
-    // mutator: set slug về dạng lowercase trước khi lưu vào db
-    public function setSlugAttribute($value) {
-        $this -> attributes['slug'] = strtolower($value);
-    }
-
+    // Relations
     public function products()
     {
         return $this->hasMany(Product::class);
     }
-
-    // Danh mục cha
     public function parent()
     {
         return $this->belongsTo(Category::class, 'parent_id');
     }
-    
-    // Danh mục con
     public function children()
     {
         return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    // mutator: set slug về dạng lowercase trước khi lưu vào db
+    public function setSlugAttribute($value)
+    {
+        $this->attributes['slug'] = strtolower($value);
     }
 }

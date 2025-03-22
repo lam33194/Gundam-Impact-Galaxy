@@ -34,7 +34,7 @@ class CategoryController extends Controller
 
     public function store(CategoryStoreRequest $request)
     {
-        $validatedData = $request->validated();
+        $validatedData = $request->toArray();
 
         $category = Category::create($validatedData);
 
@@ -64,7 +64,7 @@ class CategoryController extends Controller
 
         if (!$category) return $this->not_found("Danh mục không tồn tại");
 
-        $data = $request->validated();
+        $data = $request->toArray();
 
         $category->update($data);
 
