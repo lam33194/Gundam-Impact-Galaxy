@@ -8,6 +8,8 @@ import AdminLayout from "./components/AdminLayout";
 import BlogDetail from "./pages/BlogDetail";
 import Cart from "./pages/Cart";
 import ProductList from "./pages/admin/product_management/ProductList";
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 function App() {
     return (
@@ -20,7 +22,8 @@ function App() {
                     <Route path="/product-detail" element={<ProductDetail />} />
                     <Route path="/blog-detail" element={<BlogDetail />} />
                     <Route path="/cart" element={<Cart />} />
-                    {/* <Route path='/login' element= */}
+                    <Route path='/login' element={<Login/>} />
+                    <Route path='/signup' element={<Signup/>} />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" element={<AdminLayout />}>
