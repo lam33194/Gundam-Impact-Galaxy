@@ -34,12 +34,10 @@ class CategoryController extends Controller
 
     public function store(CategoryStoreRequest $request)
     {
-        $validatedData = $request->toArray();
-
-        $category = Category::create($validatedData);
+        $category = Category::create($request->toArray());
 
         $this->loadRelations($category, $request, true);
-        
+
         return $this->created("Tạo danh mục thành công", [
             'category' => new CategoryResource($category),
         ]);
@@ -64,9 +62,19 @@ class CategoryController extends Controller
 
         if (!$category) return $this->not_found("Danh mục không tồn tại");
 
-        $data = $request->toArray();
+        $parentId = $request->input('parentId');
 
-        $category->update($data);
+        // ko được chọn chính danh mục đang update làm dm cha
+        if ($parentId == $category->id) {
+            return $this->failedValidation('Danh mục cha không hợp lệ');
+        }
+
+        // ko được chọn dm con của mình làm danh mục cha
+        if (in_array($parentId, $category->children()->pluck('id')->toArray())) {
+            return $this->failedValidation('Danh mục cha không hợp lệ');
+        }
+
+        $category->update($request->toArray());
 
         $this->loadRelations($category, $request, true);
 

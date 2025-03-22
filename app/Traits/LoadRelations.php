@@ -37,7 +37,7 @@ trait LoadRelations
                 }
 
                 if ($isInstance) {
-                    $model->loadMissing($relation);
+                    $model->load($relation);
                 } else {
                     // Eager load
                     $model->with($relation);

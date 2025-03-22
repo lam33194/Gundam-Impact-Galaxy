@@ -4,7 +4,7 @@ namespace App\Traits;
 
 trait ApiResponse
 {
-    protected function success($message, $statusCode = 200, $data = [])
+    protected function success(string $message, $statusCode = 200, $data = [])
     {
         return response()->json([
             'message' => $message,
@@ -17,7 +17,7 @@ trait ApiResponse
      * 400 (Bad Request) được sử dụng khi server không thể xử lý yêu cầu do lỗi từ phía client
      * EG cú pháp sai, dữ liệu không hợp lệ, hoặc thiếu thông tin cần thiết.  
      */
-    protected function error($message, $statusCode = 400, $data = [])
+    protected function error(string $message, $statusCode = 400, $data = [])
     {
         return response()->json([
             'message' => $message,
@@ -65,5 +65,11 @@ trait ApiResponse
     protected function conflict($msg)
     {
         return $this->error($msg, 409);
+    }
+
+    // 422 (Unprocessable Entity): Xảy ra khi ko pass hay thỏa mãn rules, validation
+    protected function failedValidation($msg)
+    {
+        return $this->error($msg, 422);
     }
 }
