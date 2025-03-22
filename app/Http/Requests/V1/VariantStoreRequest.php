@@ -31,7 +31,7 @@ class VariantStoreRequest extends FormRequest
             'variantName'  => 'required|string|max:255',
             'sku'          => 'required|string|max:50|unique:variants,sku',
             'stock'        => 'required|integer|min:0',
-            'extraPrice'  => 'required|numeric|min:0',
+            'extraPrice'   => 'required|numeric|min:0',
 
             'productImages'   => 'required|array',
             'productImages.*' => 'image|mimes:jpeg,png,jpg,gif|max:4096',

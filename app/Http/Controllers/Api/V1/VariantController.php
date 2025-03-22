@@ -21,30 +21,25 @@ class VariantController extends Controller
         'product',
         'productImages',
         'variantValues',
+        'variantValues.variantAttribute',
     ];
 
-    public function index(Request $request, string $slug)
+    public function index(Request $request)
     {
-        $product = Product::whereSlug($slug)->first();
+        $variants = Variant::query();
 
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        $variants = $product->variants;
-
-        $this->loadRelations($variants, $request, true);
+        $this->loadRelations($variants, $request);
 
         return $this->ok("Lấy danh sách biến thể thành công", [
-            'variants' => VariantResource::collection($variants),
+            'variants' => VariantResource::collection($variants->get()),
         ]);
     }
 
-    public function store(VariantStoreRequest $request, string $slug)
+    public function store(VariantStoreRequest $request)
     {
-        $product = Product::whereSlug($slug)->first();
-
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
         $validatedData = $request->toArray();
+
+        $product = Product::find($validatedData['productId'])->first();
 
         $variant = $product->variants()->create($validatedData);
 
@@ -70,13 +65,9 @@ class VariantController extends Controller
         ]);
     }
 
-    public function show(Request $request, string $slug, string $sku)
+    public function show(Request $request, string $sku)
     {
-        $product = Product::whereSlug($slug)->first();
-
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        $variant = $product->variants()->whereSku($sku)->first();
+        $variant = Variant::whereSku($sku)->first();
 
         if (!$variant) return $this->not_found('Biến thể không tồn tại hoặc không thuộc sản phẩm này');
 
@@ -87,17 +78,15 @@ class VariantController extends Controller
         ]);
     }
 
-    public function update(VariantUpdateRequest $request, string $slug, string $sku)
+    public function update(VariantUpdateRequest $request, string $sku)
     {
-        $product = Product::whereSlug($slug)->first();
-
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        $variant = $product->variants()->whereSku($sku)->first();
+        $variant = Variant::whereSku($sku)->first();
 
         if (!$variant) return $this->not_found('Biến thể không tồn tại hoặc không thuộc sản phẩm này');
-
+        
         $validatedData = $request->toArray();
+
+        $product = Product::find($validatedData['productId'])->first();
 
         $variant->update($validatedData);
 
@@ -126,13 +115,9 @@ class VariantController extends Controller
         ]);
     }
 
-    public function destroy(string $slug, string $sku)
+    public function destroy(string $sku)
     {
-        $product = Product::whereSlug($slug)->first();
-
-        if (!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        $variant = $product->variants()->whereSku($sku)->first();
+        $variant = Variant::whereSku($sku)->first();
 
         if (!$variant) return $this->not_found('Biến thể không tồn tại hoặc không thuộc sản phẩm này');
 

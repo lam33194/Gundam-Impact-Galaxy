@@ -76,11 +76,11 @@ Route::prefix('v1')->group(function () {
         
     // Variant API
     Route::controller(VariantController::class)->group(function () {
-        Route::get   ('products/{slug}/variants',       'index');
-        Route::get   ('products/{slug}/variants/{sku}', 'show');
-        Route::post  ('products/{slug}/variants',       'store');
-        Route::put   ('products/{slug}/variants/{sku}', 'update');
-        Route::delete('products/{slug}/variants/{sku}', 'destroy');
+        Route::get   ('variants',       'index');
+        Route::get   ('variants/{sku}', 'show');
+        Route::post  ('variants',       'store');
+        Route::put   ('variants/{sku}', 'update');
+        Route::delete('variants/{sku}', 'destroy');
     });
 
     Route::prefix('auth')->group(function () {

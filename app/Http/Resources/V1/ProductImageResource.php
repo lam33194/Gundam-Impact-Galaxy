@@ -18,12 +18,10 @@ class ProductImageResource extends JsonResource
 
         return [
             'id'        => $this->id,
+            'productId' => $this->product_id,
             'variantId' => $this->variant_id,
             'imageUrl'  => $this->image_url,
-            'isPrimary' => $this->is_primary,
-            // relations
-            'product'  => new ProductResource($this->whenLoaded('product')),
-            'variant'  => new VariantResource($this->whenLoaded('variant'))            
+            'isPrimary' => $this->is_primary,           
         ];
 
         // id
