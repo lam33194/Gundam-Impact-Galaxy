@@ -43,4 +43,11 @@ class ResetPasswordRequest extends FormRequest
             'password.confirmed' => 'Mật khẩu xác nhận không khớp',
         ];
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'password_confirmation' => $this->passwordConfirmation,
+        ]);
+    }
 }

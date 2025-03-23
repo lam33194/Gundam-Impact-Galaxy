@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 class AuthController extends Controller
 {
     use ApiResponse;
+
     public function register(RegisterRequest $request)
     {
         $validatedData = $request->only(['email', 'password', 'name']);
@@ -74,7 +75,7 @@ class AuthController extends Controller
         $request->validated();
 
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $request->only('email', 'password', 'passwordConfirmation', 'token'),
             function ($user, $password) {
                 $user->update([
                     'password' => $password,
@@ -94,22 +95,34 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
+        $data = $request->all();
+
+        if (isset($data['passwordConfirmation'])) {
+            $data['password_confirmation'] = $data['passwordConfirmation'];
+        }
+
+        $request->replace($data);
+
+        dd($request->all());
+
         $request->validate([
-                'current_password' => 'required|current_password',
+                'currentPassword'  => 'required|current_password',
                 'password'         => 'required|confirmed|min:8',
+                'passwordConfirmation' => 'required',
             ],
             [
-                'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại',
-                'current_password.current_password' => 'Sai mật khẩu',
+                'currentPassword.required'         => 'Vui lòng nhập mật khẩu hiện tại',
+                'currentPassword.current_password' => 'Sai mật khẩu',
 
-                'password.required'   => 'Vui lòng nhập mật khẩu',
+                'password.required'   => 'Vui lòng nhập mật khẩu mới',
                 'password.confirmed'  => 'Mật khẩu xác nhận không khớp',
-                'password.min'        => 'Mật khẩu phải chứa ít nhất :min ký tự',
+                'password.min'        => 'Mật khẩu mới phải chứa ít nhất :min ký tự',
+                'passwordConfirmation.required' => 'Vui lòng nhập xác nhận mật khẩu',
             ]
         );
 
-        auth()->user()->update(['password' => $request->get('password')]);
+        auth()->user()->update(['password' => $request->password]);
 
-        return $this->ok(['Đổi mật khẩu thành công']);
+        return $this->ok('Đổi mật khẩu thành công');
     }
 }
