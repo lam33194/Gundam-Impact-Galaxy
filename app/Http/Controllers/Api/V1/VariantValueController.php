@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\VariantValueResource;
 use App\Models\VariantAttribute;
-use App\Models\VariantValue;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -87,6 +86,8 @@ class VariantValueController extends Controller
 
         if (!$attributeValue) return $this->not_found("Giá trị không tồn tại hoặc không thuộc về thuộc tính này");
 
+        if ($attributeValue->variants()->exists()) return $this->conflict('Không thể cập nhật vì có biến thể chứa thuộc tính này');
+
         // unique: [variant_attribute_id - value]
         $request->validate([
             'value' => "required|string|max:50|" . Rule::unique('variant_values', 'value')->where('variant_attribute_id', $attribute_id)->ignore($value_id),
@@ -119,7 +120,7 @@ class VariantValueController extends Controller
 
         if (!$attributeValue) return $this->not_found("Giá trị không tồn tại hoặc không thuộc về thuộc tính này");
 
-        if ($attributeValue->variants()->count()) return $this->conflict('Không thể xóa vì có biến thể chứa thuộc tính này');
+        if ($attributeValue->variants()->exists()) return $this->conflict('Không thể xóa vì có biến thể chứa thuộc tính này');
 
         $attributeValue->delete();
 

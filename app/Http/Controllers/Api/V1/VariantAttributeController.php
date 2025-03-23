@@ -59,6 +59,14 @@ class VariantAttributeController extends Controller
 
         if (!$variantAttribute) return $this->not_found("Thuộc tính không tồn tại");
 
+        $hasVariants = $variantAttribute->variantValues()
+            ->whereHas('variants', function ($query) {
+                $query->where('variants.id', '>', 0);
+            })
+            ->exists();
+
+        if ($hasVariants) return $this->conflict('Không thể cập nhật vì có biến thể chứa thuộc tính này');
+
         $validatedData = $request->validate([
             'name' => 'required|string|max:50|unique:variant_attributes,name,' . $id
         ], [
@@ -82,6 +90,20 @@ class VariantAttributeController extends Controller
         $variantAttribute = VariantAttribute::find($id);
 
         if (!$variantAttribute) return $this->not_found("Thuộc tính không tồn tại");
+
+        // C1: dễ đọc nhưng hiệu suất kém hơn, phải eager load $variantAttribute::with('variantValues.variants')
+        // foreach ($variantAttribute->variantValues as $value) {
+        //     if ($value->variants()->exists()) return ...
+        // }
+
+        // C2 dùng query builder
+        $hasVariants = $variantAttribute->variantValues()
+            ->whereHas('variants', function ($query) {
+                $query->where('variants.id', '>', 0);
+            })
+            ->exists();
+
+        if ($hasVariants) return $this->conflict('Không thể xóa vì có biến thể chứa thuộc tính này');
 
         $variantAttribute->delete();
 

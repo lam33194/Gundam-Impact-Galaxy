@@ -39,7 +39,7 @@ class VariantController extends Controller
     {
         $validatedData = $request->toArray();
 
-        $product = Product::find($validatedData['productId'])->first();
+        $product = Product::find($validatedData['productId']);
 
         $variant = $product->variants()->create($validatedData);
 
@@ -86,7 +86,7 @@ class VariantController extends Controller
         
         $validatedData = $request->toArray();
 
-        $product = Product::find($validatedData['productId'])->first();
+        $product = Product::find($validatedData['productId']);
 
         $variant->update($validatedData);
 

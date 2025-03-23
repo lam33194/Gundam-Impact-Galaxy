@@ -153,7 +153,7 @@ class ProductController extends Controller
 
         if (!$product) return $this->not_found('Sản phẩm không tồn tại');
 
-        $image = $product->productImages()->find($id)->first();
+        $image = $product->productImages()->find($id);
 
         if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
 
@@ -192,7 +192,7 @@ class ProductController extends Controller
 
         if (!$product) return $this->not_found('Sản phẩm không tồn tại');
 
-        $image = $product->productImages()->find($id)->first();
+        $image = $product->productImages()->find($id);
 
         if (!$image) return $this->not_found('Ảnh không tồn tại hoặc không thuộc sản phẩm này');
 
