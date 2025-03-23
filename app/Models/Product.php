@@ -39,6 +39,11 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
+    public function cartItems()
+    {
+        return $this->hasMany(Cartitem::class);
+    }
+
     // Accessor: làm tròn price
     public function getRoundPriceAttribute()
     {

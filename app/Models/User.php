@@ -55,4 +55,10 @@ class User extends Authenticatable
     {
         $this->notify(new ResetPasswordNotification($token));
     }
+
+    // Relation
+    public function cartItems() 
+    {
+        return $this->hasMany(CartItem::class);
+    }
 }

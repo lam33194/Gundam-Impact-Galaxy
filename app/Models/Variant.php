@@ -22,12 +22,19 @@ class Variant extends Model
     {
         return $this->belongsToMany(VariantValue::class, 'pivot_vv');
     }
+
     public function product()
     {
         return $this->belongsTo(Product::class);
     }
+    
     public function productImages()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function cartItems()
+    {
+        return $this->hasMany(Cartitem::class);
     }
 }
