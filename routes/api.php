@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
@@ -34,10 +35,15 @@ Route::prefix('v1')->group(function () {
         Route::post  ('users',      'store');
         Route::put   ('users/{id}', 'update');
         Route::delete('users/{id}', 'destroy');
-        // Cart Items
-        Route::get   ('users/{id}/cart-items', 'show_cart_items');
-        Route::post  ('users/{id}/cart-items', 'add_to_cart');
-        Route::delete('users/{id}/cart-items', 'clear_cart_items');
+    });
+
+    // Cart Items
+    Route::controller(CartItemController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function(){
+            Route::get   ('cart-items', 'show_cart_items');
+            Route::post  ('cart-items', 'add_to_cart');
+            Route::delete('cart-items', 'clear_cart_items');
+        });
     });
 
     // Category API

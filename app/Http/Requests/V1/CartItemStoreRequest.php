@@ -33,7 +33,6 @@ class CartItemStoreRequest extends FormRequest
         // attributes
 
         return [
-            'userId'     => 'required|exists:users,id',
             'productId'  => 'required|exists:products,id',
             'variantId'  => 'required|exists:variants,id',
             'quantity'   => 'required|integer|min:0',
@@ -43,9 +42,6 @@ class CartItemStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'userId.required'    => 'Vui lòng điền vào trường :attribute',
-            'userId.exists'      => 'Người dùng không tồn tại',
-
             'productId.required' => 'Vui điền vào trường :attribute',
             'productId.exists'   => 'Sản phẩm không tồn tại',
 
@@ -61,7 +57,6 @@ class CartItemStoreRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'user_id'       => $this->userId,
             'product_id'    => $this->productId,
             'variant_id'    => $this->variantId,
         ]);
