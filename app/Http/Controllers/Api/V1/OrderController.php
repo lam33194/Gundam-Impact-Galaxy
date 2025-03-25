@@ -16,61 +16,64 @@ class OrderController extends Controller
 
     protected $validRelations = [
         'user',
-        'orderItems'
+        'orderItems',
+        'orderItems.product',
+        'orderItems.variant',
     ];
 
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $orders = Order::query();
+
+        $this->loadRelations($orders, $request);
+
+        return $this->ok('Lấy danh sách hóa đơn thành công', [
+            'orders' => OrderResource::collection($orders->get()),
+        ]);
     }
 
-    public function show(string $order_code)
+    public function show(Request $request, string $order_code)
     {
-        //
-    }
+        $order = Order::whereOrderCode($order_code)->first();
 
-    public function store(OrderStoreRequest $request)
-    {
-        // shippingAddress, shippingFee, note
-        $validatedData = $request->toArray();
+        if (!$order) return $this->not_found('Đơn hàng không tồn tại');
 
-        $order = Order::create([array_merge(
-            $validatedData,
-            [
-                'user_id'      => auth()->id(),
-                'order_code'   => 'ORD-' . strtoupper(uniqid()),
-                'total_amount' => 0,
-                'status'       => 'pending',
-            ]
-        )]);
+        $this->loadRelations($order, $request, true);
 
-        return $this->ok('Tạo đơn hàng thành công', [
-            'order' => new OrderResource($order),
+        return $this->ok('Lấy chi tiết hóa đơn thành công', [
+            'orders' => new OrderResource($order),
         ]);
     }
 
     public function update(Request $request, string $order_code)
     {
-        //
+        $order = Order::whereOrderCode($order_code)->first();
+
+        if (!$order) return $this->not_found('Đơn hàng không tồn tại');
+
+        $validatedData = $request->validate([
+            'status' => 'required|in:pending,cancelled,processing,shipped,delivered',
+        ], [
+            // 
+        ]);
+
+        $order->update($validatedData);
+
+        $this->loadRelations($order, $request, true);
+
+        return $this->ok('Cập nhật đơn hàng thành công', [
+            'order' => new OrderResource($order),
+        ]);
     }
 
     public function destroy(string $order_code)
     {
-        //
-    }
+        $order = Order::whereOrderCode($order_code)->first();
 
-    public function show_order_items(string $order_code)
-    {
-        //
-    }
+        if (!$order) return $this->not_found('Đơn hàng không tồn tại');
 
-    public function add_order_items(Request $request, string $order_code)
-    {
-        // $order = Order::where('order_code', $order_code)->first();
-    }
+        $order->delete();
 
-    public function clear_order_items(string $order_code)
-    {
-        //
+        return $this->no_content();
     }
 }

@@ -1,15 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
-use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\SocialAuthController;
 use App\Http\Controllers\Api\V1\VariantAttributeController;
 use App\Http\Controllers\Api\V1\VariantController;
 use App\Http\Controllers\Api\V1\VariantValueController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,26 +22,38 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::prefix('v1')->group(function () {
     // User API
     Route::controller(UserController::class)->group(function () {
         Route::get   ('users',      'index');
         Route::get   ('users/{id}', 'show');
-        Route::post  ('users',      'store');
-        Route::put   ('users/{id}', 'update');
-        Route::delete('users/{id}', 'destroy');
+
+        Route::middleware(['auth:sanctum'])->group(function() {
+            // Danh sách orders của user đang đăng nhập
+            Route::get   ('user/orders',              'show_orders');
+            // Đặt hàng
+            Route::post  ('user/orders',              'store_order');
+            // Cập nhật / hủy đơn hàng 
+            Route::put   ('user/orders/{order_code}', 'update_order');
+            Route::get   ('user/cart-items',          'show_cart_items');
+            Route::post  ('user/cart-items',          'add_to_cart');
+            Route::delete('user/cart-items',          'clear_cart_items');
+        });
+
+        Route::middleware(['isAdmin'])->group(function() {
+            Route::post  ('users',      'store');
+            Route::put   ('users/{id}', 'update');
+            Route::delete('users/{id}', 'destroy');
+        });
     });
 
-    // Cart Items
-    Route::controller(CartItemController::class)->group(function () {
-        Route::middleware(['auth:sanctum'])->group(function(){
-            Route::get   ('cart-items', 'show_cart_items');
-            Route::post  ('cart-items', 'add_to_cart');
-            Route::delete('cart-items', 'clear_cart_items');
+    // Order api
+    Route::controller(OrderController::class)->group(function () {
+        Route::middleware(['auth:sanctum', 'isAdmin'])->group(function() {
+            Route::get   ('orders',              'index');
+            Route::get   ('orders/{order_code}', 'show');
+            Route::put   ('orders/{order_code}', 'update');
+            Route::delete('orders/{order_code}', 'destroy');
         });
     });
 

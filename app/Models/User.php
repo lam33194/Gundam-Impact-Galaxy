@@ -8,6 +8,7 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -60,5 +61,16 @@ class User extends Authenticatable
     public function cartItems() 
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function orders() 
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    // Accessor để tính total_amount của cart_items (product_price + extra_price)
+    public function getTotalAmountAttribute()
+    {
+        return $this->cartItems()->sum(DB::raw('(product_price + extra_price) * quantity'));
     }
 }
