@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Payment\VnPayController;
 use App\Http\Requests\V1\CartItemStoreRequest;
 use App\Http\Requests\V1\UserStoreRequest;
 use App\Http\Requests\V1\UserUpdateRequest;
@@ -32,6 +33,8 @@ class UserController extends Controller
     {
         $users = User::query();
 
+        $this->loadRelations($users, $request);
+
         return $this->ok("Lấy danh sách người dùng thành công", [
             'users' => UserResource::collection($users->get())
         ]);
@@ -59,6 +62,8 @@ class UserController extends Controller
         $user = User::find($id);
 
         if (!$user) return $this->not_found("Người dùng không tồn tại");
+
+        $this->loadRelations($user, request(), true);
 
         return $this->ok("Lấy thông tin người dùng thành công", [
             'user' => new UserResource($user),
@@ -106,19 +111,23 @@ class UserController extends Controller
     {
         $user = request()->user();
 
+        $order = $user->orders->load(['orderItems','payment']);
+
         return $this->ok("Lấy danh sách hóa đơn của người dùng thành công", [
-            'orders' => OrderResource::collection($user->orders),
+            'orders' => OrderResource::collection($order),
         ]);
     }
 
     public function store_order(Request $request)
     {
         $validatedData = $request->validate([
+            'paymentMethod'   => 'required|string|in:cod,vnpay',
             'shippingAddress' => 'required|string|max:255',
             'note'            => 'nullable|string',
             // 'shippingFee'     => 'required|integer|min:0',
         ], [
-            // 
+            'paymentMethod.required' => 'Vui lòng chọn phương thức thanh toán',
+            'paymentMethod.in'       => 'Phương thức thanh toán không hợp lệ',
         ]);
 
         $validatedData['shipping_address'] = $validatedData['shippingAddress'];
@@ -149,6 +158,12 @@ class UserController extends Controller
         // Xóa giỏ hàng
         $user->cartItems()->delete();
 
+        // Thêm data bảng payment
+        $order->payment()->create([
+            'payment_method' => $validatedData['paymentMethod'],
+            'status'         => 'pending',
+        ]);
+
         return $this->ok('Tạo đơn hàng thành công', [
             'order' => new OrderResource($order),
         ]);
@@ -168,6 +183,7 @@ class UserController extends Controller
 
         $validatedData = $request->validate([
             'shippingAddress' => 'required|string|max:255',
+            'paymentMethod'   => 'required|in:vnpay,cod',
             'note'            => 'nullable|string',
             'status'          => 'required|in:pending,cancelled',
         ], [
@@ -177,6 +193,10 @@ class UserController extends Controller
         $validatedData['shipping_address'] = $validatedData['shippingAddress'];
 
         $order->update($validatedData);
+
+        if ($validatedData['paymentMethod']) $order->payment()->update([
+            'payment_method' => $validatedData['paymentMethod'],
+        ]);
 
         return $this->ok("Cập nhật hóa đơn thành công", [
             'order' => new OrderResource($order),
@@ -188,6 +208,7 @@ class UserController extends Controller
         $user = $request->user();
 
         return $this->ok('Lấy thông tin giỏ hàng thành công', [
+            'totalAmount' => $user->total_amount,
             'cartItems' => CartItemResource::collection($user->cartItems),
         ]);
     }

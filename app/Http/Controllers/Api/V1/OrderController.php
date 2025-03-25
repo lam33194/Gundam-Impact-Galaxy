@@ -19,6 +19,7 @@ class OrderController extends Controller
         'orderItems',
         'orderItems.product',
         'orderItems.variant',
+        'payment',
     ];
 
     public function index(Request $request)

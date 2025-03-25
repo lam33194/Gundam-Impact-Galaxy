@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\SocialAuthController;
 use App\Http\Controllers\Api\V1\VariantAttributeController;
 use App\Http\Controllers\Api\V1\VariantController;
 use App\Http\Controllers\Api\V1\VariantValueController;
+use App\Http\Controllers\Payment\VnPayController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -124,4 +125,10 @@ Route::prefix('v1')->group(function () {
         Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
         Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');    
     });
+    
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::post('vnpay/create',    [VnPayController::class, 'createPayment']);
+        Route::post('vnpay/createUrl', [VnPayController::class, 'createPaymentUrl']);
+    });
+    Route::get ('vnpay/return',    [VNPayController::class, 'vnpayReturn']);
 });
