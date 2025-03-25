@@ -105,6 +105,34 @@ class VariantSeeder extends Seeder
                     3, 5
                 ]
             ],
+            [
+                'id' => 7,
+                'product_id' => 4,
+                'variant_name' => 'Zaku HG 1/86',
+                'sku' => 'SKU-ZKHG186',
+                'stock' => 30,
+                'extra_price' => 20000,
+                'images' => [
+                    'https://picsum.photos/1000',
+                ],
+                'values' => [
+                    2, 5
+                ]
+            ],
+            [
+                'id' => 8,
+                'product_id' => 5,
+                'variant_name' => 'Metalbuild Exodia 1/100',
+                'sku' => 'DAK-BUH-LMAO',
+                'stock' => 30,
+                'extra_price' => 20000,
+                'images' => [
+                    'https://picsum.photos/1000',
+                ],
+                'values' => [
+                    1, 6
+                ]
+            ],
         ];
         
         foreach ($variants as $variant) {
