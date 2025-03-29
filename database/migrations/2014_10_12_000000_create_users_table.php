@@ -17,11 +17,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('phone', 50)->nullable();
-            $table->string('address')->nullable();
+            $table->string('password')->nullable();
             $table->string('avatar')->nullable();
-            $table->string('role')->default(User::ROLE_USER);
+            $table->string('phone')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->enum('role', [User::ROLE_MEMBER, User::ROLE_ADMIN])->default(User::ROLE_MEMBER);
             $table->rememberToken();
             $table->timestamps();
         });

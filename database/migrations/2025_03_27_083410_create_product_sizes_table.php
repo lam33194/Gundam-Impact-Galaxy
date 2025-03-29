@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\VariantAttribute;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('variant_values', function (Blueprint $table) {
+        Schema::create('product_sizes', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(VariantAttribute::class)->constrained()->cascadeOnDelete();
-            $table->string('value');
-            $table->unique(['variant_attribute_id', 'value']);
+            $table->string('name', 255);
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('variant_values');
+        Schema::dropIfExists('product_sizes');
     }
 };

@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 50)->unique();
-            $table->string('discount_type');
-            $table->decimal('discount_value', 10, 2);
-            $table->timestamp('start_date')->nullable();
-            $table->timestamp('end_date')->nullable();
-            $table->boolean('is_active')->default(true);
+            $table->string('code')->unique();
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
+            $table->dateTime('start_date_time');
+            $table->dateTime('end_date_time');
+            $table->decimal('discount', 10, 0)->default(0);
+            $table->boolean('is_active')->default(1)->comment("0 : Ngừng hoạt động , 1 : Hoạt động");
             $table->timestamps();
         });
     }
