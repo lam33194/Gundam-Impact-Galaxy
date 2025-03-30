@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Product;
+use App\Models\Comment;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,13 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('variants', function (Blueprint $table) {
+        Schema::create('comment_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
-            $table->string('variant_name');
-            $table->string('sku', 50)->unique();
-            $table->unsignedInteger('stock');
-            $table->decimal('extra_price', 11, 2)->default(0);
+            $table->foreignIdFor(Comment::class);
+            $table->string('image', 255)->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('variants');
+        Schema::dropIfExists('comment_images');
     }
 };

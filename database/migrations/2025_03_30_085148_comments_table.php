@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Post;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,10 +15,11 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Post::class)->constrained()->cascadeOnDelete();
-            $table->text('content');
-            $table->boolean('is_hidden')->default(false);
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Product::class)->constrained();
+            $table->string('content', 255)->nullable();
+            $table->string('image', 255)->nullable();
+            $table->integer('rating')->default(0);
             $table->timestamps();
         });
     }

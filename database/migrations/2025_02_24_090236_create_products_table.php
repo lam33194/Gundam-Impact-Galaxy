@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -14,13 +13,22 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Category::class) -> constrained() -> cascadeOnDelete();
-            $table->string('name');
-            $table->string('slug')->unique();
-            $table->text('description');
-            $table->decimal('price',11,2);
-            // giá cao nhất là 999 triệu (999.999.999,00)
-            $table->string('thumbnail');
+            $table->foreignIdFor(Category::class)->constrained();
+
+            $table->string('name', 255);
+            $table->string('slug', 255)->unique();
+            $table->string('sku', 255)->unique();
+            $table->string('thumb_image', 500)->nullable();
+            $table->decimal('price_regular', 20, 0)->default(0);
+            $table->decimal('price_sale', 20, 0)->default(0);
+            $table->text('description')->nullable();
+            $table->text('content')->nullable();
+            $table->unsignedBigInteger('views')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_hot_deal')->default(false);
+            $table->boolean('is_good_deal')->default(false);
+            $table->boolean('is_new')->default(false);
+            $table->boolean('is_show_home')->default(false);
             $table->timestamps();
         });
     }
