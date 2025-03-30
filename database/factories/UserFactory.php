@@ -30,7 +30,6 @@ class UserFactory extends Factory
         // password
         // remember_token
         // phone
-        // address
         // avatar
         // role
         return [
@@ -40,7 +39,6 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'phone' => fake() -> phoneNumber(),
-            'address' => fake() -> address(),
             'avatar' => "https://picsum.photos/".fake()->numberBetween(700, 1000),
             // https://picsum.photos/width/height
         ];
