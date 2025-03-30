@@ -18,7 +18,7 @@ function BlogDetail() {
                 </span>
             </div>
 
-            <div className="main-content d-flex gap-4">
+            <div className="main-content d-flex gap-5">
                 <div className="left col-3 d-flex flex-column gap-3">
                     <h4>TIN NỔI BẬT</h4>
                     <div className="outstanding-blogs d-flex flex-column gap-3">
@@ -26,35 +26,35 @@ function BlogDetail() {
                             <img
                                 className="col-5"
                                 src="https://bizweb.dktcdn.net/100/456/060/files/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671376577"
-                                height={"64px"}
+                           
                             ></img>
                             <p className="col-7 pe-2">
                                 Cách Lắp Ráp Mô Hình Gundam MG Cho Người
                             </p>
                         </div>
-                        <div className="line"></div>
+                        <div className="line my-1"></div>
                         <div className="outstanding-blog d-flex gap-2">
                             <img
                                 className="col-5"
                                 src="https://bizweb.dktcdn.net/100/456/060/files/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671376577"
-                                height={"64px"}
+                             
                             ></img>
                             <p className="col-7 pe-2">
                                 Cách Lắp Ráp Mô Hình Gundam MG Cho Người
                             </p>
                         </div>
-                        <div className="line"></div>
+                        <div className="line my-1"></div>
                         <div className="outstanding-blog d-flex gap-2">
                             <img
                                 className="col-5"
                                 src="https://bizweb.dktcdn.net/100/456/060/files/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671376577"
-                                height={"64px"}
+                            
                             ></img>
                             <p className="col-7 pe-2">
                                 Cách Lắp Ráp Mô Hình Gundam MG Cho Người
                             </p>
                         </div>
-                        <div className="line"></div>
+                        <div className="line my-1"></div>
                     </div>
 
                     <h4>SẢN PHẨM NỔI BẬT</h4>

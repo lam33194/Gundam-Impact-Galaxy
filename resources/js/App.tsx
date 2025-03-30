@@ -11,6 +11,7 @@ import ProductList from "./pages/admin/product_management/ProductList";
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Checkout from './pages/Checkout';
+import BlogList from './pages/BlogList';
 
 
 function App() {
@@ -27,6 +28,7 @@ function App() {
                     <Route path='/login' element={<Login/>} />
                     <Route path='/signup' element={<Signup/>} />
                     <Route path='/checkout' element={<Checkout/>} />
+                    <Route path='/blog-list' element={<BlogList/>} />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" element={<AdminLayout />}>
