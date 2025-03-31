@@ -11,9 +11,8 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
-    public const ROLE_ADMIN = 'admin';
     public const ROLE_MEMBER = 'member';
+    public const ROLE_ADMIN = 'admin';
 
     public static $is_active = [
         true => 'Active',
@@ -29,10 +28,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'phone',
         'avatar',
-        'role',
-        'is_active'
+        'phone',
+        'is_active',
+        'role'
     ];
 
     /**
@@ -58,5 +57,10 @@ class User extends Authenticatable
     public function isAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function user_vouchers()
+    {
+        return $this->hasMany(UserVoucher::class);
     }
 }
