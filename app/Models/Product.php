@@ -43,4 +43,24 @@ class Product extends Model
         'is_new' => 0,
         'is_show_home' => 0,
     ];
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function galleries()
+    {
+        return $this->hasMany(ProductGallery::class);
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 }
