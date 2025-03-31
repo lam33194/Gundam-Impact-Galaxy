@@ -6,11 +6,14 @@ trait ApiResponse
 {
     protected function success($message, $statusCode = 200, $data = [])
     {
-        return response()->json([
+        $response = [
             'message' => $message,
             'status'  => 'success',
-            'data'    => $data,
-        ], $statusCode);
+        ];
+
+        if (!empty($data)) $response['data'] = $data;
+
+        return response()->json($response, $statusCode);
     }
 
     /** 
@@ -19,11 +22,14 @@ trait ApiResponse
      */
     protected function error($message, $statusCode = 400, $data = [])
     {
-        return response()->json([
+        $response = [
             'message' => $message,
             'status'  => 'error',
-            'data'    => $data,
-        ], $statusCode);
+        ];
+
+        if (!empty($data)) $response['data'] = $data;
+
+        return response()->json($response, $statusCode);
     }
 
     protected function ok($msg, $data = [])
