@@ -15,7 +15,7 @@ use PhpParser\Node\Stmt\Foreach_;
 class OrderService
 {
     use ApiResponseTrait;
-    private const PATH_URL = "https://datn-gundam.me";
+    private const PATH_URL = "http://gundam-impact-galaxy.test";
     public static function generateOrderId()
     {
         return substr(time(), -6) . mt_rand(100000, 999999);

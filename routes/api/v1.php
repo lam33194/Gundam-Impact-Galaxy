@@ -28,14 +28,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('user',[AuthController::class,'getUsers']);
 
     // Add to cart
-    Route::prefix('carts')->middleware('CheckAuthCart')->group(function () {
+    Route::prefix('carts')->middleware('auth:sanctum')->group(function () {
         Route::get('/',         [CartController::class, 'index']);
         Route::post('/',        [CartController::class, 'store']);
         Route::put('/{id}',     [CartController::class, 'update']);
         Route::delete('/{id}',  [CartController::class, 'destroy']);
     });
     // Order
-    Route::prefix('orders')->middleware('CheckAuthCart')->group(function () {
+    Route::prefix('orders')->middleware('auth:sanctum')->group(function () {
         
         Route::post('/',        [OrderController::class, 'store']);
 
