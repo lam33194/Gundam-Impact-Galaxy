@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Order;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,14 +15,28 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class) -> constrained() -> cascadeOnDelete();
-            $table->string('order_code',20)->unique();
-            $table->decimal('total_amount',11,2);
-            $table->enum('status',['pending','processing','shipped','delivered','cancelled'])
-                ->default('pending');
-            $table->string('shipping_address');
-            $table->decimal('shipping_fee',11,2)->default(0);
-            $table->text('note')->nullable();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->string('user_name', 255);
+            $table->string('user_email', 255);
+            $table->string('user_phone', 255);
+            $table->string('user_address', 255);
+            $table->string('user_note', 255)->nullable();
+
+            $table->boolean('same_as_buyer')->default(true);
+            $table->string('order_sku');
+            $table->string('type_payment')->default(Order::TYPE_PAYMENT_COD);
+
+            $table->string('ship_user_name', 255)->nullable();
+            $table->string('ship_user_email', 255)->nullable();
+            $table->string('ship_user_phone', 255)->nullable();
+            $table->string('ship_user_address', 255)->nullable();
+            $table->string('ship_user_note', 255)->nullable();
+
+            $table->string('status_order')->default(Order::STATUS_ORDER_PENDING);
+            $table->string('status_payment')->default(Order::STATUS_PAYMENT_UNPAID);
+
+            $table->unsignedBigInteger('total_price')->default(0);
+
             $table->timestamps();
         });
     }

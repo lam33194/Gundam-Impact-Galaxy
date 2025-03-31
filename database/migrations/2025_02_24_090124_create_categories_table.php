@@ -5,8 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
@@ -15,13 +14,10 @@ return new class extends Migration
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->foreign('parent_id')
-                ->references('id')
-                ->on('categories')
-                ->nullOnDelete();
-            // khi xóa category cha, trường parent_id của các category con sẽ được set là null
+            $table->text('description')->nullable();
+            $table->string('slug', 190)->unique()->nullable();
+            $table->boolean('status')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
