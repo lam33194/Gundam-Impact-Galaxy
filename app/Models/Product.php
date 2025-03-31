@@ -11,7 +11,6 @@ class Product extends Model
 
     protected $fillable = [
         'category_id',
-        'sub_category_id',
         'name',
         'slug',
         'sku',
@@ -62,5 +61,29 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    // Scope
+    public function scopeNameFilter($query, $name)
+    {
+        return $query->where('name','LIKE',"%$name%");
+    }
+    public function scopeSlugFilter($query, $slug)
+    {
+        return $query->where('slug','LIKE',"%$slug%");
+    }
+    public function scopeSkuFilter($query, $sku)
+    {
+        return $query->where('sku', $sku);
+    }
+    public function scopePriceRangeFilter($query, $minPrice, $maxPrice)
+    {
+        if ($minPrice !== null) {
+            $query->where('price_regular', '>=', $minPrice);
+        }
+        if ($maxPrice !== null) {
+            $query->where('price_regular', '<=', $maxPrice);
+        }
+        return $query;
     }
 }
