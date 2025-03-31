@@ -14,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Route::get('/{any}', function () {
+//     return view('index');
+// })->where('any', '^(?!admin).*');
+
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
@@ -22,7 +26,3 @@ Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 
 Route::post('/logout', [LoginController::class, 'logout']);
-
-// Route::get('/{any}', function () {
-//     return view('index');
-// })->where('any', '.*');
