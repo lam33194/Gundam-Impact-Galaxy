@@ -17,9 +17,15 @@ Route::prefix('v1')->group(function () {
 
     Route::controller(CartItemController::class)->group(function () {
 
-        Route::middleware('auth:sanctum')->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
             // Add to Cart
-            Route::post('carts', 'store');
+            Route::post  ('carts', 'store');
+            // Show cart items
+            Route::get   ('carts', 'index');
+            // Update cart items
+            Route::put   ('carts/{id}', 'update');
+            // Xóa toàn bộ giỏ hàng
+            Route::delete('carts', 'destroy');
         });
 
     });
