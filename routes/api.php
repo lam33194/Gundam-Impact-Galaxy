@@ -1,24 +1,40 @@
 <?php
 
+use App\Http\Controllers\Api\V1\CartItemController;
+use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
-|
-*/
+Route::prefix('v1')->group(function () {
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::controller(ProductController::class)->group(function () {
+        // Lấy tất cả product
+        Route::get('products',       'index');
+        // Product detail
+        Route::get('products/{slug}', 'show');
+    });
+
+    Route::controller(CartItemController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
+            // Add to Cart
+            Route::post  ('carts', 'store');
+            // Show cart items
+            Route::get   ('carts', 'index');
+            // Update cart items
+            Route::put   ('carts/{id}', 'update');
+            // Xóa toàn bộ giỏ hàng
+            Route::delete('carts', 'destroy');
+        });
+    });
+
+    Route::controller(UserController::class)->group(function () {
+        Route::get('users',      'index');
+        Route::get('users/{id}', 'show');
+    });
 });
+
 Route::apiResource('tags', TagController::class);
 
 Route::apiResource('users', UserController::class);

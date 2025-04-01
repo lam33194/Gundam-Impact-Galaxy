@@ -6,11 +6,14 @@ trait ApiResponse
 {
     protected function success($message, $statusCode = 200, $data = [])
     {
-        return response()->json([
+        $response = [
             'message' => $message,
             'status'  => 'success',
-            'data'    => $data,
-        ], $statusCode);
+        ];
+
+        if (!empty($data)) $response['data'] = $data;
+
+        return response()->json($response, $statusCode);
     }
 
     /** 
@@ -19,11 +22,14 @@ trait ApiResponse
      */
     protected function error($message, $statusCode = 400, $data = [])
     {
-        return response()->json([
+        $response = [
             'message' => $message,
             'status'  => 'error',
-            'data'    => $data,
-        ], $statusCode);
+        ];
+
+        if (!empty($data)) $response['data'] = $data;
+
+        return response()->json($response, $statusCode);
     }
 
     protected function ok($msg, $data = [])
@@ -59,5 +65,17 @@ trait ApiResponse
     protected function unauthenticated($msg)
     {
         return $this->error($msg, 401);
+    }
+    
+    // 409 (Conflict): Xảy ra khi xóa tài nguyên đang được sử dụng, ... 
+    protected function conflict($msg)
+    {
+        return $this->error($msg, 409);
+    }
+
+    // 422 (Unprocessable Entity): Xảy ra khi ko pass hay thỏa mãn rules, validation
+    protected function failedValidation($msg)
+    {
+        return $this->error($msg, 422);
     }
 }
