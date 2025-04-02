@@ -43,6 +43,9 @@ class LoginController extends Controller
     }
     public function logout(){
         Auth::logout();
+        request()->session()->invalidate();
+        Toastr::success(null , self::LOGOUT_MESSAGE);
+        return redirect()->route("admin.login");
     }
 
 }
