@@ -21,4 +21,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::apiResource('tags', TagController::class);
 
-Route::apiResource('users', UserController::class);
+Route::get('/users', [UserController::class, 'index']);    // Lấy danh sách users
+Route::post('/users', [UserController::class, 'store']);   // Thêm user mới
+Route::get('/users/{id}', [UserController::class, 'show']); // Lấy user theo ID
+Route::put('/users/{id}', [UserController::class, 'update']); // Cập nhật user
+Route::delete('/users/{id}', [UserController::class, 'destroy']); // Xóa user
