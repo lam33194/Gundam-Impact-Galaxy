@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,6 +19,9 @@ Route::get('/{any}', function () {
     return view('index');
 })->where('any', '^(?!admin).*');
 
-Route::prefix('admin')->group(function() {
+Route::prefix('admin')->name('admin.')->group(function() {
     Route::view('/', 'admin.dashboard')->name('dashboard');
+    
+    Route::resource('products', ProductController::class);
+    Route::resource('vouchers', VoucherController::class);
 });

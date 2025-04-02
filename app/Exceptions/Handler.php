@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -43,6 +44,12 @@ class Handler extends ExceptionHandler
                 return response()->json([
                     'message' => 'Nội dung bạn đang tìm kiếm không tồn tại',
                 ], 404);
+            }
+
+            if ($exception instanceof MethodNotAllowedHttpException) {
+                return response()->json([
+                    'message' => 'Phương thức HTTP không hợp lệ',
+                ], 405);
             }
         }
         return parent::render($request, $exception);
