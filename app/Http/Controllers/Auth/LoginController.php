@@ -14,7 +14,7 @@ class LoginController extends Controller
 {
     private const PATH_VIEW = 'auth.login';
     private const LOGIN_MESSAGE = 'Đăng nhập thành công';
-   
+    private const LOGOUT_MESSAGE = 'Đăng xuất thành công';
     public function showFormLogin()
     {
         return view(self::PATH_VIEW);
@@ -40,6 +40,9 @@ class LoginController extends Controller
         }
 
         return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
+    }
+    public function logout(){
+        Auth::logout();
     }
 
 }
