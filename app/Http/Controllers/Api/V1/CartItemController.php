@@ -15,13 +15,13 @@ class CartItemController extends Controller
 
     protected $validRelations = [
         'user',
-        'productVariant',
-        'productVariant.product',
+        'variant',
+        'variant.product',
     ];
 
     public function index(Request $request)
     {
-        $carts = $request->user()->cartItems()->with('productVariant.product')->get();
+        $carts = $request->user()->cartItems;
 
         // Tính tổng tiền
         // $total = $carts->sum(function ($cartItem) {

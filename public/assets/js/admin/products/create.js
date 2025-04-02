@@ -23,7 +23,7 @@ function initializeSelect2() {
 }
 
 function fetchProductData() {
-  return $.get(`${BASE_URL}/api/v1/products`);
+  return $.get(`${BASE_URL}/api/v1/variant-attributes`);
 }
 
 // handle variants 02/10/2024

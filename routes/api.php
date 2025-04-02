@@ -14,6 +14,8 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
+        // Lấy data colors và sizes 
+        Route::get('variant-attributes', 'getVariantAttributes');
     });
 
     Route::controller(CartItemController::class)->group(function () {
@@ -28,13 +30,4 @@ Route::prefix('v1')->group(function () {
             Route::delete('carts', 'destroy');
         });
     });
-
-    Route::controller(UserController::class)->group(function () {
-        Route::get('users',      'index');
-        Route::get('users/{id}', 'show');
-    });
 });
-
-Route::apiResource('tags', TagController::class);
-
-Route::apiResource('users', UserController::class);

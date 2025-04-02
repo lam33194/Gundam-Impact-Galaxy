@@ -15,10 +15,15 @@ return new class extends Migration
     {
         Schema::create('user_vouchers', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->foreignIdFor(Voucher::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Voucher::class)->constrained()->cascadeOnDelete();
             $table->integer('usage_count')->default(0)->comment('Số lần sử dụng');
+            $table->boolean('is_used')->default(false); // Trạng thái đã sử dụng hết hay chưa
+            $table->dateTime('assigned_at')->nullable();
             $table->timestamps();
+
+            // Đảm bảo mỗi user chỉ có 1 bản ghi cho mỗi voucher
+            $table->unique(['user_id', 'voucher_id']);
         });
     }
 
