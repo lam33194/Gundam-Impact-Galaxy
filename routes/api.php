@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::apiResource('tags', TagController::class);
+Route::apiResource('users', controller: UserController::class);
 
 Route::get('/users', [UserController::class, 'index']);    // Lấy danh sách users
 Route::post('/users', [UserController::class, 'store']);   // Thêm user mới
@@ -27,7 +27,7 @@ Route::get('/users/{id}', [UserController::class, 'show']); // Lấy user theo I
 Route::put('/users/{id}', [UserController::class, 'update']); // Cập nhật user
 Route::delete('/users/{id}', [UserController::class, 'destroy']); // Xóa user
 
-
+Route::apiResource('tags', controller: TagController::class);
 
 Route::get('/tags', [TagController::class, 'index']);    // Lấy danh sách tags
 Route::post('/tags', [TagController::class, 'store']);   // Thêm tag mới
