@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -34,3 +35,11 @@ Route::post('/tags', [TagController::class, 'store']);   // Thêm tag mới
 Route::get('/tags/{id}', [TagController::class, 'show']); // Lấy tag theo ID
 Route::put('/tags/{id}', [TagController::class, 'update']); // Cập nhật tag
 Route::delete('/tags/{id}', [TagController::class, 'destroy']); // Xóa tag
+
+Route::apiResource('tags', controller: ColorController::class);
+
+Route::get('/colors', [ColorController::class, 'index']);    // Lấy danh sách colors
+Route::post('/colors', [ColorController::class, 'store']);   // Thêm color mới
+Route::get('/colors/{id}', [ColorController::class, 'show']); // Lấy color theo ID
+Route::put('/colors/{id}', [ColorController::class, 'update']); // Cập nhật color
+Route::delete('/colors/{id}', [ColorController::class, 'destroy']); // Xóa color
