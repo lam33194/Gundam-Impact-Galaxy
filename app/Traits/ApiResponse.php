@@ -66,4 +66,16 @@ trait ApiResponse
     {
         return $this->error($msg, 401);
     }
+    
+    // 409 (Conflict): Xảy ra khi xóa tài nguyên đang được sử dụng, ... 
+    protected function conflict($msg)
+    {
+        return $this->error($msg, 409);
+    }
+
+    // 422 (Unprocessable Entity): Xảy ra khi ko pass hay thỏa mãn rules, validation
+    protected function failedValidation($msg)
+    {
+        return $this->error($msg, 422);
+    }
 }
