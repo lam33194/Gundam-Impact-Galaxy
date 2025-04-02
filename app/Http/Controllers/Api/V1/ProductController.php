@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\ProductColor;
+use App\Models\ProductSize;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 
@@ -70,5 +72,18 @@ class ProductController extends Controller
                 $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
             }
         }
+    }
+
+    public function getVariantAttributes()
+    {
+        $productColor = ProductColor::query()->latest('id')->select(['id', 'name'])->get();
+        $productSize  = ProductSize::query()->latest('id')->select(['id', 'name'])->get();
+
+        return response()->json([
+            'data' => [
+                'productColors' => $productColor,
+                'productSizes'  => $productSize,
+            ]
+        ]);
     }
 }

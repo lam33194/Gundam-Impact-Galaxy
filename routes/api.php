@@ -14,6 +14,8 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
+        // Lấy data colors và sizes 
+        Route::get('variant-attributes', 'getVariantAttributes');
     });
 
     Route::controller(CartItemController::class)->group(function () {
