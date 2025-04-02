@@ -26,3 +26,11 @@ Route::post('/users', [UserController::class, 'store']);   // Thêm user mới
 Route::get('/users/{id}', [UserController::class, 'show']); // Lấy user theo ID
 Route::put('/users/{id}', [UserController::class, 'update']); // Cập nhật user
 Route::delete('/users/{id}', [UserController::class, 'destroy']); // Xóa user
+
+
+
+Route::get('/tags', [TagController::class, 'index']);    // Lấy danh sách tags
+Route::post('/tags', [TagController::class, 'store']);   // Thêm tag mới
+Route::get('/tags/{id}', [TagController::class, 'show']); // Lấy tag theo ID
+Route::put('/tags/{id}', [TagController::class, 'update']); // Cập nhật tag
+Route::delete('/tags/{id}', [TagController::class, 'destroy']); // Xóa tag
