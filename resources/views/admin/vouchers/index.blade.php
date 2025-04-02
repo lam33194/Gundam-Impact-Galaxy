@@ -57,23 +57,29 @@
                                 <tr>
                                     <th>ID</th>
                                     <th>Mã giảm giá</th>
-                                    <th>Giảm giá (VNĐ)</th>
+                                    <th>Giảm giá</th>
                                     <th>Ngày bắt đầu</th>
                                     <th>Ngày kết thúc</th>
                                     <th>Trạng thái</th>
+                                    <th>Đơn hàng tối thiểu</th>
+                                    <th>Số lần được sử dụng</th>
+                                    <th>Số lần sử dụng tối đa</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
 
                             <tbody>
+                            @foreach ($vouchers as $voucher)
                                 <tr>
-                                    <td>1</td>
-                                    <td>BIZZARE</td>
-                                    <td>20,000 VNĐ</td>
-                                    <td>13/03/2025 14:38:00</td>
-                                    <td>13/03/2025 14:38:00</td>
+                                    <td>{{ $voucher->id }}</td>
+                                    <td>{{ $voucher->code }}</td>
+                                    <td>{{ number_format($voucher->discount, 0, ',', '.') }} VNĐ</td>
+                                    <td>{{ \Carbon\Carbon::parse($voucher->start_date_time)->format('d/m/Y H:i:s') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($voucher->end_date_time)->format('d/m/Y H:i:s') }}</td>
                                     <td>?</td>
-
+                                    <td>min-order</td>
+                                    <td>used count</td>
+                                    <td>max usage</td>
                                     <td class="text-center">
                                         <a href="#">
                                             <button title="Chi tiết" class="btn btn-success btn-sm" type="button">
@@ -86,31 +92,18 @@
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </a>
+
+                                        {{-- <form method="POST" action="" class="d-inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Bạn có muốn xóa không')">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form> --}}
                                     </td>
                                 </tr>
-
-                                <tr>
-                                    <td>1</td>
-                                    <td>BIZZARE</td>
-                                    <td>20,000 VNĐ</td>
-                                    <td>13/03/2025 14:38:00</td>
-                                    <td>13/03/2025 14:38:00</td>
-                                    <td>?</td>
-
-                                    <td class="text-center">
-                                        <a href="#">
-                                            <button title="Chi tiết" class="btn btn-success btn-sm" type="button">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                        </a>
-
-                                        <a href="#">
-                                            <button title="Sửa" class="btn btn-warning btn-sm" type="button">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </a>
-                                    </td>
-                                </tr>
+                            @endforeach
                             </tbody>
                         </table>
                     </div>

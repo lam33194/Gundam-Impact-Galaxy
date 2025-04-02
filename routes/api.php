@@ -31,7 +31,3 @@ Route::prefix('v1')->group(function () {
         });
     });
 });
-
-Route::apiResource('tags', TagController::class);
-
-Route::apiResource('users', UserController::class);
