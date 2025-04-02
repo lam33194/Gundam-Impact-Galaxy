@@ -33,9 +33,9 @@
                     </div>
                     <div class="col-sm-8">
                         <div class="text-sm-end">
-                            <a href="" class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2 addCustomers-modal">
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2 addCustomers-modal">
                                 <i class="mdi mdi-plus me-1"></i>
-                                New Product
+                                Thêm sản phẩm
                             </a>
                         </div>
                     </div><!-- end col-->
@@ -47,14 +47,14 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Image</th>
-                                <th>Name</th>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
                                 <th>Sku</th>
-                                <th>Category</th>
-                                <th>Price_Regular</th>
-                                <th>Price_Sale</th>
-                                <th>View</th>
-                                <th>Action</th>
+                                <th>Danh mục</th>
+                                <th>Giá gốc</th>
+                                <th>Giá sale</th>
+                                <th>Lượt xem</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
 
@@ -121,13 +121,13 @@
                                                 <a href="" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                     </i>
-                                                    Edit
+                                                    Sửa
                                                 </a>
                                             </li>
                                             <li>
                                                 <a href="" class="dropdown-item edit-list">
                                                     <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
+                                                    Chi tiết
                                                 </a>
                                             </li>
                                         </ul>

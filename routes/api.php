@@ -28,11 +28,6 @@ Route::prefix('v1')->group(function () {
             Route::delete('carts', 'destroy');
         });
     });
-
-    Route::controller(UserController::class)->group(function () {
-        Route::get('users',      'index');
-        Route::get('users/{id}', 'show');
-    });
 });
 
 Route::apiResource('tags', TagController::class);

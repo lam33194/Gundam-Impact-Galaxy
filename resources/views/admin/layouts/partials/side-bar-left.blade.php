@@ -7,7 +7,7 @@
 
 
             <li>
-                <a href="#" class="waves-effect">
+                <a href="{{ route('admin.dashboard') }}" class="waves-effect">
                     <i class="bx bx-home-circle"></i>
                     <span key="t-chat">Dashboards</span>
                 </a>
@@ -36,7 +36,7 @@
                 </a>
                 <ul class="sub-menu" aria-expanded="true">
                     <li>
-                        <a href="#" key="t-level-1-1">
+                        <a href="{{ route('admin.products.index') }}" key="t-level-1-1">
                             Danh sách
                         </a>
                     </li>
