@@ -33,7 +33,9 @@
                                     <span class="text-danger">*</span>
                                     Ảnh Thu Nhỏ
                                 </label>
-
+                                @error('product.thumb_image')
+                                <div class="text-danger fst-italic">*{{ $message }}</div>
+                                @enderror
                                 <div class="text-center">
                                     <div class="position-relative d-inline-block">
                                         <div class="position-absolute bottom-0 end-0">
@@ -121,9 +123,11 @@
                             </h4>
                             <button type="button" class="btn btn-primary" onclick="addImageGallery()">Thêm ảnh</button>
                         </div>
-
+                        
                         <div class="card-body">
-
+                            @error('product_galleries')
+                            <div class="text-danger fst-italic">*{{ $message }}</div>
+                            @enderror
                             <div class="live-preview">
                                 <div class="row gy-4" id="gallery_list">
                                     <div class="col-md-4" id="gallery_default_item">
@@ -133,7 +137,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -227,7 +230,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">
-                                    <span class="text-danger">*</span>
+                                    <span class="text-danger"></span>
                                     Select Tags
                                 </label>
 
@@ -236,10 +239,6 @@
                                     <option value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
-
-                                @error('tags')
-                                <div class="text-danger fst-italic">*{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">
