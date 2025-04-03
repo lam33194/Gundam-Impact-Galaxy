@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Api;
+namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CartStoreRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,8 @@ class CartStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'product_variant_id' => 'required|integer|exists:product_variants,id',
-            'quantity'           => 'required|integer|min:1'
+            'name' => 'required',
+            'slug' => 'max:190'
         ];
     }
 }

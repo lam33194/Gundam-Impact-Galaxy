@@ -33,34 +33,37 @@
                     </div>
                     <div class="col-sm-8">
                         <div class="text-sm-end">
-                            <a href="" class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2 addCustomers-modal">
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-success btn-rounded waves-effect waves-light mb-2 me-2 addCustomers-modal">
                                 <i class="mdi mdi-plus me-1"></i>
-                                New Product
+                                Thêm sản phẩm
                             </a>
                         </div>
                     </div><!-- end col-->
                 </div>
 
+                @if ($products->isNotEmpty())
                 <div>
                     <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Image</th>
-                                <th>Name</th>
+                                <th>Ảnh</th>
+                                <th>Tên sản phẩm</th>
                                 <th>Sku</th>
-                                <th>Category</th>
-                                <th>Price_Regular</th>
-                                <th>Price_Sale</th>
-                                <th>View</th>
-                                <th>Action</th>
+                                <th>Danh mục</th>
+                                <th>Giá gốc</th>
+                                <th>Giá sale</th>
+                                <th>Lượt xem</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
 
                         <tbody>
+
+                            @foreach ($products as $product)
                             <tr>
                                 <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
+                                    <div class="d-none">{{ $product->id }}</div>
                                     <div class="form-check font-size-16">
                                         <input class="form-check-input" type="checkbox">
                                         <label class="form-check-label"></label>
@@ -68,33 +71,43 @@
                                 </td>
 
                                 <td>
+                                    @if ($product->thumb_image && Storage::exists($product->thumb_image))
+                                    <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}" style="height: 40px; width: 40px">
+                                    @else
                                     <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
+                                    @endif
                                 </td>
 
                                 <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
+                                    {{ Str::length($product->name) > 20
+                                            ? Str::limit($product->name, 20, '...')
+                                            : $product->name }}
                                 </td>
 
                                 <td>
-                                    DX-2104
+                                    {{ $product->sku }}
                                 </td>
 
                                 <td>
-                                    Accessory Model
+                                    {{ $product->category->name }}
                                 </td>
 
                                 <td>
-                                    120.000đ
+                                    {{ number_format($product->price_regular) }}đ
                                 </td>
 
                                 <td>
+                                    @if(!empty($product->price_sale))
+                                    {{ number_format($product->price_sale) }}đ
+                                    @else
                                     <span class="badge bg-danger font-size-12 p-2">
                                         No Sale
                                     </span>
+                                    @endif
                                 </td>
                                 <td>
                                     <span class="badge bg-info font-size-12 p-2">
-                                        100
+                                        {{ $product->views }}
                                     </span>
                                 </td>
 
@@ -108,467 +121,33 @@
                                                 <a href="" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                     </i>
-                                                    Edit
+                                                    Sửa
                                                 </a>
                                             </li>
                                             <li>
                                                 <a href="" class="dropdown-item edit-list">
                                                     <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
+                                                    Chi tiết
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="dtr-control sorting_1" tabindex="0">
-                                    <div class="d-none">1</div>
-                                    <div class="form-check font-size-16">
-                                        <input class="form-check-input" type="checkbox">
-                                        <label class="form-check-label"></label>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
-                                </td>
-
-                                <td>
-                                    Mô hình gundam aowijgoigjoiajfoa
-                                </td>
-
-                                <td>
-                                    DX-2104
-                                </td>
-
-                                <td>
-                                    Accessory Model
-                                </td>
-
-                                <td>
-                                    120.000đ
-                                </td>
-
-                                <td>
-                                    <span class="badge bg-danger font-size-12 p-2">
-                                        No Sale
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info font-size-12 p-2">
-                                        100
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                        </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="mdi mdi-pencil font-size-16 text-success me-1">
-                                                    </i>
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a href="" class="dropdown-item edit-list">
-                                                    <i class="bx bx-show font-size-16 text-warning me-1"></i>
-                                                    Show
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
 
                 <div class="row">
-                    {{-- $products->links() --}}
+                    {{ $products->links('admin.layouts.components.pagination') }}
                 </div>
+
+                @else
+                <div class="min-vh-100">
+                    <h1 class="text-danger">No Data</h1>
+                </div>
+                @endif
 
             </div>
             <!-- end card body -->
