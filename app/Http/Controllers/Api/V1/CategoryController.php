@@ -3,9 +3,6 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\V1\CategoryStoreRequest;
-use App\Http\Requests\V1\CategoryUpdateRequest;
-use App\Http\Resources\V1\CategoryResource;
 use App\Models\Category;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
@@ -17,6 +14,9 @@ class CategoryController extends Controller
 
     protected $validRelations = [
         'products',
+        'products.tags',
+        'products.galleries',
+        'products.variants',
     ];
 
     public function index(Request $request)

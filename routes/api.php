@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
@@ -39,6 +40,13 @@ Route::prefix('v1')->group(function () {
             Route::put   ('carts/{id}', 'update');
             // Xóa toàn bộ giỏ hàng
             Route::delete('carts', 'destroy');
+        });
+    });
+
+    Route::controller(OrderController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
+            // Đặt hàng
+            Route::post('orders', 'store');
         });
     });
 
