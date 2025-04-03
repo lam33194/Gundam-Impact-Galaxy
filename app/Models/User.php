@@ -60,8 +60,32 @@ class User extends Authenticatable
         return $this->role === self::ROLE_ADMIN;
     }
 
+    // Accessor để lấy tổng tiền giỏ hàng
+    public function getTotalPriceAttribute()
+    {
+        // Eager load
+        if (!$this->relationLoaded('cartItems')) {
+            $this->load('cartItems.variant.product');
+        }
+
+        return $this->cartItems->sum(function ($cartItem) {
+            $variant = $cartItem->variant;
+            $product = $variant->product;
+
+            // if price_sale else price_regular
+            $price = $product->price_sale > 0 ? $product->price_sale : $product->price_regular;
+
+            return $price * $cartItem->quantity;
+        });
+    }
+
     public function cartItems()
     {
         return $this->hasMany(CartItem::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }
