@@ -1,7 +1,32 @@
-
+import { useLocation } from "react-router-dom";
 import "./Login.scss";
+import { useEffect, useState } from "react";
 
 function Login() {
+
+  const location = useLocation();
+  const [formData, setFormData] = useState({
+    email: location.state?.email || "",
+    password: location.state?.password || ""
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  useEffect(() => {
+    if (location.state?.email && location.state?.password) {
+      setFormData({
+        email: location.state.email,
+        password: location.state.password
+      });
+    }
+  }, [location]);
+
   return (
 
     <div className="login-container d-flex m-auto row col-lg-8">
@@ -14,9 +39,11 @@ function Login() {
             </label>
             <input
               type="email"
-              id="email_"
+              id="email"
               className="form-control form-control-lg"
               placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
             />
           </div>
           <div className="mb-3">
@@ -28,6 +55,8 @@ function Login() {
               id="password"
               className="form-control form-control-lg"
               placeholder="Mật khẩu"
+              value={formData.password}
+              onChange={handleChange}
             />
           </div>
           <button type="submit" className="btn btn-lg btn-dark col-12">
@@ -41,14 +70,14 @@ function Login() {
         </div>
 
         <div className="row justify-content-center gap-2 oauth">
-            <button className="btn btn-lg btn-primary btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
-              <i className="fab fa-facebook-f me-2"></i> <span>Facebook</span>
-            </button>
-       
+          <button className="btn btn-lg btn-primary btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
+            <i className="fab fa-facebook-f me-2"></i> <span>Facebook</span>
+          </button>
 
-            <button className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
-              <i className="fab fa-google me-2"></i> <span>Google</span>
-            </button>
+
+          <button className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
+            <i className="fab fa-google me-2"></i> <span>Google</span>
+          </button>
 
         </div>
         <h6 className="text-center">
@@ -69,14 +98,14 @@ function Login() {
             <i className="fa-solid fa-fire me-2"></i>Quà tặng bí mật
           </li>
           <li>
-            <i className="fa-solid fa-fire me-2"></i>Chăm sóc khách hàng 1-1 
+            <i className="fa-solid fa-fire me-2"></i>Chăm sóc khách hàng 1-1
           </li>
           <li>
             <i className="fa-solid fa-fire me-2"></i>Chi tiết hơn về chương
             trình hội viên, bạn có thể <a href="">xem tại đây</a>
           </li>
         </ul>
-        <button className="btn btn-lg col-7"><a href="/signup" style={{'color': '#fff'}}>Đăng ký</a></button>
+        <button className="btn btn-lg col-7"><a href="/signup" style={{ 'color': '#fff' }}>Đăng ký</a></button>
       </div>
     </div>
   );
