@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Api\CartStoreRequest;
+use App\Http\Requests\V1\CartStoreRequest;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -45,7 +45,7 @@ class CartItemController extends Controller
 
         // Nếu sản phẩm đã tồn tại, tăng quantity sp đó trong giỏ hàng
         if ($cartItem) {
-            if ($cartItem->quantity + $data['quantity'] > $cartItem->productVariant->quantity)
+            if ($cartItem->quantity + $data['quantity'] > $cartItem->variant->quantity)
                 return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
             $cartItem->increment('quantity', $data['quantity']);
@@ -70,20 +70,22 @@ class CartItemController extends Controller
         
         $cartItem = $request->user()->cartItems()->find($id);
 
-        if (!$cartItem) return $this->not_found('Không tìm thấy sản phẩm');
+        if (!$cartItem) return $this->not_found('Không tìm thấy sản phẩm trong giỏ hàng');
 
         if ($data['quantity'] == 0) {
             $cartItem->delete();
             return $this->ok('Xóa sản phẩm khỏi giỏ hàng thành công');
         }
 
-        if ($data['quantity'] > $cartItem->productVariant->quantity) {
+        if ($data['quantity'] > $cartItem->variant->quantity) {
             return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
         };
 
         $cartItem->update([
             'quantity' => $data['quantity'] 
         ]);
+
+        $cartItem->unsetRelation('variant');
 
         $this->loadRelations($cartItem, $request, true);
 
