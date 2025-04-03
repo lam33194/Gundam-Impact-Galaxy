@@ -1,6 +1,6 @@
 import "./Coupon.scss";
 
-function Coupon() {
+const Coupon = () => {
   return (
     <div className="coupon d-flex gap-3 align-items-center">
       <div className="image p-2">

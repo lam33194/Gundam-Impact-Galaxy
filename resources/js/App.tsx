@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Checkout from './pages/Checkout';
 import BlogList from './pages/BlogList';
+import Search from './pages/Search';
 
 
 function App() {
@@ -22,13 +23,14 @@ function App() {
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
                     <Route path="/home" element={<Navigate to="/" replace />} />
-                    <Route path="/product-detail" element={<ProductDetail />} />
+                    <Route path="/product/:slug" element={<ProductDetail />} />
                     <Route path="/blog-detail" element={<BlogDetail />} />
                     <Route path="/cart" element={<Cart />} />
                     <Route path='/login' element={<Login/>} />
                     <Route path='/signup' element={<Signup/>} />
                     <Route path='/checkout' element={<Checkout/>} />
                     <Route path='/blog-list' element={<BlogList/>} />
+                    <Route path='/search' element={<Search/>} />
                 </Route>
                 {/* Admin routes */}
                 <Route path="/admin" element={<AdminLayout />}>

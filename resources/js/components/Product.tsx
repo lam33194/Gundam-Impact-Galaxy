@@ -1,5 +1,5 @@
 import "./Products.scss";
-function Product() {
+const Product = ({p}) => {
   return (
     <div className="product d-flex flex-column gap-2">
       <div className="product-image">
@@ -14,10 +14,14 @@ function Product() {
 
       <div className="product-info d-flex flex-column">
         <span className="product-name">
-          Mô hình PG 1/60 Zeta Gundam - Mô hình Gundam chính hãng Bandai Nhật
-          Bản
+          {/* Mô hình PG 1/60 Zeta Gundam - Mô hình Gundam chính hãng Bandai Nhật
+          Bản */}
+          {p.name}
         </span>
-        <span className="product-price">4.500.000đ</span>
+        <span className="product-price">
+        {/* 4.500.000đ */}
+        {p.price_sale}đ
+        </span>
       </div>
 
       <div className="buy">

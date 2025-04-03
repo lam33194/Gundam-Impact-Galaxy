@@ -3,9 +3,9 @@ import "./Home.scss";
 import Product from "../components/Product";
 import Coupon from "../components/Coupon";
 import Blog from "../components/Blog";
-import { Link } from "react-router-dom";
 
 function Home() {
+  
     return (
         <div className="home-container container flex-column d-flex gap-5">
             <Carousel prevLabel="Previous" nextLabel="Next">
@@ -56,16 +56,13 @@ function Home() {
                 <Coupon />
             </div>
 
-            <div className="blog-list">
+            <div className="blog-list-home">
                 <span className="fw-bold text-uppercase">BLOG TIN TỨC</span>
                 <div className="list row">
-                    <div className="left col-6">
+                    <div className="col-6">
                         <Blog display={"column"} />
-                        <Link to="/blog-detail" style={{ display: "row" }}>
-                            <Blog display={"row"} />
-                        </Link>
                     </div>
-                    <div className="right d-flex flex-column gap-2 col-6">
+                    <div className="d-flex flex-column gap-2 col-6">
                         <Blog display={"row"} />
                         <Blog display={"row"} />
                         <Blog display={"row"} />

@@ -1,7 +1,32 @@
+import { useParams } from "react-router-dom";
 import Blog from "../components/Blog";
 import "./ProductDetail.scss";
+import { useEffect, useState } from "react";
+import { getDetail } from "../services/ProductService";
 
-function ProductDetail() {
+const ProductDetail = () =>{
+    const {slug} = useParams();
+    const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState(null);
+
+    const getProductDetail = async() =>{
+        try {
+            const res = await getDetail(slug);
+            console.log(res);
+            if (res && res.data){
+                setProduct(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() =>{
+        if (slug){
+            getProductDetail();
+        }
+    }, [slug])
+
     return (
         <div className="product-detail container d-flex">
             <div className="detail row col-9 gap-4">
@@ -15,16 +40,20 @@ function ProductDetail() {
 
                 <div className="info d-flex flex-column gap-1 col-lg-6 col-sm-12">
                     <h5 className="fw-bold mb-0">
-                        Mô hình tàu One Piece (15cm) - Baratie (Sanji) - Mô hình
-                        chính hãng Bandai Nhật Bản
+                        {product !== null ? product.name : ''}
+                        {/* Mô hình tàu One Piece (15cm) - Baratie (Sanji) - Mô hình
+                        chính hãng Bandai Nhật Bản */}
                     </h5>
                     <div className="d-flex gap-4">
                         <span>
-                            Thương hiệu: <strong>BANDAI</strong>
+                            Thương hiệu: <strong>
+                            {/* BANDAI */}
+                            {product !== null  ? product.category.name : ''}
+                            </strong>
                         </span>
-                        <span>Mã sản phẩm: 4543112913982 </span>
+                        <span>Mã sản phẩm: {product !== null  ? product.sku : ''}</span>
                     </div>
-                    <span className="price">380.000đ</span>
+                    <span className="price">{product !== null  ? product.price_regular : ''}đ</span>
                     <div className="line mb-2 mt-1"></div>
                     <span>5 Mã Giảm Giá</span>
                     <div className="coupon-lists d-flex gap-2">
@@ -43,6 +72,7 @@ function ProductDetail() {
                             className="btn btn-outline-dark"
                             type="button"
                             id="button-minus"
+                            onClick={() => quantity > 0 ? setQuantity(quantity - 1) : setQuantity(0)}
                         >
                             <i className="bi bi-dash"></i>
                         </button>
@@ -50,7 +80,7 @@ function ProductDetail() {
                         <input
                             type="text"
                             className="fw-bold form-control text-center"
-                            value="1"
+                             value={quantity}
                             aria-label="Quantity"
                             min="1"
                         />
@@ -59,6 +89,7 @@ function ProductDetail() {
                             className="btn btn-outline-dark"
                             type="button"
                             id="button-plus"
+                            onClick={() => setQuantity(quantity + 1)}
                         >
                             <i className="bi bi-plus"></i>
                         </button>
