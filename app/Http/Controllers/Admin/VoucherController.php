@@ -44,4 +44,19 @@ class VoucherController extends Controller
     {
         //
     }
+    
+    public function toggleStatus($id, Request $request)
+    {
+        try {
+            $voucher = Voucher::findOrFail($id);
+
+            $voucher->is_active = $request->has('is_active');
+
+            $voucher->save();
+
+            return back()->with('success', 'Thao tác thành công !!!');
+        } catch (\Throwable $th) {
+            return back()->with('error', 'Thao tác không thành công !!!');
+        }
+    }
 }

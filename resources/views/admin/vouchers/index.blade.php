@@ -60,10 +60,10 @@
                                     <th>Giảm giá</th>
                                     <th>Ngày bắt đầu</th>
                                     <th>Ngày kết thúc</th>
-                                    <th>Trạng thái</th>
                                     <th>Đơn hàng tối thiểu</th>
                                     <th>Số lần được sử dụng</th>
                                     <th>Số lần sử dụng tối đa</th>
+                                    <th>Trạng thái</th>
                                     <th>Hành động</th>
                                 </tr>
                             </thead>
@@ -76,10 +76,25 @@
                                     <td>{{ number_format($voucher->discount, 0, ',', '.') }} VNĐ</td>
                                     <td>{{ \Carbon\Carbon::parse($voucher->start_date_time)->format('d/m/Y H:i:s') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($voucher->end_date_time)->format('d/m/Y H:i:s') }}</td>
-                                    <td>?</td>
                                     <td>min-order</td>
                                     <td>used count</td>
                                     <td>max usage</td>
+                                    <td>
+                                    <form action="{{ route('admin.vouchers.toggle', $voucher->id) }}"
+                                          class="form-check form-switch form-switch-success" 
+                                          method="POST"
+                                          id="toggleForm{{ $voucher->id }}">
+                                        @csrf
+                                        <input type="checkbox" 
+                                               name="is_active" 
+                                               id="switch{{ $voucher->id }}"
+                                               class="form-check-input switch-is-active changeActive" 
+                                               style="width: 55px; height: 25px;"
+                                               {{ $voucher->is_active ? 'checked' : '' }}
+                                               onchange="confirmChange({{ $voucher->id }}, this)">
+                                        <label for="switch{{ $voucher->id }}" data-on-label="Yes" data-off-label="No"></label>
+                                    </form>
+                                    </td>
                                     <td class="text-center">
                                         <a href="#">
                                             <button title="Chi tiết" class="btn btn-success btn-sm" type="button">
@@ -111,4 +126,22 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script>
+        function confirmChange(voucherId, checkbox) {
+        // Lưu trạng thái ban đầu của checkbox
+        const originalState = checkbox.checked;
+
+        if (confirm("Bạn có muốn thay đổi trạng thái không?")) {
+            // Nếu đồng ý, submit form
+            document.getElementById('toggleForm' + voucherId).submit();
+        } else {
+            // Nếu hủy, khôi phục trạng thái ban đầu
+            checkbox.checked = !originalState;
+            return false;
+        }
+    }
+    </script>
 @endsection
