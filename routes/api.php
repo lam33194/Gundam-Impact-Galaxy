@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
@@ -39,5 +40,10 @@ Route::prefix('v1')->group(function () {
             // Xóa toàn bộ giỏ hàng
             Route::delete('carts', 'destroy');
         });
+    });
+
+    Route::prefix('auth')->group(function () {
+        // Đăng ký
+        Route::post('register', [AuthController::class, 'register']);   
     });
 });
