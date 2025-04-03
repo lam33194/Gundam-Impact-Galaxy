@@ -47,6 +47,10 @@ Route::prefix('v1')->group(function () {
         Route::middleware(['auth:sanctum'])->group(function () {
             // Đặt hàng
             Route::post('orders', 'store');
+            // List đơn hàng của user
+            Route::get ('orders', 'index');
+            // Hủy đặt hàng
+            Route::put ('orders/{id}', 'update');
         });
     });
 

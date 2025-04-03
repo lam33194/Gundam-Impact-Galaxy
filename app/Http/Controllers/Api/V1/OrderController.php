@@ -4,18 +4,33 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\OrderStoreRequest;
+use App\Http\Requests\V1\OrderUpdateRequest;
 use App\Models\Order;
 use App\Traits\ApiResponse;
+use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
-    use ApiResponse;
+    use ApiResponse, LoadRelations;
+
+    protected $validRelations = [
+        // 'user',
+        'orderItems',
+        'orderItems.variant',
+        'orderItems.variant.product',
+        'orderItems.variant.size',
+        'orderItems.variant.color',
+    ];
 
     public function index(Request $request)
     {
-        // 
+        $orders = $request->user()->orders();
+
+        $this->loadRelations($orders, $request);
+
+        return response()->json($orders->paginate(10));
     }
 
     public function store(OrderStoreRequest $request)
@@ -82,6 +97,36 @@ class OrderController extends Controller
             }
 
             return $this->ok('Đơn hàng của bạn đã được tạo', $order);
+        });
+    }
+
+    public function update(OrderUpdateRequest $request, string $id)
+    {
+        $order = Order::find($id);
+
+        if (!$order) return $this->not_found('Đơn hàng không tồn tại');
+
+        if ($order->status_order != Order::STATUS_ORDER_PENDING 
+            || $order->status_payment != Order::STATUS_PAYMENT_UNPAID
+        ) return $this->error('Không thể cập nhật vì đơn hàng đã được xử lý');
+
+        $validatedData = $request->validated();
+
+        return DB::transaction(function () use ($order, $validatedData) {
+            // Cập nhật đơn hàng
+            $order->update($validatedData);
+    
+            if ($order->status_order === Order::STATUS_ORDER_CANCELED) {
+                // Lấy tất cả orderItems của đơn hàng
+                $orderItems = $order->orderItems()->with('variant')->get();
+    
+                foreach ($orderItems as $orderItem) {
+                    // Tăng lại số lượng tồn kho trong product_variants
+                    $orderItem->variant->increment('quantity', $orderItem->quantity);
+                }
+            }
+            
+            return $this->ok("Cập nhật hóa đơn thành công", $order);
         });
     }
 }

@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Models\Order;
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderStoreRequest extends FormRequest
+class OrderUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -34,14 +35,14 @@ class OrderStoreRequest extends FormRequest
             'ship_user_address' => 'nullable|string|max:255',
             'ship_user_note'    => 'nullable|string|max:255',
 
-            'type_payment'      => 'required|in:cod',
-            'voucher_code'      => 'nullable|exsist:vouchers,code'
+            'status_order'      => 'required|in:'.Order::STATUS_ORDER_CANCELED.','.Order::STATUS_ORDER_PENDING,
+            'type_payment'      => 'required|in:cod,momo,vnpay',
         ];
     }
 
     public function messages(): array
     {
-        return [
+        return [           
             'user_name.required'       => 'Vui lòng nhập tên người mua.',
             'user_name.string'         => 'Tên người mua phải là chuỗi ký tự.',
             'user_name.max'            => 'Tên người mua không được vượt quá :max ký tự.',
@@ -76,15 +77,10 @@ class OrderStoreRequest extends FormRequest
     
             'ship_user_note.string'    => 'Ghi chú người nhận phải là chuỗi ký tự.',
             'ship_user_note.max'       => 'Ghi chú người nhận không được vượt quá :max ký tự.',
-          
-            // 'status_order.in'          => 'Trạng thái đơn hàng không hợp lệ.',
-            // 'status_payment.in'        => 'Trạng thái thanh toán không hợp lệ.',
+
             'type_payment.required'    => 'Phương thức thanh toán không được để trông.',
             'type_payment.in'          => 'Phương thức thanh toán không hợp lệ.',
-    
-            // 'total_price.required'     => 'Vui lòng nhập tổng giá trị đơn hàng.',
-            // 'total_price.min'          => 'Tổng giá trị đơn hàng không được âm.',
+            'status_order.in'          => 'Trạng thái đơn hàng không hợp lệ.',
         ];
     }
-    
 }

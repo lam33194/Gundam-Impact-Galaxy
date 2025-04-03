@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\CartStoreRequest;
+use App\Models\ProductVariant;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -53,7 +54,12 @@ class CartItemController extends Controller
             $this->loadRelations($cartItem, $request, true);
 
             return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
-        } 
+        }
+
+        $variant = ProductVariant::find($data['product_variant_id']);
+
+        if ($data['quantity'] > $variant->quantity)
+            return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
         $cartItem = $request->user()->cartItems()->create($data);
 
