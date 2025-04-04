@@ -7,6 +7,7 @@ use App\Http\Requests\V1\LoginRequest;
 use App\Http\Requests\V1\RegisterRequest;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -46,5 +47,30 @@ class AuthController extends Controller
         request()->user()->currentAccessToken()->delete();
 
         return $this->ok('Đăng xuất thành công');
+    }
+
+    public function changePassword(Request $request)
+    {
+        $data = $request->all();
+
+        $request->validate([
+                'current_password'      => 'required|current_password',
+                'password'              => 'required|confirmed|min:8',
+                'password_confirmation' => 'required',
+            ],
+            [
+                'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại',
+                'current_password.current_password' => 'Sai mật khẩu',
+
+                'password.required'   => 'Vui lòng nhập mật khẩu mới',
+                'password.confirmed'  => 'Mật khẩu xác nhận không khớp',
+                'password.min'        => 'Mật khẩu mới phải chứa ít nhất :min ký tự',
+                'password_confirmation.required' => 'Vui lòng nhập xác nhận mật khẩu',
+            ]
+        );
+
+        $request->user()->update(['password' => $request->password]);
+
+        return $this->ok('Đổi mật khẩu thành công');
     }
 }

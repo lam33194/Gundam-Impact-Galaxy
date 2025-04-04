@@ -76,8 +76,10 @@ Route::prefix('v1')->group(function () {
         Route::post('login',    [AuthController::class, 'login']);   
 
         Route::middleware('auth:sanctum')->group(function () {
-                // Đăng xuất
-                Route::post('logout', [AuthController::class, 'logout']);
-            });
+            // Đăng xuất
+            Route::post('logout', [AuthController::class, 'logout']);
+            // Đổi mật khẩu
+            Route::post('change-password', [AuthController::class, 'changePassword']);
+        });
     });
 });
