@@ -16,6 +16,8 @@ class ProductController extends Controller
 
     protected $validRelations = [
         'variants',
+        'variants.color',
+        'variants.size',
         'galleries',
         'tags',
         'category',
