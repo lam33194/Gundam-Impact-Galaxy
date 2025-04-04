@@ -1,3 +1,4 @@
+import { FormatCurrency } from "../utils/FormatCurrency";
 import "./Products.scss";
 const Product = ({p}) => {
   return (
@@ -20,7 +21,7 @@ const Product = ({p}) => {
         </span>
         <span className="product-price">
         {/* 4.500.000đ */}
-        {p.price_sale}đ
+        {FormatCurrency(p.price_sale)}đ
         </span>
       </div>
 
