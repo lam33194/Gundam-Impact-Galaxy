@@ -1,76 +1,139 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Blog from "../components/Blog";
 import "./ProductDetail.scss";
 import { useEffect, useState } from "react";
 import { getDetail } from "../services/ProductService";
 import { addToCart } from "../services/CartService";
 import { toast } from "react-toastify";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import Slider from "react-slick";
 
-const ProductDetail = () =>{
-    const {slug} = useParams();
+const ProductDetail = () => {
+    const productVariants = [
+        { id: 1, imageUrl: "https://example.com/image1.jpg" },
+        { id: 2, imageUrl: "https://example.com/image2.jpg" },
+        { id: 3, imageUrl: "https://example.com/image3.jpg" },
+    ];
+
+    const nav = useNavigate();
+
+    const settings = {
+        dots: true,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 2,
+        slidesToScroll: 1,
+    };
+
+    const { slug } = useParams();
     const [quantity, setQuantity] = useState(1);
     const [product, setProduct] = useState<any>(null);
-    const [productVariantId, setProductVariantId] = useState(0);
+    const [productVariant, setProductVariant] = useState({});
 
-    const getProductDetail = async() =>{
+    const getProductDetail = async () => {
         try {
             const res = await getDetail(slug);
             console.log(res);
-            if (res && res.data){
+            if (res && res.data) {
                 setProduct(res.data);
-                console.log(res.data.variants[0].id)
+                console.log(res.data.variants[0].id);
             }
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
-    const updateCart = async () => {
+    const updateCart = async (index ?: any) => {
         try {
-            const res = await addToCart({ product_variant_id: product!.variants[0].id, quantity: quantity });
+            const res = await addToCart({
+                product_variant_id: product!.variants[0].id,
+                quantity: quantity,
+            });
             if (res && res.data) {
-                toast.success("Đã cập nhật giỏ hàng!")
+                if (index === -1){
+                    nav('/cart')
+                }
+                toast.success("Đã thêm vào giỏ hàng!");
                 console.log(res.data);
             }
         } catch (error) {
             console.log(error);
         }
     };
-    
 
-    useEffect(() =>{
-        if (slug){
+    useEffect(() => {
+        if (slug) {
             getProductDetail();
         }
-    }, [slug])
+    }, [slug]);
 
     return (
         <div className="product-detail container d-flex">
             <div className="detail row col-9 gap-4">
-                <div
-                    className="img col-lg-5 col-sm-12"
-                    style={{
-                        backgroundImage:
-                            "url(https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390)",
-                    }}
-                ></div>
+                <div className="image col-lg-5">
+                    <div
+                        className="img"
+                        // style={{
+                        //     backgroundImage: `url(${
+                        //         productVariant!.image ||
+                        //         "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                        //     })`,
+                        // }}
+                        style={{
+                            backgroundImage: `url(${
+                                "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                            })`,
+                        }}
+                    ></div>
+
+                    <div className="col-lg-10">
+                        <Slider {...settings}>
+                            {product?.variants.map((variant: any) => (
+                                <div key={variant.id} className="product-variant">
+                                    <img
+                                    className="product-variant"
+                                        src={
+                                            variant.imageu ||
+                                            "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                        }
+                                        alt={`Slide ${variant.id}`}
+                                        style={{
+                                            width: "120px",
+                                            height: "120px",
+                                        }}
+                                        onClick={() =>
+                                            setProductVariant(variant)
+                                        }
+                                    />
+                                
+                                </div>
+                            ))}
+                        </Slider>
+                    </div>
+                </div>
 
                 <div className="info d-flex flex-column gap-1 col-lg-6 col-sm-12">
                     <h5 className="fw-bold mb-0">
-                        {product !== null ? product.name : ''}
+                        {product !== null ? product.name : ""}
                         {/* Mô hình tàu One Piece (15cm) - Baratie (Sanji) - Mô hình
                         chính hãng Bandai Nhật Bản */}
                     </h5>
                     <div className="d-flex gap-4">
                         <span>
-                            Thương hiệu: <strong>
-                            {/* BANDAI */}
-                            {product !== null  ? product.category.name : ''}
+                            Thương hiệu:{" "}
+                            <strong>
+                                {/* BANDAI */}
+                                {product !== null ? product.category.name : ""}
                             </strong>
                         </span>
-                        <span>Mã sản phẩm: {product !== null  ? product.sku : ''}</span>
+                        <span>
+                            Mã sản phẩm: {product !== null ? product.sku : ""}
+                        </span>
                     </div>
-                    <span className="price">{product !== null  ? product.price_regular : ''}đ</span>
+                    <span className="price">
+                        {product !== null ? product.price_regular : ""}đ
+                    </span>
                     <div className="line mb-2 mt-1"></div>
                     <span>5 Mã Giảm Giá</span>
                     <div className="coupon-lists d-flex gap-2">
@@ -89,7 +152,11 @@ const ProductDetail = () =>{
                             className="btn btn-outline-dark"
                             type="button"
                             id="button-minus"
-                            onClick={() => quantity > 0 ? setQuantity(quantity - 1) : setQuantity(0)}
+                            onClick={() =>
+                                quantity > 0
+                                    ? setQuantity(quantity - 1)
+                                    : setQuantity(0)
+                            }
                         >
                             <i className="bi bi-dash"></i>
                         </button>
@@ -97,7 +164,7 @@ const ProductDetail = () =>{
                         <input
                             type="text"
                             className="fw-bold form-control text-center"
-                             value={quantity}
+                            value={quantity}
                             aria-label="Quantity"
                             min="1"
                         />
@@ -115,10 +182,13 @@ const ProductDetail = () =>{
                     <div className="d-flex gap-2 pay my-2">
                         <button className="btn btn-dark col-10 d-flex flex-column">
                             <span>Thanh toán online hoặc ship COD</span>
-                            <span className="fw-bold">Mua ngay</span>
+                            <span className="fw-bold"  onClick={() => updateCart(-1)}>Mua ngay</span>
                         </button>
                         <button className="btn btn-dark col-2">
-                            <i className="fa-solid fa-cart-shopping" onClick={() => updateCart()}></i>
+                            <i
+                                className="fa-solid fa-cart-shopping"
+                                onClick={() => updateCart()}
+                            ></i>
                         </button>
                     </div>
 
@@ -176,6 +246,6 @@ const ProductDetail = () =>{
             </div>
         </div>
     );
-}
+};
 
 export default ProductDetail;
