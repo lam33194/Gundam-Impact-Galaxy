@@ -3,11 +3,14 @@ import Blog from "../components/Blog";
 import "./ProductDetail.scss";
 import { useEffect, useState } from "react";
 import { getDetail } from "../services/ProductService";
+import { addToCart } from "../services/CartService";
+import { toast } from "react-toastify";
 
 const ProductDetail = () =>{
     const {slug} = useParams();
     const [quantity, setQuantity] = useState(1);
-    const [product, setProduct] = useState(null);
+    const [product, setProduct] = useState<any>(null);
+    const [productVariantId, setProductVariantId] = useState(0);
 
     const getProductDetail = async() =>{
         try {
@@ -15,11 +18,25 @@ const ProductDetail = () =>{
             console.log(res);
             if (res && res.data){
                 setProduct(res.data);
+                console.log(res.data.variants[0].id)
             }
         } catch (error) {
             console.log(error);
         }
     }
+
+    const updateCart = async () => {
+        try {
+            const res = await addToCart({ product_variant_id: product!.variants[0].id, quantity: quantity });
+            if (res && res.data) {
+                toast.success("Đã cập nhật giỏ hàng!")
+                console.log(res.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
 
     useEffect(() =>{
         if (slug){
@@ -101,7 +118,7 @@ const ProductDetail = () =>{
                             <span className="fw-bold">Mua ngay</span>
                         </button>
                         <button className="btn btn-dark col-2">
-                            <i className="fa-solid fa-cart-shopping"></i>
+                            <i className="fa-solid fa-cart-shopping" onClick={() => updateCart()}></i>
                         </button>
                     </div>
 

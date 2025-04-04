@@ -13,11 +13,14 @@ import Signup from './pages/Signup';
 import Checkout from './pages/Checkout';
 import BlogList from './pages/BlogList';
 import Search from './pages/Search';
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     return (
-        <BrowserRouter>
+       <div>
+         <ToastContainer/>
+         <BrowserRouter>
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Layout />}>
@@ -39,6 +42,7 @@ function App() {
                 </Route>
             </Routes>
         </BrowserRouter >
+       </div>
     );
 }
 
