@@ -5,7 +5,7 @@ use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +52,13 @@ Route::prefix('v1')->group(function () {
             // Hủy đặt hàng
             Route::put ('orders/{id}', 'update');
         });
+    });
+
+    Route::controller(UserController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('users',       'index');
+        // Chi tiết user
+        Route::get('users/{id}',  'show');
     });
 
     Route::prefix('auth')->group(function () {
