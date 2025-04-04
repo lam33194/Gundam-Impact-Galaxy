@@ -30,6 +30,8 @@ class OrderController extends Controller
 
         $this->loadRelations($orders, $request);
 
+        $this->applyFilters($orders, $request->query());
+
         return response()->json($orders->paginate(10));
     }
 
@@ -128,5 +130,13 @@ class OrderController extends Controller
             
             return $this->ok("Cập nhật hóa đơn thành công", $order);
         });
+    }
+
+    private function applyFilters($order, $queryParams)
+    {
+        // Tìm kiếm theo status
+        if (!empty($queryParams['status_order'])) {
+            $order->statusOrderFilter($queryParams['status_order']);
+        }
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -63,8 +64,22 @@ Route::prefix('v1')->group(function () {
         Route::put('users',      'update')->middleware('auth:sanctum');
     });
 
+    Route::controller(PaymentController::class)->group(function(){
+        // Tạo đường dẫn thanh toán online
+        Route::get('orders/{id}/payment', 'createPayment')->middleware('auth:sanctum');
+        Route::get('vnpay/return', 'vnpayReturn');
+    });
+
     Route::prefix('auth')->group(function () {
         // Đăng ký
         Route::post('register', [AuthController::class, 'register']);   
+        Route::post('login',    [AuthController::class, 'login']);   
+
+        Route::middleware('auth:sanctum')->group(function () {
+            // Đăng xuất
+            Route::post('logout', [AuthController::class, 'logout']);
+            // Đổi mật khẩu
+            Route::post('change-password', [AuthController::class, 'changePassword']);
+        });
     });
 });
