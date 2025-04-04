@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Product from "../components/Product";
-import './Search.scss';
+import "./Search.scss";
 import { useNavigate } from "react-router-dom";
 import { getAll } from "../services/ProductService";
 
@@ -18,15 +18,15 @@ function Search() {
         } catch (error) {
             console.log("Detected error:", error);
         }
-    }
+    };
 
-    const redirectToDetail = (slug : any) =>{
-        navigate('/product/' + slug)
-    }
+    const redirectToDetail = (slug: any) => {
+        navigate("/product/" + slug);
+    };
 
-    useEffect(() =>{
+    useEffect(() => {
         getAllProducts();
-    },[])
+    }, []);
     return (
         <div className="container mt-5">
             <h1 className="text-center mb-4">Tìm kiếm sản phẩm</h1>
@@ -45,13 +45,17 @@ function Search() {
 
             <h5 className="mt-4">DANH SÁCH SẢN PHẨM</h5>
             <ul className="list-group mt-3">
-            {products && products.map((p, index) => {
-                            return (
-                                <div className="prod" onClick={() => redirectToDetail(p.slug)}>
-                                    <Product key={index} p={p}/>
-                                </div>
-                            );
-                        })}
+                {products &&
+                    products.map((p, index) => {
+                        return (
+                            <div
+                                className="prod"
+                                onClick={() => redirectToDetail(p.slug)}
+                            >
+                                <Product key={index} p={p} />
+                            </div>
+                        );
+                    })}
             </ul>
         </div>
     );
