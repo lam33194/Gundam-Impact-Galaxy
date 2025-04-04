@@ -73,5 +73,11 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         // Đăng ký
         Route::post('register', [AuthController::class, 'register']);   
+        Route::post('login',    [AuthController::class, 'login']);   
+
+        Route::middleware('auth:sanctum')->group(function () {
+                // Đăng xuất
+                Route::post('logout', [AuthController::class, 'logout']);
+            });
     });
 });
