@@ -56,9 +56,11 @@ Route::prefix('v1')->group(function () {
 
     Route::controller(UserController::class)->group(function () {
         // Lấy tất cả user
-        Route::get('users',       'index');
+        Route::get('users',      'index');
         // Chi tiết user
-        Route::get('users/{id}',  'show');
+        Route::get('users/{id}', 'show');
+        // Cập nhật thông tin user
+        Route::put('users',      'update')->middleware('auth:sanctum');
     });
 
     Route::prefix('auth')->group(function () {
