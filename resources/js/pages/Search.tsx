@@ -8,11 +8,12 @@ import { FormatCurrency } from "../utils/FormatCurrency";
 
 function Search() {
     const [priceRange, setPriceRange] = useState({ min: "", max: "" });
-    const [selectedType, setSelectedType] = useState('');
+    const [selectedType, setSelectedType] = useState("");
+    const [searchType, setSearchType] = useState("name");
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [keyword, setKeyword] = useState("");
-    const [filterTitle, setFilterTitle] = useState('');
+    const [filterTitle, setFilterTitle] = useState("");
     const navigate = useNavigate();
 
     const getAllProducts = async () => {
@@ -49,29 +50,49 @@ function Search() {
     };
 
     const handleTypeChange = async (type: any) => {
-       
         const res = await getAllByCategory(type);
         setProducts(res.data.data);
         setFilterTitle("Lọc theo loại: " + type);
         setSelectedType(type);
     };
-    
 
-    const applyFilters = async() => {
-        console.log("Min Price:", priceRange.min);
-        console.log("Max Price:", priceRange.max);
-        console.log("Selected Types:", selectedType);
-        setSelectedType('')
+    const search = async () => {
         try {
             const params = {
-                min_price: priceRange.min,
-                max_price: priceRange.max,
-            }
+                [searchType]: keyword,
+            };
             const res = await getAll(params);
             if (res.data && res.data.data) {
                 console.log(res.data.data);
                 setProducts(res.data.data);
-                setFilterTitle("Lọc theo giá: " + FormatCurrency(priceRange.min) + 'đ - ' + FormatCurrency(priceRange.max) + 'đ');
+                setFilterTitle("Lọc theo " + searchType + ": " + keyword);
+            }
+        } catch (error) {
+            console.log("Detected error:", error);
+        }
+    };
+
+    const applyFilters = async () => {
+        console.log("Min Price:", priceRange.min);
+        console.log("Max Price:", priceRange.max);
+        console.log("Selected Types:", selectedType);
+        setSelectedType("");
+        try {
+            const params = {
+                min_price: priceRange.min,
+                max_price: priceRange.max,
+            };
+            const res = await getAll(params);
+            if (res.data && res.data.data) {
+                console.log(res.data.data);
+                setProducts(res.data.data);
+                setFilterTitle(
+                    "Lọc theo giá: " +
+                        FormatCurrency(priceRange.min) +
+                        "đ - " +
+                        FormatCurrency(priceRange.max) +
+                        "đ"
+                );
             }
         } catch (error) {
             console.log("Detected error:", error);
@@ -84,23 +105,51 @@ function Search() {
     }, []);
     return (
         <div className="container mt-5">
-            <h1 className="text-center mb-4">Tìm kiếm sản phẩm</h1>
-            <div className="input-group mb-4">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Nhập tên sản phẩm..."
-                    style={{ borderRadius: '0.25rem 0 0 0.25rem' }}
-                />
-                <button className="btn btn-primary" type="button" style={{ borderRadius: '0 0.25rem 0.25rem 0' }}>
-                    Search
-                </button>
+            <div className="nav d-flex align-items-center mb-2">
+                <a href="" className="text-decoration-none text-dark">
+                    Trang chủ
+                </a>
+                <span className="mx-2">/</span>
+                <span className="text-muted">Danh sách sản phẩm</span>
             </div>
+            <h2 className="text-center">DANH SÁCH SẢN PHẨM</h2>
 
             <div className="row">
-                <div className="col-lg-3 mt-5">
+                <div className="col-lg-3 mt-3">
+                    <div className="search-bar mb-5">
+                        <p className="text-dark text-bold fw-bold">Tìm Kiếm:</p>
+                        <select
+                            className="form-select me-2 mb-2 col-12"
+                            value={searchType}
+                            onChange={(e) => setSearchType(e.target.value)}
+                        >
+                            <option  disabled value="">Tìm kiếm theo</option>
+                            <option value="name">Tên sản phẩm</option>
+                            <option value="slug">Slug</option>
+                            <option value="sku">SKU</option>
+                        </select>
+
+                        <input
+                            type="text"
+                            className="form-control col-12 mb-2"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            placeholder="Nhập từ khóa..."
+                            style={{ borderRadius: "0.25rem" }}
+                        />
+                       
+                            <button
+                                className="btn btn-primary col-12"
+                                onClick={search}
+                                type="button"
+                                style={{ borderRadius: "0" }}
+                            >
+                                Tìm kiếm
+                            </button>
+                       
+                    </div>
                     <div className="card p-3 shadow-sm">
-                        <h4 className="mb-3">Mức Giá</h4>
+                        <span className="fw-bold mb-3">Mức Giá:</span>
                         <div className="d-flex mb-3">
                             <input
                                 type="number"
@@ -119,11 +168,14 @@ function Search() {
                                 onChange={handlePriceChange}
                             />
                         </div>
-                        <button className="btn btn-dark mb-4 w-100" onClick={applyFilters}>
+                        <button
+                            className="btn btn-dark mb-4 w-100"
+                            onClick={applyFilters}
+                        >
                             Áp Dụng Giá
                         </button>
 
-                        <h4 className="mb-3">Loại</h4>
+                        <span className="fw-bold mb-3">Loại:</span>
                         {categories.map((c, index) => (
                             <div className="form-check mb-2" key={index}>
                                 <input
@@ -140,9 +192,8 @@ function Search() {
                     </div>
                 </div>
 
-                <div className="col-lg-8 offset-lg-1">
-                    <h5 className="mt-3">DANH SÁCH SẢN PHẨM</h5>
-                    <span className="mt-3 font-italic">{filterTitle}</span>
+                <div className="col-lg-8 offset-lg-1 mt-3">
+                    <span className="font-italic">{filterTitle}</span>
                     <ul className="list-group mt-3">
                         {products &&
                             products.map((p, index) => (
