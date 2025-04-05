@@ -14,7 +14,7 @@ export const signup = (data: any): Promise<any> => {
     });
 }
 
-export const login = (data: any): Promise<any> => {
+export const authenticate = (data: any): Promise<any> => {
     const formData = new FormData();
     formData.append('email', data.email);
     formData.append('password', data.password);
