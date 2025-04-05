@@ -3,9 +3,26 @@ import "./Home.scss";
 import Product from "../components/Product";
 import Coupon from "../components/Coupon";
 import Blog from "../components/Blog";
+import { useEffect, useState } from "react";
+import { getAll } from "../services/ProductService";
 
 function Home() {
-  
+    const [products, setProducts] = useState([]);
+    const getAllProducts = async () => {
+        try {
+            const res = await getAll();
+            if (res.data && res.data.data) {
+                console.log(res.data.data);
+                setProducts(res.data.data);
+            }
+        } catch (error) {
+            console.log("Detected error:", error);
+        }
+    };
+
+    useEffect(()=>{
+        getAllProducts();
+    }, [])
     return (
         <div className="home-container container flex-column d-flex gap-5">
             <Carousel prevLabel="Previous" nextLabel="Next">
@@ -31,11 +48,10 @@ function Home() {
                     Sản phẩm bán chạy
                 </span>
                 <div className="product-list">
-                    <Product />
-                    <Product />
-                    <Product />
-                    <Product />
-                    <Product />
+                    {products &&
+                        products.map((p, index) => {
+                            return <Product key={index} p={p} />;
+                        })}
                 </div>
             </div>
             <div className="banner row ">
@@ -72,11 +88,10 @@ function Home() {
             <div className="best-seller">
                 <span className="fw-bold text-uppercase">CÓ THỂ BẠN THÍCH</span>
                 <div className="product-list">
-                    <Product />
-                    <Product />
-                    <Product />
-                    <Product />
-                    <Product />
+                    {products &&
+                        products.map((p, index) => {
+                            return <Product key={index} p={p} />;
+                        })}
                 </div>
             </div>
             <div className="service-info row">

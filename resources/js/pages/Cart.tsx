@@ -355,7 +355,7 @@ const Cart = () => {
                         </tr>
                         <tr>
                             <td colSpan={2} className="">
-                                <a href="#" className="btn btn-dark col-12">
+                                <a href="/checkout" className="btn btn-dark col-12">
                                     Thanh toán
                                 </a>
                             </td>

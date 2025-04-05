@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Checkout.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Checkout = () => {
+    const [cart, setCart] = useState([]);
     return (
         <div className="checkout container d-flex gap-5">
             <div className="col-8">
