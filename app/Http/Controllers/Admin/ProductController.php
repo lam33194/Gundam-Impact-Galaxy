@@ -142,12 +142,18 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        // return view('admin.products.edit', compact('product'));
+        $categories = Category::all();
+        $colors = ProductColor::all();
+        $sizes = ProductSize::all();
+        $tags = Tag::all();
+
+        $product->with(['galleries', 'tags', 'variants']);
+        return view('admin.products.edit', compact('product', 'tags', 'categories' ,'colors' ,'sizes'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        // $product->
     }
 
     public function destroy(Product $product)

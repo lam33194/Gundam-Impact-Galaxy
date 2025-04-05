@@ -116,9 +116,9 @@
                                         <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="mdi mdi-dots-horizontal font-size-18"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
+                                        <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a href="" class="dropdown-item edit-list">
+                                                <a href="{{ route('admin.products.edit', $product->id) }}" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                     </i>
                                                     Sửa
