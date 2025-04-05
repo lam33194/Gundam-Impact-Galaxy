@@ -52,14 +52,20 @@ const ProductDetail = () => {
             });
             if (res && res.data) {
                 if (index === -1){
-                    nav('/cart')
+                   window.location.href='/cart'
                 }
                 toast.success("Đã thêm vào giỏ hàng!");
                 console.log(res.data);
             }
         } catch (error) {
-            console.log(error);
-        }
+                    console.error('Lỗi xảy ra:', error);
+                    if (error.response && error.response.data && error.response.data.message) {
+                        console.log('Thông báo lỗi:', error.response.data.message);
+                        toast.error(error.response.data.message);
+                    } else {
+                        toast.error("Có lỗi xảy ra, vui lòng thử lại!");
+                    }
+                }
     };
 
     useEffect(() => {
@@ -121,9 +127,9 @@ const ProductDetail = () => {
                     </h5>
                     <div className="d-flex gap-4">
                         <span>
-                            Thương hiệu:{" "}
+                            Thương hiệu:
                             <strong>
-                                {/* BANDAI */}
+                     
                                 {product !== null ? product.category.name : ""}
                             </strong>
                         </span>
@@ -132,7 +138,7 @@ const ProductDetail = () => {
                         </span>
                     </div>
                     <span className="price">
-                        {product !== null ? product.price_regular : ""}đ
+                        {product !== null ? product.price_sale : ""}đ
                     </span>
                     <div className="line mb-2 mt-1"></div>
                     <span>5 Mã Giảm Giá</span>
@@ -167,6 +173,7 @@ const ProductDetail = () => {
                             value={quantity}
                             aria-label="Quantity"
                             min="1"
+                            readOnly
                         />
 
                         <button

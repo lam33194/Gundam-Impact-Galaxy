@@ -10,11 +10,13 @@ const Cart = () => {
         try {
             const res = await getCart();
             if (res && res.data) {
-                console.log('iudie', res.data.data)
+                console.log("iudie", res.data.data);
                 setCart(res.data.data);
                 let t = 0;
                 res.data.data.forEach((element: any) => {
-                    t += Number(element.variant.product.price_regular) * Number(element.quantity)
+                    t +=
+                        Number(element.variant.product.price_sale) *
+                        Number(element.quantity);
                 });
                 console.log(t);
                 setTotal(t);
@@ -22,27 +24,29 @@ const Cart = () => {
         } catch (error) {}
     };
 
-    const updateCartItem = async(item_id: any, quantity: any) => {
+    const redirectToDetail = (slug: any) => {
+        window.location.href = "/product/" + slug;
+    };
+
+    const updateCartItem = async (item_id: any, quantity: any) => {
         try {
             const res = await updateCart(quantity, item_id);
-            if (res && res.data){
+            if (res && res.data) {
                 getCartDetail();
-                if (quantity === 0){
-                    toast.success("Xóa thành công mặt hàng!")
-                }else{
-                    toast.success("Cập nhật giỏ hàng thành công!")
+                if (quantity === 0) {
+                    toast.success("Xóa thành công mặt hàng!");
+                } else {
+                    toast.success("Cập nhật giỏ hàng thành công!");
                 }
             }
-        } catch (error) {
-            
-        }
-    }
+        } catch (error) {}
+    };
 
-    useEffect(() =>{
-        if (cart !== null){
+    useEffect(() => {
+        if (cart !== null) {
             getCartDetail();
         }
-    }, [])
+    }, []);
     return (
         <div className="checkout-page container">
             <div className="nav d-flex align-items-center">
@@ -72,45 +76,57 @@ const Cart = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {cart &&
+                        {cart && cart.length === 0 ? (
+                            <tr>
+                                <td colSpan="4" className="text-center">
+                                    <span className="fw-bold">
+                                        Không có mặt hàng nào!
+                                    </span>
+                                </td>
+                            </tr>
+                        ) : (
                             cart.map((p, index) => {
                                 return (
                                     <tr key={index}>
-                                        {" "}
-                                        {/* Thêm key */}
                                         <td className="w-40">
                                             <div className="d-flex gap-3">
                                                 <div
                                                     className="img-product"
+                                                    onClick={() =>
+                                                        redirectToDetail(p.slug)
+                                                    }
                                                     style={{
-                                                        backgroundImage: `url(${
-                                                           
-                                                            "https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350"
-                                                        })`,
+                                                        backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350"})`,
                                                     }}
                                                 ></div>
 
-                                                <div className="info d-flex flex-column justify-content-center">
+                                                <div className="info d-flex flex-column justify-content-center align-items-start">
                                                     <span>
-                                                        {p?.variant?.product?.name ||
+                                                        {p?.variant?.product
+                                                            ?.name ||
                                                             "Mô hình Dragon Girl Loong - Chính hãng Cangtoys"}
                                                     </span>
-                                                    <button
+                                                    <a
                                                         onClick={() =>
-                                                            updateCartItem(p.id, 0)
+                                                            updateCartItem(
+                                                                p.id,
+                                                                0
+                                                            )
                                                         }
-                                                        className="btn btn-link"
+                                                        style={{cursor: 'pointer'}}
+                                                        className=""
                                                     >
-                                                        {" "}
-                                                        {/* Thay a bằng button */}
                                                         Xóa
-                                                    </button>
+                                                    </a>
                                                 </div>
                                             </div>
                                         </td>
                                         <td className="align-middle w-20">
                                             <strong className="price">
-                                                {FormatCurrency(p.variant.product.price_regular) || "200,000"}đ
+                                                {FormatCurrency(
+                                                    p.variant.product.price_sale
+                                                ) || "200,000"}
+                                                đ
                                             </strong>
                                         </td>
                                         <td className="align-middle w-20">
@@ -123,19 +139,21 @@ const Cart = () => {
                                                     type="button"
                                                     id="button-minus"
                                                     onClick={() =>
-                                                        updateCartItem(p.id, p.quantity - 1)
+                                                        updateCartItem(
+                                                            p.id,
+                                                            p.quantity - 1
+                                                        )
                                                     }
                                                 >
                                                     <i className="bi bi-dash"></i>
                                                 </button>
 
                                                 <input
-                                                    type="text" // Đổi input type thành number
+                                                    type="text"
                                                     className="fw-bold form-control text-center"
-                                                    value={p.quantity || 1} // Sử dụng state cho value
+                                                    value={p.quantity}
                                                     aria-label="Quantity"
                                                     min="1"
-                                                    readOnly
                                                 />
 
                                                 <button
@@ -143,7 +161,10 @@ const Cart = () => {
                                                     type="button"
                                                     id="button-plus"
                                                     onClick={() =>
-                                                        updateCartItem(p.id, p.quantity + 1)
+                                                        updateCartItem(
+                                                            p.id,
+                                                            p.quantity + 1
+                                                        )
                                                     }
                                                 >
                                                     <i className="bi bi-plus"></i>
@@ -152,193 +173,17 @@ const Cart = () => {
                                         </td>
                                         <td className="align-middle w-20">
                                             <strong className="price">
-                                                {FormatCurrency(p.variant.product.price_regular * p.quantity) ||
-                                                    "400,000"}đ
+                                                {FormatCurrency(
+                                                    p.variant.product
+                                                        .price_sale * p.quantity
+                                                ) || "400,000"}
+                                                đ
                                             </strong>{" "}
                                         </td>
                                     </tr>
                                 );
-                            })}
-
-                        {/* <tr>
-                            <td className="w-40">
-                                <div className="d-flex gap-3">
-                                    <div
-                                        className="img-product"
-                                        style={{
-                                            backgroundImage: `url(https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350)`,
-                                        }}
-                                    ></div>
-
-                                    <div className="info d-flex flex-column justify-content-center">
-                                        <span>
-                                            Mô hình Dragon Girl Loong - Chính
-                                            hãng Cangtoys
-                                        </span>
-                                        <a href="#">Xóa</a>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">200,000đ</strong>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <div
-                                    className="input-group input-group-sm quantity-selector"
-                                    style={{ width: "100px" }}
-                                >
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-minus"
-                                    >
-                                        <i className="bi bi-dash"></i>
-                                    </button>
-
-                                    <input
-                                        type="text"
-                                        className="fw-bold form-control text-center"
-                                        value="1"
-                                        aria-label="Quantity"
-                                        min="1"
-                                    />
-
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-plus"
-                                    >
-                                        <i className="bi bi-plus"></i>
-                                    </button>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">400,000đ</strong>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td className="w-40">
-                                <div className="d-flex gap-3">
-                                    <div
-                                        className="img-product"
-                                        style={{
-                                            backgroundImage: `url(https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350)`,
-                                        }}
-                                    ></div>
-
-                                    <div className="info d-flex flex-column justify-content-center">
-                                        <span>
-                                            Mô hình Dragon Girl Loong - Chính
-                                            hãng Cangtoys
-                                        </span>
-                                        <a href="#">Xóa</a>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">200,000đ</strong>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <div
-                                    className="input-group input-group-sm quantity-selector"
-                                    style={{ width: "100px" }}
-                                >
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-minus"
-                                    >
-                                        <i className="bi bi-dash"></i>
-                                    </button>
-
-                                    <input
-                                        type="text"
-                                        className="fw-bold form-control text-center"
-                                        value="1"
-                                        aria-label="Quantity"
-                                        min="1"
-                                    />
-
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-plus"
-                                    >
-                                        <i className="bi bi-plus"></i>
-                                    </button>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">400,000đ</strong>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td className="w-40">
-                                <div className="d-flex gap-3">
-                                    <div
-                                        className="img-product"
-                                        style={{
-                                            backgroundImage: `url(https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350)`,
-                                        }}
-                                    ></div>
-
-                                    <div className="info d-flex flex-column justify-content-center">
-                                        <span>
-                                            Mô hình Dragon Girl Loong - Chính
-                                            hãng Cangtoys
-                                        </span>
-                                        <a href="#">Xóa</a>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">200,000đ</strong>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <div
-                                    className="input-group input-group-sm quantity-selector"
-                                    style={{ width: "100px" }}
-                                >
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-minus"
-                                    >
-                                        <i className="bi bi-dash"></i>
-                                    </button>
-
-                                    <input
-                                        type="text"
-                                        className="fw-bold form-control text-center"
-                                        value="1"
-                                        aria-label="Quantity"
-                                        min="1"
-                                    />
-
-                                    <button
-                                        className="btn btn-outline-dark"
-                                        type="button"
-                                        id="button-plus"
-                                    >
-                                        <i className="bi bi-plus"></i>
-                                    </button>
-                                </div>
-                            </td>
-
-                            <td className=" align-middle w-20">
-                                <strong className="price">400,000đ</strong>
-                            </td>
-                        </tr> */}
+                            })
+                        )}
                     </tbody>
                 </table>
 
@@ -350,12 +195,17 @@ const Cart = () => {
                         <tr>
                             <td>Tổng tiền:</td>
                             <td>
-                                <strong className="price">{FormatCurrency(total) || '200,000'}đ</strong>
+                                <strong className="price">
+                                    {FormatCurrency(total) || "200,000"}đ
+                                </strong>
                             </td>
                         </tr>
                         <tr>
                             <td colSpan={2} className="">
-                                <a href="/checkout" className="btn btn-dark col-12">
+                                <a
+                                    href="/checkout"
+                                    className="btn btn-dark col-12"
+                                >
                                     Thanh toán
                                 </a>
                             </td>
