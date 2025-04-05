@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Product from "../components/Product";
 import "./Search.scss";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getAll, getAllByCategory } from "../services/ProductService";
 import { fetchAll } from "../services/CategoryService";
 import { FormatCurrency } from "../utils/FormatCurrency";
@@ -15,6 +15,7 @@ function Search() {
     const [keyword, setKeyword] = useState("");
     const [filterTitle, setFilterTitle] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
 
     const getAllProducts = async () => {
         try {
@@ -88,10 +89,10 @@ function Search() {
                 setProducts(res.data.data);
                 setFilterTitle(
                     "Lọc theo giá: " +
-                        FormatCurrency(priceRange.min) +
-                        "đ - " +
-                        FormatCurrency(priceRange.max) +
-                        "đ"
+                    FormatCurrency(priceRange.min) +
+                    "đ - " +
+                    FormatCurrency(priceRange.max) +
+                    "đ"
                 );
             }
         } catch (error) {
@@ -100,9 +101,32 @@ function Search() {
     };
 
     useEffect(() => {
-        getAllProducts();
-        getAllCategories();
-    }, []);
+        const performInitialSearch = async () => {
+            const state = location.state as { initialSearchType?: string; initialKeyword?: string };
+            if (state?.initialKeyword) {
+                setSearchType('name');
+                setKeyword(state.initialKeyword);
+                try {
+                    const params = {
+                        name: state.initialKeyword
+                    };
+                    const res = await getAll(params);
+                    if (res.data && res.data.data) {
+                        setProducts(res.data.data);
+                        setFilterTitle("Lọc theo tên sản phẩm: " + state.initialKeyword);
+                    }
+                } catch (error) {
+                    console.log("Detected error:", error);
+                }
+            } else {
+                getAllProducts();
+            }
+            getAllCategories();
+        };
+
+        performInitialSearch();
+    }, [location.state]);
+
     return (
         <div className="container mt-5">
             <div className="nav d-flex align-items-center mb-2">
@@ -123,7 +147,7 @@ function Search() {
                             value={searchType}
                             onChange={(e) => setSearchType(e.target.value)}
                         >
-                            <option  disabled value="">Tìm kiếm theo</option>
+                            <option disabled value="">Tìm kiếm theo</option>
                             <option value="name">Tên sản phẩm</option>
                             <option value="slug">Slug</option>
                             <option value="sku">SKU</option>
@@ -137,16 +161,16 @@ function Search() {
                             placeholder="Nhập từ khóa..."
                             style={{ borderRadius: "0.25rem" }}
                         />
-                       
-                            <button
-                                className="btn btn-primary col-12"
-                                onClick={search}
-                                type="button"
-                                style={{ borderRadius: "0" }}
-                            >
-                                Tìm kiếm
-                            </button>
-                       
+
+                        <button
+                            className="btn btn-primary col-12"
+                            onClick={search}
+                            type="button"
+                            style={{ borderRadius: "0" }}
+                        >
+                            Tìm kiếm
+                        </button>
+
                     </div>
                     <div className="card p-3 shadow-sm">
                         <span className="fw-bold mb-3">Mức Giá:</span>
@@ -196,9 +220,9 @@ function Search() {
                     <span className="font-italic">{filterTitle}</span>
                     {products.length === 0 ? (
                         <div className="mt-3 fw-semibold fst-italic">
-                        <span>Không tìm thấy Sản phẩm thỏa mãn!</span>
-                    </div>
-                    ): ''}
+                            <span>Không tìm thấy Sản phẩm thỏa mãn!</span>
+                        </div>
+                    ) : ''}
                     <ul className="list-group mt-3">
                         {products &&
                             products.map((p, index) => (
