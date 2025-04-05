@@ -130,6 +130,16 @@
                                                     Chi tiết
                                                 </a>
                                             </li>
+                                            <li>
+                                            <form method="POST" action="{{ route('admin.products.destroy', $product->id) }}" class="d-inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="dropdown-item edit-list" onclick="return confirm('Bạn có muốn xóa không')">
+                                                    <i class="fas fa-trash-alt text-danger font-size-16 me-2"></i>
+                                                    Xóa
+                                                </button>
+                                            </form>
+                                            </li>
                                         </ul>
                                     </div>
                                 </td>
