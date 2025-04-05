@@ -1,6 +1,3 @@
-@php
-use App\Models\Order;
-@endphp
 @extends('admin.layouts.master')
 @section('title', 'Orders')
 @section('content')
@@ -40,13 +37,13 @@ use App\Models\Order;
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Mã đơn hàng</th>
-                                <th>Tên sản phẩm</th>
-                                <th>Số lượng</th>
-                                <th>Trạng thái đơn hàng</th>
-                                <th>Trạng thái thanh toán</th>
-                                <th>Thành tiền</th>
-                                <th>Thao tác</th>
+                                <th>Order Code</th>
+                                <th>Name</th>
+                                <th>Quantity</th>
+                                <th>Status Order</th>
+                                <th>Status Payment</th>
+                                <th>Total</th>
+                                <th></th>
                             </tr>
                         </thead>
 
@@ -87,7 +84,7 @@ use App\Models\Order;
                                 </td>
 
                                 <td>
-                                    <a href="{{ route('admin.orders.edit', $order) }}" class="btn btn-warning btn-sm">
+                                    <a href="" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
 

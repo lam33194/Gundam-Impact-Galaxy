@@ -134,4 +134,39 @@ class ProductController extends Controller
 
         return [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries];
     }
+
+    public function show(Product $product)
+    {
+        // return view('admin.products.show', compact('product'));
+    }
+
+    public function edit(Product $product)
+    {
+        $categories = Category::all();
+        $colors = ProductColor::all();
+        $sizes = ProductSize::all();
+        $tags = Tag::all();
+
+        $product->with(['galleries', 'tags', 'variants']);
+        return view('admin.products.edit', compact('product', 'tags', 'categories' ,'colors' ,'sizes'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        // $product->
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->load('galleries');
+
+        foreach ($product->galleries as $gallery) {
+            $this->delete_storage_file($gallery, 'image');
+            $gallery->delete();
+        }
+
+        $product->delete();
+
+        return redirect()->back()->with('success', 'Xóa sản phẩm thành công');
+    }
 }

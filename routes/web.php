@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\LoginController;
@@ -26,6 +27,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::resource('products', ProductController::class);
     Route::resource('vouchers', VoucherController::class);
+    Route::resource('orders', OrderController::class);
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
