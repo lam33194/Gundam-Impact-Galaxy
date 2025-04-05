@@ -1,19 +1,16 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface User {
     id: number;
     name: string;
     email: string;
-    phone: string | null;
-    avatar: string | null;
-    address: string | null;
     role: string;
 }
 
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
+    isLoading: boolean;
     login: (userData: User, token: string) => void;
     logout: () => void;
 }
@@ -23,17 +20,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is logged in on component mount
-        const userInfo = localStorage.getItem('userInfo');
-        const token = localStorage.getItem('token');
+        const checkAuth = () => {
+            const token = localStorage.getItem('token');
+            const userInfo = localStorage.getItem('userInfo');
 
-        if (userInfo && token) {
-            setUser(JSON.parse(userInfo));
-            setIsAuthenticated(true);
-        }
+            if (token && userInfo) {
+                setUser(JSON.parse(userInfo));
+                setIsAuthenticated(true);
+            }
+            setIsLoading(false);
+        };
+
+        checkAuth();
     }, []);
 
     const login = (userData: User, token: string) => {
@@ -48,12 +49,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setIsAuthenticated(false);
         localStorage.removeItem('userInfo');
         localStorage.removeItem('token');
-        navigate('/');
     };
 
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
     return (
-        <AuthContext.Provider value={{ user, isAuthenticated, login, logout }
-        }>
+        <AuthContext.Provider value={{
+            user,
+            isAuthenticated,
+            isLoading,
+            login,
+            logout
+        }}>
             {children}
         </AuthContext.Provider>
     );

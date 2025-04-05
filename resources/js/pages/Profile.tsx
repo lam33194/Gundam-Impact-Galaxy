@@ -1,16 +1,45 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getUserById } from '../services/UserService';
 import './Profile.scss';
 
 function Profile() {
-    const { user } = useAuth();
+    const { user: authUser } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [formData, setFormData] = useState({
-        name: user?.name || '',
-        email: user?.email || '',
-        phone: user?.phone || '',
-        address: user?.address || ''
+        name: '',
+        email: '',
+        phone: '',
+        address: '',
+        avatar: ''
     });
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                if (authUser?.id) {
+                    setIsLoading(true);
+                    const response = await getUserById(authUser.id);
+                    const userData = response.data.data[0];
+
+                    setFormData({
+                        name: userData.name || '',
+                        email: userData.email || '',
+                        phone: userData.phone || '',
+                        address: userData.address || '',
+                        avatar: userData.avatar || ''
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [authUser?.id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -30,15 +59,35 @@ function Profile() {
     };
 
     const handleCancel = () => {
-        // Reset form data to original values
-        setFormData({
-            name: user?.name || '',
-            email: user?.email || '',
-            phone: user?.phone || '',
-            address: user?.address || ''
-        });
+        if (authUser?.id) {
+            getUserById(authUser.id)
+                .then(response => {
+                    const userData = response.data[0];
+                    console.log(userData);
+                    setFormData({
+                        name: userData.name || '',
+                        email: userData.email || '',
+                        phone: userData.phone || '',
+                        address: userData.address || '',
+                        avatar: userData.avatar || ''
+                    });
+                })
+                .catch(error => {
+                    console.error('Failed to reset user data:', error);
+                });
+        }
         setIsEditing(false);
     };
+
+    if (isLoading) {
+        return (
+            <div className="container py-5 text-center">
+                <div className="spinner-border" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="container py-5">
@@ -51,7 +100,7 @@ function Profile() {
                                 <div className="avatar-container">
                                     <div className="avatar-wrapper">
                                         <img
-                                            src={user?.avatar || "../assets/default-avatar.png"}
+                                            src={formData?.avatar || "../assets/default-avatar.png"}
                                             alt="User Avatar"
                                             className="profile-avatar"
                                         />
@@ -69,7 +118,6 @@ function Profile() {
                     </div>
                 </div>
 
-                {/* Personal Info Card */}
                 <div className="col-md-8">
                     <div className="card shadow-sm profile-card">
                         <div className="card-body p-4">
