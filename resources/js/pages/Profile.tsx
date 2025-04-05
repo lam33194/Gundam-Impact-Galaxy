@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserById, updateUser } from '../services/UserService';
 import { getProvinces, getDistricts, getWards } from '../services/LocationService';
@@ -32,6 +32,11 @@ function Profile() {
     const [selectedProvince, setSelectedProvince] = useState<string>('');
     const [selectedDistrict, setSelectedDistrict] = useState<string>('');
     const [selectedWard, setSelectedWard] = useState<string>('');
+
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const DateDisplay: React.FC<{ label: string; icon: string; date: string }> = ({ label, icon, date }) => (
         <div className="mb-2">
@@ -191,6 +196,21 @@ function Profile() {
         }));
     };
 
+    const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!validTypes.includes(file.type)) {
+                alert('Vui lòng chọn file ảnh có định dạng .jpg, .jpeg hoặc .png');
+                return;
+            }
+
+            const previewUrl = URL.createObjectURL(file);
+            setAvatarPreview(previewUrl);
+            setAvatarFile(file);
+        }
+    };
+
     const handleUpdate = () => {
         setIsEditing(true);
     };
@@ -209,16 +229,22 @@ function Profile() {
                 return;
             }
 
-            const updateData = {
-                name: formData.name,
-                phone: formData.phone,
-                address: formData.address,
-                ward: wards.find(w => w.id === selectedWard)?.name || '',
-                district: districts.find(d => d.id === selectedDistrict)?.name || '',
-                city: provinces.find(p => p.id === selectedProvince)?.name || ''
-            };
+            const formDataToSend = new FormData();
+            formDataToSend.append('name', formData.name);
+            formDataToSend.append('phone', formData.phone);
+            formDataToSend.append('address', formData.address);
+            formDataToSend.append('ward', wards.find(w => w.id === selectedWard)?.name || '');
+            formDataToSend.append('district', districts.find(d => d.id === selectedDistrict)?.name || '');
+            formDataToSend.append('city', provinces.find(p => p.id === selectedProvince)?.name || '');
 
-            await updateUser(updateData);
+            if (avatarFile) {
+                formDataToSend.append('avatar', avatarFile);
+            }
+
+            await updateUser(formDataToSend);
+
+            setAvatarFile(null);
+            setAvatarPreview(null);
 
             const response = await getUserById(authUser.id, { include: 'addresses' });
             const userData = response.data.data[0] as UserData;
@@ -237,6 +263,12 @@ function Profile() {
         if (!authUser?.id) return;
 
         try {
+            setAvatarFile(null);
+            setAvatarPreview(null);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+
             setSelectedProvince('');
             setSelectedDistrict('');
             setSelectedWard('');
@@ -353,18 +385,31 @@ function Profile() {
                             <div className="text-center">
                                 <div className="avatar-container">
                                     <div className="avatar-wrapper">
-                                        <img
-                                            src={getAvatarUrl(formData.avatar)}
-                                            alt="User Avatar"
-                                            className="profile-avatar"
+                                        <label htmlFor="avatar-input" style={{ cursor: isEditing ? 'pointer' : 'default' }}>
+                                            <img
+                                                src={avatarPreview || getAvatarUrl(formData.avatar)}
+                                                alt="User Avatar"
+                                                className="profile-avatar"
+                                            />
+                                        </label>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            id="avatar-input"
+                                            className="d-none"
+                                            accept="image/png,image/jpeg,image/jpg"
+                                            onChange={handleAvatarChange}
+                                            disabled={!isEditing}
                                         />
                                     </div>
                                     {isEditing && (
-                                        <button
+                                        <label
+                                            htmlFor="avatar-input"
                                             className="btn btn-light btn-sm position-absolute avatar-upload-btn shadow-sm"
+                                            style={{ cursor: 'pointer' }}
                                         >
                                             <i className="fas fa-camera"></i>
-                                        </button>
+                                        </label>
                                     )}
                                 </div>
                             </div>
