@@ -1,0 +1,43 @@
+.profile-avatar {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-upload-btn {
+    border-radius: 50%;
+    bottom: 0;
+    right: 0;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+
+    .button-group {
+        display: flex;
+        gap: 1rem;
+    }
+}
+
+.profile-card {
+    border-radius: 10px;
+    overflow: hidden;
+
+    .card-body {
+        padding: 2rem;
+    }
+}
+
+.avatar-container {
+    position: relative;
+    display: inline-block;
+
+    .avatar-wrapper {
+        border: 2px solid #dee2e6;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+}

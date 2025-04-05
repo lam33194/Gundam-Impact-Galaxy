@@ -2,7 +2,8 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { useEffect, useState } from "react";
-import { login } from "../services/AuthService";
+import { authenticate } from "../services/AuthService";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginResponse {
   0: {
@@ -23,6 +24,8 @@ interface LoginResponse {
 function Login() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: location.state?.email || "",
     password: location.state?.password || ""
@@ -39,11 +42,10 @@ function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await login(formData);
+      const response = await authenticate(formData);
       const data = response.data as LoginResponse;
 
-      localStorage.setItem('userInfo', JSON.stringify(data[0]));
-      localStorage.setItem('token', data[1]);
+      login(data[0], data[1]);
 
       navigate('/');
     } catch (error: any) {
