@@ -15,6 +15,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, AuthRoute } from './components/ProtectedRoute';
+import OrderHistory from './pages/OrderHistory';
 
 function App() {
     return (
@@ -43,6 +44,7 @@ function App() {
                             <Route path='/checkout' element={<Checkout />} />
                             <Route path='/blog-list' element={<BlogList />} />
                             <Route path='/search' element={<Search />} />
+                            <Route path='/order-history' element={<OrderHistory />} />
                             <Route path='/profile' element={
                                 <ProtectedRoute>
                                     <Profile />

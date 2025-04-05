@@ -112,7 +112,7 @@ function Search() {
                 <span className="mx-2">/</span>
                 <span className="text-muted">Danh sách sản phẩm</span>
             </div>
-            <h2 className="text-center">DANH SÁCH SẢN PHẨM</h2>
+            <h2 className="my-4">DANH SÁCH SẢN PHẨM</h2>
 
             <div className="row">
                 <div className="col-lg-3 mt-3">
@@ -194,6 +194,11 @@ function Search() {
 
                 <div className="col-lg-8 offset-lg-1 mt-3">
                     <span className="font-italic">{filterTitle}</span>
+                    {products.length === 0 ? (
+                        <div className="mt-3 fw-semibold fst-italic">
+                        <span>Không tìm thấy Sản phẩm thỏa mãn!</span>
+                    </div>
+                    ): ''}
                     <ul className="list-group mt-3">
                         {products &&
                             products.map((p, index) => (

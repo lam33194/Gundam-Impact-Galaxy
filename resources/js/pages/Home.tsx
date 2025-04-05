@@ -20,6 +20,10 @@ function Home() {
         }
     };
 
+    const redirectToDetail = (slug: any) => {
+        window.location.href = "/product/" + slug;
+    };
+
     useEffect(()=>{
         getAllProducts();
     }, [])
@@ -44,13 +48,17 @@ function Home() {
             </Carousel>
 
             <div className="best-seller">
-                <span className="fw-bold text-uppercase">
+                <h4 className="fw-bold text-uppercase fs-5 mb-3">
                     Sản phẩm bán chạy
-                </span>
+                </h4>
                 <div className="product-list">
                     {products &&
                         products.map((p, index) => {
-                            return <Product key={index} p={p} />;
+                            return (
+                                <div className=""   onClick={() => redirectToDetail(p.slug)}>
+                                     <Product key={index} p={p} />
+                                </div>
+                            );
                         })}
                 </div>
             </div>
@@ -73,7 +81,7 @@ function Home() {
             </div>
 
             <div className="blog-list-home">
-                <span className="fw-bold text-uppercase">BLOG TIN TỨC</span>
+                <h4 className="fw-bold text-uppercase fs-5">BLOG TIN TỨC</h4>
                 <div className="list row">
                     <div className="col-6">
                         <Blog display={"column"} />
@@ -86,11 +94,15 @@ function Home() {
                 </div>
             </div>
             <div className="best-seller">
-                <span className="fw-bold text-uppercase">CÓ THỂ BẠN THÍCH</span>
+                <h4 className="fw-bold text-uppercase fs-5">CÓ THỂ BẠN THÍCH</h4>
                 <div className="product-list">
                     {products &&
                         products.map((p, index) => {
-                            return <Product key={index} p={p} />;
+                            return (
+                                <div className=""   onClick={() => redirectToDetail(p.slug)}>
+                                     <Product key={index} p={p} />
+                                </div>
+                            );
                         })}
                 </div>
             </div>
