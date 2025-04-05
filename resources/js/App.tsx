@@ -41,10 +41,18 @@ function App() {
                                     <Signup />
                                 </AuthRoute>
                             } />
-                            <Route path='/checkout' element={<Checkout />} />
+                            <Route path='/checkout' element={
+                                <ProtectedRoute>
+                                    <Checkout />
+                                </ProtectedRoute>
+                            } />
                             <Route path='/blog-list' element={<BlogList />} />
                             <Route path='/search' element={<Search />} />
-                            <Route path='/order-history' element={<OrderHistory />} />
+                            <Route path='/order-history' element={
+                                <ProtectedRoute>
+                                    <OrderHistory />
+                                </ProtectedRoute>
+                            } />
                             <Route path='/profile' element={
                                 <ProtectedRoute>
                                     <Profile />
