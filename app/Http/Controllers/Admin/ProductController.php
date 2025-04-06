@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helper\Toastr;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductColor;
@@ -39,7 +39,24 @@ class ProductController extends Controller
         return view('admin.products.create', compact(['categories', 'tags', 'colors', 'sizes', 'tags']));
     }
 
-    public function store(StoreProductRequest $request)
+    public function show(Product $product)
+    {
+        $product->load(['variants', 'galleries', 'tags', 'category']);
+        return view('admin.products.show', compact('product'));
+    }
+
+    public function edit(Product $product)
+    {
+        $categories = Category::all();
+        $colors = ProductColor::all();
+        $sizes = ProductSize::all();
+        $tags = Tag::all();
+
+        $product->with(['galleries', 'tags', 'variants']);
+        return view('admin.products.edit', compact('product', 'tags', 'categories', 'colors', 'sizes'));
+    }
+
+    public function store(ProductStoreRequest $request)
     {
         [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleData($request);
 
@@ -62,14 +79,14 @@ class ProductController extends Controller
 
             DB::commit();
 
-            Toastr::success(null, "Thêm sản phẩm thành công");
-            return redirect()->route('admin.products.index');
+            return redirect()->route('admin.products.index')->with('success', 'Tạo sản phẩm thành công');
         } catch (\Exception $e) {
             DB::rollBack();
 
             if (!empty($dataProduct['thumb_image']) && Storage::exists($dataProduct['thumb_image'])) {
                 Storage::delete($dataProduct['thumb_image']);
-            };
+            }
+            ;
 
             foreach (array_merge($dataProductVariants, $dataProductGalleries) as $item) {
                 if (!empty($item['image']) && Storage::exists($item['image'])) {
@@ -77,9 +94,8 @@ class ProductController extends Controller
                 }
             }
 
-            Toastr::error(null, 'Đã xảy ra lỗi');
             Log::error($e->getMessage());
-            return redirect()->back();
+            return redirect()->back()->with('error', $e->getMessage());
         }
     }
 
@@ -135,25 +151,124 @@ class ProductController extends Controller
         return [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries];
     }
 
-    public function show(Product $product)
+    public function update(ProductUpdateRequest $request, Product $product)
     {
-        // return view('admin.products.show', compact('product'));
+        [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleUpdateData($request, $product);
+
+        try {
+            DB::beginTransaction();
+
+            // Store old image paths for cleanup if needed
+            $oldThumbImage = $product->thumb_image;
+            $oldVariantImages = $product->variants->pluck('image')->toArray();
+            $oldGalleryImages = $product->galleries->pluck('image')->toArray();
+
+            // Update product
+            $product->update($dataProduct);
+
+            // Only update variants if new data is provided
+            if (!empty($dataProductVariants)) {
+                $product->variants()->delete();
+                foreach ($dataProductVariants as $item) {
+                    $item += ['product_id' => $product->id];
+                    ProductVariant::query()->create($item);
+                }
+            }
+
+            // Sync tags
+            $product->tags()->sync($dataProductTags);
+
+            // Only update galleries if new images are provided
+            if (!empty($dataProductGalleries)) {
+                $product->galleries()->delete();
+                foreach ($dataProductGalleries as $item) {
+                    $item += ['product_id' => $product->id];
+                    ProductGallery::create($item);
+                }
+            }
+
+            DB::commit();
+
+            // Clean up old thumb image if it was replaced
+            if ($oldThumbImage && $oldThumbImage !== $dataProduct['thumb_image'] && Storage::exists($oldThumbImage)) {
+                Storage::delete($oldThumbImage);
+            }
+
+            return redirect()->back()->with('success', 'Cập nhật sản phẩm thành công');
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Clean up new uploaded images on failure
+            if (!empty($dataProduct['thumb_image']) && $dataProduct['thumb_image'] !== $oldThumbImage && Storage::exists($dataProduct['thumb_image'])) {
+                Storage::delete($dataProduct['thumb_image']);
+            }
+
+            foreach (array_merge($dataProductVariants, $dataProductGalleries) as $item) {
+                if (!empty($item['image']) && Storage::exists($item['image'])) {
+                    Storage::delete($item['image']);
+                }
+            }
+
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', $e->getMessage());
+        }
     }
 
-    public function edit(Product $product)
+    private function handleUpdateData(Request $request, Product $product)
     {
-        $categories = Category::all();
-        $colors = ProductColor::all();
-        $sizes = ProductSize::all();
-        $tags = Tag::all();
+        $dataProduct = $request->product;
 
-        $product->with(['galleries', 'tags', 'variants']);
-        return view('admin.products.edit', compact('product', 'tags', 'categories' ,'colors' ,'sizes'));
-    }
+        // Set default values
+        $dataProduct['is_active'] ??= 0;
+        $dataProduct['is_hot_deal'] ??= 0;
+        $dataProduct['is_good_deal'] ??= 0;
+        $dataProduct['is_new'] ??= 0;
+        $dataProduct['is_show_home'] ??= 0;
+        $dataProduct['price_sale'] ??= 0;
 
-    public function update(Request $request, Product $product)
-    {
-        // $product->
+        // Only update slug if name changed
+        if ($dataProduct['name'] !== $product->name) {
+            $dataProduct['slug'] = Str::slug($dataProduct['name']) . '-' . Str::ulid();
+        }
+
+        // Handle thumbnail image
+        if ($request->hasFile('product.thumb_image')) {
+            $dataProduct['thumb_image'] = Storage::put('products', $dataProduct['thumb_image']);
+        } else {
+            $dataProduct['thumb_image'] = $product->thumb_image; // Keep existing if no new upload
+        }
+
+        // Handle product variants
+        $dataProductVariantsTmp = $request->product_variants ?? [];
+        $dataProductVariants = [];
+
+        foreach ($dataProductVariantsTmp as $key => $item) {
+            $tmp = explode('-', $key);
+            $dataProductVariants[] = [
+                'product_color_id' => $tmp[0],
+                'product_size_id' => $tmp[1],
+                'quantity' => $item['quantity'],
+                'image' => !empty($item['image']) && $request->hasFile("product_variants.{$key}.image")
+                    ? Storage::put('product_variants', $item['image'])
+                    : ($product->variants->where('product_color_id', $tmp[0])->where('product_size_id', $tmp[1])->first()?->image ?? null)
+            ];
+        }
+
+        // Handle product galleries
+        $dataProductGalleriesTmp = $request->product_galleries ?: [];
+        $dataProductGalleries = [];
+
+        foreach ($dataProductGalleriesTmp as $key => $image) {
+            if (!empty($image) && $request->hasFile("product_galleries.{$key}")) {
+                $dataProductGalleries[] = [
+                    'image' => Storage::put('product_galleries', $image)
+                ];
+            }
+        }
+
+        $dataProductTags = $request->tags;
+
+        return [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries];
     }
 
     public function destroy(Product $product)

@@ -102,11 +102,14 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Mô Tả</label>
-                                <textarea id="elm1" name="product[description]">
-                                {{ old('product.description') }}
-                                </textarea>
-                                @error('product.description')
+                                <label class="form-label">Mô tả ngắn</label>
+                                <textarea class="form-control @error('product.description') is-invalid @enderror" name="product[description]">{{ old('product.description') }}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Mô tả chi tiết</label>
+                                <textarea id="elm1" name="product[content]">{{ old('product.content') }}</textarea>
+                                @error('product.content')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
                             </div>
@@ -263,8 +266,8 @@
                             @foreach ($is as $item)
                             <div class="mb-3">
                                 <div class="form-check form-switch mb-3">
-                                    <label class="form-check-label">{{ $item }}</label>
-                                    <input class="form-check-input" value="1" type="checkbox" {{ $item === 'is_active' ? 'checked' : '' }} name="product[{{ $item }}]">
+                                    <label for="{{ $item }}" class="form-check-label">{{ $item }}</label>
+                                    <input id="{{ $item }}" class="form-check-input" value="1" type="checkbox" {{ $item === 'is_active' ? 'checked' : '' }} name="product[{{ $item }}]">
                                 </div>
                             </div>
                             @endforeach

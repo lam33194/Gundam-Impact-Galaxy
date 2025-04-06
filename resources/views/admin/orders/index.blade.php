@@ -37,13 +37,13 @@
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
-                                <th>Order Code</th>
-                                <th>Name</th>
-                                <th>Quantity</th>
-                                <th>Status Order</th>
-                                <th>Status Payment</th>
-                                <th>Total</th>
-                                <th></th>
+                                <th>Mã đơn hàng</th>
+                                <th>Người đặt</th>
+                                <th>Phương thức thanh toán</th>
+                                <th>Trạng thái đơn hàng</th>
+                                <th>Trạng thái thanh toán</th>
+                                <th>Tổng tiền</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
 
@@ -64,7 +64,7 @@
                                 </td>
 
                                 <td>
-                                    {{ $order->orderItems->count() }}
+                                    {{ $order->type_payment }}
                                 </td>
 
                                 <td>
@@ -84,7 +84,7 @@
                                 </td>
 
                                 <td>
-                                    <a href="" class="btn btn-warning btn-sm">
+                                    <a href="{{ route('admin.orders.edit', $order->id) }}" class="btn btn-warning btn-sm">
                                         <i class="fas fa-edit"></i>
                                     </a>
 
