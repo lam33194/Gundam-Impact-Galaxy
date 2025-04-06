@@ -28,6 +28,19 @@ class OrderController extends Controller
 
     public function update(Request $request, Order $order)
     {
-        //
+        $status = $request->only('status_order');
+
+        switch ($status['status_order']) {
+            case Order::STATUS_ORDER_DELIVERED:
+                $order->update(array_merge($status, ['status_payment' => Order::STATUS_PAYMENT_PAID]));
+            break;
+
+            default:
+                $order->update($status);
+            break;
+        }
+
+        Toastr::success('Success', 'Cập nhật trạng thái thành công');
+        return back();
     }
 }

@@ -128,7 +128,7 @@
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="" class="dropdown-item edit-list">
+                                                <a href="{{ route('admin.products.show', $product->id) }}" class="dropdown-item edit-list">
                                                     <i class="bx bx-show font-size-16 text-warning me-1"></i>
                                                     Chi tiết
                                                 </a>

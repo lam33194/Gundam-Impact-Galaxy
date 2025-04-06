@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'New Product')
+@section('title', 'Edit Product')
 
 @section('style')
 <link rel="stylesheet" href="{{ asset('assets/css/admin/product-create.css') }}">
@@ -243,11 +243,7 @@
 
                                 <select id="select-tag-product-multiple" class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Choose ..." name="tags[]">
                                     @foreach ($tags as $tag)
-                                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
-                                    @endforeach
-
-                                    @foreach ($product->tags as $selectedTag)
-                                        <option selected value="{{$selectedTag->id}}">{{$selectedTag->name}}</option>
+                                        <option {{ $product->tags->contains($tag->id) ? 'selected' : '' }} value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
