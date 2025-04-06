@@ -60,7 +60,7 @@ class AuthController extends Controller
             ],
             [
                 'current_password.required'         => 'Vui lòng nhập mật khẩu hiện tại',
-                'current_password.current_password' => 'Sai mật khẩu',
+                'current_password.current_password' => 'Mật khẩu hiện tại không đúng',
 
                 'password.required'   => 'Vui lòng nhập mật khẩu mới',
                 'password.confirmed'  => 'Mật khẩu xác nhận không khớp',

@@ -52,6 +52,8 @@ Route::prefix('v1')->group(function () {
             Route::get ('orders', 'index');
             // Hủy đặt hàng
             Route::put ('orders/{id}', 'update');
+            // Chi tiết đơn hàng
+            Route::get ('orders/{id}', 'show');
         });
     });
 
