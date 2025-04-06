@@ -192,7 +192,7 @@
                                 <div class="card-body">
                                     @if($product->content)
                                         <div class="border p-3 rounded">
-                                            {!! $product->content !!}
+                                            <p>{!! $product->content !!}</p>
                                         </div>
                                     @else
                                         <div class="alert alert-info mb-0">Chưa có nội dung chi tiết</div>
@@ -215,7 +215,7 @@
                                 <div class="col-md-3 mb-3">
                                     <div class="card">
                                         <div class="card-header">
-                                            <h6 class="mb-0 font-size-14">Ảnh đại diện</h6>
+                                            <h6 class="mb-0 font-size-14">Ảnh thumbnail</h6>
                                         </div>
                                         <div class="card-body text-center">
                                             @if($product->thumb_image)
@@ -286,8 +286,12 @@
                                         </td>
 
                                         <td>
-                                            <img src="{{ Storage::url($variant->image ?? $product->thumb_iamge) }}" width="70"
+                                            @if($variant->image && Storage::exists($variant->image))
+                                            <img src="{{ Storage::url($variant->image) }}" width="70"
                                                 alt="variant_image">
+                                            @else
+                                            <span>defaul image</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

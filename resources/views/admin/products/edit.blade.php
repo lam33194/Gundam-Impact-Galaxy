@@ -9,14 +9,14 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0 font-size-18">Sửa Sảm Phẩm</h4>
+            <h4 class="mb-sm-0 font-size-18">Sửa Sảm Phẩm {{ $product->name }}</h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.products.index') }}">Sản Phẩm</a>
                     </li>
-                    <li class="breadcrumb-item active">Thêm Sản Phẩm</li>
+                    <li class="breadcrumb-item active">Sửa Sản Phẩm</li>
                 </ol>
             </div>
         </div>
@@ -105,9 +105,14 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Mô Tả</label>
-                                <textarea id="elm1" name="product[description]">{{old('product.description') ?? $product->description }}</textarea>
-                                @error('product.description')
+                                <label class="form-label">Mô tả ngắn</label>
+                                <textarea class="form-control @error('product.description') is-invalid @enderror" name="product[description]">{{ old('product.description') ?? $product->description }}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Mô tả chi tiết</label>
+                                <textarea id="elm1" name="product[content]">{{ old('product.content') ?? $product->content }}</textarea>
+                                @error('product.content')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
                             </div>
@@ -127,7 +132,7 @@
                         <div class="card-body">
                             <div class="d-flex gap-3">
                                 @foreach ($product->galleries as $gallery)
-                                <img src="{{ Storage::url($gallery->image) }}" height="100" width="100" alt="">
+                                <img src="{{ Storage::url($gallery->image) }}" height="100" width="auto" alt="">
                                 @endforeach
                             </div>
 
