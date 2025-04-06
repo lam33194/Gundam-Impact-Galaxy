@@ -46,7 +46,8 @@
                     <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th></th>
+                                <th>ID</th>
                                 <th>Ảnh</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Sku</th>
@@ -69,6 +70,8 @@
                                         <label class="form-check-label"></label>
                                     </div>
                                 </td>
+
+                                <td>{{$product->id}}</td>
 
                                 <td>
                                     @if ($product->thumb_image && Storage::exists($product->thumb_image))
