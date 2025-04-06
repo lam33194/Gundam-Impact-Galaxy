@@ -3,18 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductSize;
+use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    use LoadRelations;
+    use ApiResponse, LoadRelations;
 
     protected $validRelations = [
         'variants',
+        'variants.color',
+        'variants.size',
         'galleries',
         'tags',
         'category',
@@ -22,13 +26,15 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::query();
+        $products = Product::query()->latest();
 
         $this->loadRelations($products, $request);
 
         $this->applyFilters($products, $request->query());
 
-        return response()->json($products->paginate(10));
+        $perPage = request()->query('per_page', 10);
+
+        return response()->json($products->paginate($perPage)->appends($request->query()));
     }
 
     public function show(string $slug)
@@ -40,6 +46,24 @@ class ProductController extends Controller
         $this->loadRelations($products, request(), true);
 
         return response()->json($products);
+    }
+
+    // Lấy danh sách products của category 
+    public function getByCategory(Request $request, string $slug)
+    {
+        $category = Category::whereSlug($slug)->first();
+
+        if (!$category) return $this->not_found("Danh mục không tồn tại");
+
+        $products = $category->products()->getQuery();
+
+        $this->loadRelations($products, $request);
+        
+        $this->applyFilters($products, $request->query());
+
+        $perPage = request()->query('per_page', 10);
+
+        return response()->json($products->paginate($perPage)->appends($request->query()));
     }
 
     // còn thiếu: lọc theo price_sale. Sắp xếp theo views, time, price
