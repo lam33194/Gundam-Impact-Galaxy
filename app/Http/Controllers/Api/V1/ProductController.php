@@ -7,12 +7,13 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductSize;
+use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    use LoadRelations;
+    use ApiResponse, LoadRelations;
 
     protected $validRelations = [
         'variants',
@@ -25,7 +26,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::query();
+        $products = Product::query()->latest();
 
         $this->loadRelations($products, $request);
 

@@ -13,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('user_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->string('address');
             $table->string('ward');
             $table->string('district');

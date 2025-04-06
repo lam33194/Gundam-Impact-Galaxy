@@ -11,13 +11,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('user_socials', function (Blueprint $table) {
-            $table->id();
-            $table->foreignIdFor(User::class)->constrained();
-            $table->string('provider');
-            $table->string('provider_id');
-            $table->timestamps();
-        });
+        // Schema::create('user_socials', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignIdFor(User::class)->constrained();
+        //     $table->string('provider');
+        //     $table->string('provider_id');
+        //     $table->timestamps();
+        // });
     }
 
     /**

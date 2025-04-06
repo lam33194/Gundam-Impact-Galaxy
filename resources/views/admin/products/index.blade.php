@@ -46,7 +46,8 @@
                     <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                         <thead class="table-light">
                             <tr>
-                                <th>#</th>
+                                <th></th>
+                                <th>ID</th>
                                 <th>Ảnh</th>
                                 <th>Tên sản phẩm</th>
                                 <th>Sku</th>
@@ -69,6 +70,8 @@
                                         <label class="form-check-label"></label>
                                     </div>
                                 </td>
+
+                                <td>{{$product->id}}</td>
 
                                 <td>
                                     @if ($product->thumb_image && Storage::exists($product->thumb_image))
@@ -116,19 +119,29 @@
                                         <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="mdi mdi-dots-horizontal font-size-18"></i>
                                         </a>
-                                        <ul class="dropdown-menu dropdown-menu-end" style="">
+                                        <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a href="" class="dropdown-item edit-list">
+                                                <a href="{{ route('admin.products.edit', $product->id) }}" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                     </i>
                                                     Sửa
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="" class="dropdown-item edit-list">
+                                                <a href="{{ route('admin.products.show', $product->id) }}" class="dropdown-item edit-list">
                                                     <i class="bx bx-show font-size-16 text-warning me-1"></i>
                                                     Chi tiết
                                                 </a>
+                                            </li>
+                                            <li>
+                                            <form method="POST" action="{{ route('admin.products.destroy', $product->id) }}" class="d-inline-block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button class="dropdown-item edit-list" onclick="return confirm('Bạn có muốn xóa không')">
+                                                    <i class="fas fa-trash-alt text-danger font-size-16 me-2"></i>
+                                                    Xóa
+                                                </button>
+                                            </form>
                                             </li>
                                         </ul>
                                     </div>

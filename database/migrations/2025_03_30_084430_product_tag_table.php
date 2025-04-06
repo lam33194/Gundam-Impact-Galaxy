@@ -13,8 +13,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('product_tag', function (Blueprint $table) {
-            $table->foreignIdFor(Product::class)->constrained();
-            $table->foreignIdFor(Tag::class)->constrained();
+            $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(Tag::class)->constrained()->cascadeOnDelete();
             $table->primary(['product_id', 'tag_id']);
         });
     }
