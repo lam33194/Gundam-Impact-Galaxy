@@ -23,7 +23,7 @@
             </li>
 
             <li class="{{ activeMenuLi('admin/users') }}">
-                <a href="#" class="waves-effect {{ activeMenu('admin/users') }}">
+                <a href="{{ route('admin.users.index') }}" class="waves-effect {{ activeMenu('admin/users') }}">
                     <i class="bx bx-user"></i>
                     <span key="t-users">Quản lý tài khoản</span>
                 </a>
