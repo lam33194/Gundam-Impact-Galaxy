@@ -7,6 +7,7 @@ import './Profile.scss';
 import { UserData } from '../interfaces/UserData';
 import InfoField from '../components/InfoField';
 import { STORAGE_URL } from '../utils/constants';
+import { toast } from 'react-toastify';
 
 function Profile() {
     const { user: authUser } = useAuth();
@@ -201,7 +202,7 @@ function Profile() {
         if (file) {
             const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
             if (!validTypes.includes(file.type)) {
-                alert('Vui lòng chọn file ảnh có định dạng .jpg, .jpeg hoặc .png');
+                toast.error('Vui lòng chọn file ảnh có định dạng .jpg, .jpeg hoặc .png');
                 return;
             }
 
@@ -220,12 +221,12 @@ function Profile() {
             if (!authUser?.id) return;
 
             if (!formData.name.trim()) {
-                alert('Vui lòng nhập họ tên');
+                toast.error('Vui lòng nhập họ tên');
                 return;
             }
 
             if (!formData.phone.trim()) {
-                alert('Vui lòng nhập số điện thoại');
+                toast.error('Vui lòng nhập số điện thoại');
                 return;
             }
 
@@ -252,10 +253,11 @@ function Profile() {
 
             setFormData(setUserFormData(userData, userAddress));
             setIsEditing(false);
-            alert('Cập nhật thông tin thành công!');
-        } catch (error) {
+            toast.success('Cập nhật thông tin thành công!');
+        } catch (error: any) {
             console.error('Failed to update user data:', error);
-            alert('Cập nhật thông tin thất bại. Vui lòng thử lại.');
+            const errorMessage = error.response?.data?.message || 'Cập nhật thông tin thất bại. Vui lòng thử lại.';
+            toast.error(errorMessage);
         }
     };
 
