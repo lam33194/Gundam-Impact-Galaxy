@@ -1,17 +1,46 @@
-.item-name{
-    font-size: 0.9rem;
-}
-.item-price{
-    font-size: 0.9rem;
+.cart-product-item {
+    .product-info {
+        font-size: 0.9rem;
+        flex: 1;
+        min-width: 0;
+
+        .item-name {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            font-size: 0.9rem;
+        }
+
+        .variant-info {
+            margin-top: 4px;
+
+            small {
+                font-size: 0.8rem;
+            }
+        }
+
+        .quantity-info {
+            margin-top: 2px;
+
+            small {
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    .item-price {
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
 }
 
-.line{
+.line {
     margin: 12px 0;
     height: 0.5px;
     background-color: #8f8f8f5f;
 }
 
-.total{
+.total {
     font-size: 1.1rem;
 }
-
