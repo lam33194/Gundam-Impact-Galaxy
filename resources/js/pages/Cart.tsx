@@ -167,9 +167,10 @@ const Cart = () => {
                                                             )
                                                         }
                                                         style={{ cursor: 'pointer' }}
-                                                        className=""
+                                                        className="delete-btn d-flex align-items-center text-decoration-none"
                                                     >
-                                                        Xóa
+                                                        <i className="fas fa-trash-alt me-1"></i>
+                                                        <span>Xóa</span>
                                                     </a>
                                                 </div>
                                             </div>

@@ -52,3 +52,17 @@ input {
         cursor: not-allowed;
     }
 }
+
+.delete-btn {
+    color: #dc3545 !important;
+    transition: color 0.2s ease;
+    cursor: pointer;
+
+    &:hover {
+        color: #bb2d3b !important;
+    }
+
+    i {
+        font-size: 1rem;
+    }
+}
