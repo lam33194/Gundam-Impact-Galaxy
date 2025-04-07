@@ -25,3 +25,16 @@ export const authenticate = (data: any): Promise<any> => {
     });
 }
 
+export const changePassword = (data: any): Promise<any> => {
+    const formData = new FormData();
+    formData.append('current_password', data.current_password);
+    formData.append('password', data.password);
+    formData.append('password_confirmation', data.password_confirmation);
+
+    return customizeAxios.post('/api/v1/auth/change-password', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+

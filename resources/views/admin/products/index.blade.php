@@ -75,9 +75,9 @@
 
                                 <td>
                                     @if ($product->thumb_image && Storage::exists($product->thumb_image))
-                                    <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}" style="height: 40px; width: 40px">
+                                    <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}" width="70" height="auto">
                                     @else
-                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" style="height: 40px; width: 40px">
+                                    <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" width="70" height="auto">
                                     @endif
                                 </td>
 

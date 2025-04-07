@@ -16,6 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, AuthRoute } from './components/ProtectedRoute';
 import OrderHistory from './pages/OrderHistory';
+import ChangePassword from './pages/ChangePassword';
 
 function App() {
     return (
@@ -56,6 +57,11 @@ function App() {
                             <Route path='/profile' element={
                                 <ProtectedRoute>
                                     <Profile />
+                                </ProtectedRoute>
+                            } />
+                            <Route path='/change-password' element={
+                                <ProtectedRoute>
+                                    <ChangePassword />
                                 </ProtectedRoute>
                             } />
                         </Route>

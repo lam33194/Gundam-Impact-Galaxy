@@ -220,7 +220,7 @@
                                         <div class="card-body text-center">
                                             @if($product->thumb_image)
                                                 <img src="{{ Storage::url($product->thumb_image) }}" class="img-fluid"
-                                                    style="max-height: 150px;" alt="Thumbnail">
+                                                    style="max-height: 180px;" alt="Thumbnail">
                                             @else
                                                 <div class="alert alert-info mb-0">Chưa có ảnh</div>
                                             @endif
@@ -239,7 +239,7 @@
                                                     @foreach($product->galleries as $gallery)
                                                         <div class="col-md-3 mb-3">
                                                             <img src="{{ Storage::url($gallery->image) }}" class="img-fluid rounded"
-                                                                style="max-height: 120px;" alt="Gallery image">
+                                                                style="max-height: 150px;" alt="Gallery image">
                                                         </div>
                                                     @endforeach
                                                 </div>

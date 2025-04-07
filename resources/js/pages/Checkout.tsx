@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Checkout.scss";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { getCart } from "../services/CartService";
 import { FormatCurrency } from "../utils/FormatCurrency";
 import { addOrder } from "../services/OrderService";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { getUserById } from "../services/UserService";
 import { getProvinces, getDistricts, getWards } from "../services/LocationService";
+import { STORAGE_URL } from "../utils/constants";
 
 const Checkout = () => {
     const { user: authUser } = useAuth();
@@ -418,59 +418,61 @@ const Checkout = () => {
                 <h4 className="title">Đơn hàng ({cart.length} sản phẩm)</h4>
                 <div className="line"></div>
                 <div className="cart-product d-flex flex-column gap-4 my-3">
-                    {cart.map((item, index) => (
+                    {cart.map((item: any, index) => (
                         <div
                             key={index}
-                            className="cart-product-item d-flex align-items-center justify-content-between"
+                            className="cart-product-item d-flex align-items-start justify-content-between"
                         >
-                            <div
-                                className="cart-product-item-image col-2"
-                                style={{
-                                    backgroundImage: `url(${item.image ||
-                                        "https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243"
-                                        })`,
-                                    height: "60px",
-                                    backgroundSize: "cover",
-                                    backgroundPosition: "center",
-                                }}
-                            ></div>
-                            <span className="item-name d-block fw-bold col-5">
-                                {item.variant.product.name ||
-                                    "Tên sản phẩm không xác định"}
-                            </span>
-                            <span className="item-quantity d-block fw-bold col-2">
-                                x{item.quantity}
-                            </span>
-                            <span className="item-price text-muted col-2">
-                                {FormatCurrency(
-                                    item.variant.product.price_sale
-                                )}
-                                đ
+                            <div className="d-flex gap-2">
+                                <div
+                                    className="cart-product-item-image"
+                                    style={{
+                                        backgroundImage: `url(${STORAGE_URL + item.variant.image || "https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243"})`,
+                                        height: "60px",
+                                        width: "60px",
+                                        backgroundSize: "cover",
+                                        backgroundPosition: "center",
+                                        flexShrink: 0
+                                    }}
+                                ></div>
+                                <div className="product-info d-flex flex-column">
+                                    <span className="item-name fw-bold">
+                                        {item.variant.product.name}
+                                    </span>
+                                    <div className="variant-info">
+                                        <small className="text-muted">
+                                            {item.variant.size.name} |
+                                            <span
+                                                className="color-dot"
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: '10px',
+                                                    height: '10px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: item.variant.color.code,
+                                                    border: '1px solid #dee2e6',
+                                                    marginLeft: '4px',
+                                                    marginRight: '4px',
+                                                    verticalAlign: 'middle'
+                                                }}
+                                            ></span>
+                                            {item.variant.color.name}
+                                        </small>
+                                    </div>
+                                    <div className="quantity-info">
+                                        <small className="text-muted">
+                                            Số lượng: {item.quantity}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            <span className="item-price text-danger fw-bold">
+                                {FormatCurrency(item.variant.product.price_sale * item.quantity)}đ
                             </span>
                         </div>
                     ))}
                 </div>
 
-                {/* <div className="cart-product-item d-flex align-items-center justify-content-between">
-                        <div
-                            className="cart-product-item-image col-2"
-                            style={{
-                                backgroundImage:
-                                    "url(https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243)",
-                                height: "60px",
-                                backgroundSize: "cover",
-                                backgroundPosition: "center",
-                            }}
-                        ></div>
-                        <span className="item-name d-block fw-bold col-7">
-                            Mô hình tàu One Piece (15cm) - Marine Warship (Tàu
-                            Hải quân) - Mô hình chính hãng Bandai Nhật Bản
-                        </span>
-                        <span className="item-price text-muted col-2">
-                            1.000.000đ
-                        </span>
-                    </div>
-                </div> */}
                 <div className="enter-coupon d-flex gap-1">
                     <div className="form-floating col-8">
                         <input
