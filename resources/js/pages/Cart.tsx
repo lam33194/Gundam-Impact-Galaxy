@@ -1,52 +1,105 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./Cart.scss";
 import { getCart, updateCart } from "../services/CartService";
 import { FormatCurrency } from "../utils/FormatCurrency";
 import { toast } from "react-toastify";
+import useDebounce from "../hooks/useDebounce";
+
 const Cart = () => {
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [pendingUpdates, setPendingUpdates] = useState<Record<number, number>>({});
+    const [originalQuantities, setOriginalQuantities] = useState<Record<number, number>>({});
+
+    const debouncedUpdates = useDebounce(pendingUpdates, 1500);
+
     const getCartDetail = async () => {
         try {
             const res = await getCart();
             if (res && res.data) {
-                console.log("iudie", res.data.data);
                 setCart(res.data.data);
                 let t = 0;
+                const originalQtys: Record<number, number> = {};
                 res.data.data.forEach((element: any) => {
-                    t +=
-                        Number(element.variant.product.price_sale) *
-                        Number(element.quantity);
+                    t += Number(element.variant.product.price_sale) * Number(element.quantity);
+                    originalQtys[element.id] = element.quantity;
                 });
-                console.log(t);
+                setOriginalQuantities(originalQtys);
                 setTotal(t);
             }
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const redirectToDetail = (slug: any) => {
         window.location.href = "/product/" + slug;
     };
 
-    const updateCartItem = async (item_id: any, quantity: any) => {
-        try {
-            const res = await updateCart(quantity, item_id);
-            if (res && res.data) {
-                getCartDetail();
-                if (quantity === 0) {
-                    toast.success("Xóa thành công mặt hàng!");
-                } else {
+    const handleQuantityChange = (itemId: number, newQuantity: number) => {
+        const currentQuantity = pendingUpdates[itemId] ?? cart.find((item: any) => item.id === itemId)?.quantity ?? 0;
+
+        const updatedQuantity = newQuantity === currentQuantity + 1 ? currentQuantity + 1 :
+            newQuantity === currentQuantity - 1 ? currentQuantity - 1 :
+                newQuantity;
+
+        setPendingUpdates(prev => ({
+            ...prev,
+            [itemId]: updatedQuantity
+        }));
+        setIsUpdating(true);
+
+        const updatedCart = cart.map((item: any) => {
+            if (item.id === itemId) {
+                return {
+                    ...item,
+                    quantity: updatedQuantity
+                };
+            }
+            return item;
+        });
+
+        let newTotal = 0;
+        updatedCart.forEach((element: any) => {
+            newTotal += Number(element.variant.product.price_sale) *
+                (element.id === itemId ? updatedQuantity : element.quantity);
+        });
+        setTotal(newTotal);
+    };
+
+    useEffect(() => {
+        const processUpdates = async () => {
+            const updates = Object.entries(debouncedUpdates);
+            if (updates.length > 0) {
+                try {
+                    for (const [itemId, quantity] of updates) {
+                        await updateCart(quantity, Number(itemId));
+                    }
+                    await getCartDetail();
                     toast.success("Cập nhật giỏ hàng thành công!");
+                    setPendingUpdates({});
+                } catch (error) {
+                    setPendingUpdates({});
+                    setCart(prev => prev.map(item => ({
+                        ...item,
+                        quantity: originalQuantities[item.id]
+                    })));
+                    console.log(error);
+                    const errorMessage = error.response?.data?.message || 'Cập nhật giỏ hàng thất bại. Vui lòng thử lại.';
+                    toast.error(errorMessage);
                 }
             }
-        } catch (error) {}
-    };
+            setIsUpdating(false);
+        };
+
+        processUpdates();
+    }, [debouncedUpdates]);
 
     useEffect(() => {
         if (cart !== null) {
             getCartDetail();
         }
     }, []);
+
     return (
         <div className="checkout-page container">
             <div className="nav d-flex align-items-center">
@@ -108,12 +161,12 @@ const Cart = () => {
                                                     </span>
                                                     <a
                                                         onClick={() =>
-                                                            updateCartItem(
+                                                            handleQuantityChange(
                                                                 p.id,
                                                                 0
                                                             )
                                                         }
-                                                        style={{cursor: 'pointer'}}
+                                                        style={{ cursor: 'pointer' }}
                                                         className=""
                                                     >
                                                         Xóa
@@ -139,9 +192,9 @@ const Cart = () => {
                                                     type="button"
                                                     id="button-minus"
                                                     onClick={() =>
-                                                        updateCartItem(
+                                                        handleQuantityChange(
                                                             p.id,
-                                                            p.quantity - 1
+                                                            (pendingUpdates[p.id] ?? p.quantity) - 1
                                                         )
                                                     }
                                                 >
@@ -151,9 +204,9 @@ const Cart = () => {
                                                 <input
                                                     type="text"
                                                     className="fw-bold form-control text-center"
-                                                    value={p.quantity}
+                                                    value={pendingUpdates[p.id] ?? p.quantity}
                                                     aria-label="Quantity"
-                                                    min="1"
+                                                    readOnly
                                                 />
 
                                                 <button
@@ -161,9 +214,9 @@ const Cart = () => {
                                                     type="button"
                                                     id="button-plus"
                                                     onClick={() =>
-                                                        updateCartItem(
+                                                        handleQuantityChange(
                                                             p.id,
-                                                            p.quantity + 1
+                                                            (pendingUpdates[p.id] ?? p.quantity) + 1
                                                         )
                                                     }
                                                 >
@@ -205,13 +258,23 @@ const Cart = () => {
                                 <a
                                     href="/checkout"
                                     className="btn btn-dark col-12"
+                                    disabled={isUpdating}
+                                    style={{
+                                        opacity: isUpdating ? 0.65 : 1,
+                                        pointerEvents: isUpdating ? 'none' : 'auto'
+                                    }}
                                 >
-                                    Thanh toán
+                                    {isUpdating ? 'Đang cập nhật...' : 'Thanh toán'}
                                 </a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
+                {isUpdating && (
+                    <div className="text-center mt-2">
+                        <small className="text-muted">Đang cập nhật giỏ hàng...</small>
+                    </div>
+                )}
             </div>
         </div>
     );

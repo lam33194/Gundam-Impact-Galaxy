@@ -16,25 +16,39 @@
 }
 
 .quantity-selector {
+
     button,
     input {
         border: 0.3px solid #ccc;
     }
+
+    button:disabled {
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
 }
 
-.all-tables{
+.all-tables {
     display: grid;
     grid-template-columns: 1fr 0.3fr;
     gap: 40px;
 }
 
-.price{
+.price {
     font-size: 0.9rem;
 }
 
-input{
-    &:focus{
+input {
+    &:focus {
         box-shadow: none;
         outline: #ccc;
+    }
+}
+
+.checkout-button {
+    transition: opacity 0.2s ease;
+
+    &[disabled] {
+        cursor: not-allowed;
     }
 }
