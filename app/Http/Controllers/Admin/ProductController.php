@@ -58,6 +58,8 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
+        // dd($request->all());
+
         [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleData($request);
 
         try {

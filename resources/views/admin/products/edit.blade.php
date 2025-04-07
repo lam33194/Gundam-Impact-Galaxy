@@ -300,7 +300,7 @@
 @endsection
 
 @section('script')
-<script src="{{ asset('assets/js/admin/products/create.js') }}"></script>
+<script src="{{ asset('assets/js/admin/products/edit.js') }}"></script>
 
 <!--tinymce js-->
 <script src="https://themesbrand.com/skote/layouts/assets/libs/tinymce/tinymce.min.js"></script>

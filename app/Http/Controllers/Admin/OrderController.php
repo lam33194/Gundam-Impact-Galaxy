@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helper\Toastr;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -40,7 +39,6 @@ class OrderController extends Controller
             break;
         }
 
-        Toastr::success('Success', 'Cập nhật trạng thái thành công');
-        return back();
+        return back()->with('success', 'Cập nhật trạng thái thành công');
     }
 }

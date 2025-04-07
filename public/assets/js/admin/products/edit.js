@@ -22,6 +22,10 @@ function initializeSelect2() {
     });
 }
 
+function fetchProductData() {
+    return $.get(`${BASE_URL}/api/v1/variant-attributes`);
+}
+
 // handle variants 02/10/2024
 const renderOptions = (data) => {
     return data
@@ -35,23 +39,23 @@ const renderTableVariants = (selectedColors, selectedSizes) => {
     selectedColors.forEach((color, colorIndex) => {
         selectedSizes.forEach((size, sizeIndex) => {
             tableRows += `<tr class="text-center">
-                ${sizeIndex === 0
+                  ${sizeIndex === 0
                     ? `<td rowspan="${selectedSizes.length}" style="vertical-align: middle;">${color.text}</td>`
                     : ""
                 }
-                <td>${size.text}</td>
-                <td>
-                <input type="tel" name="product_variants[${color.id}-${size.id
+                  <td>${size.text}</td>
+                  <td>
+                  <input type="tel" name="product_variants[${color.id}-${size.id
                 }][quantity]"
-                min="1" class="form-control quantity-variant-all" value="0" 
-                 oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                  onblur="if(this.value === '') this.value = '0'">
-                </td>
-                <td>
-                <input type="file" name="product_variants[${color.id}-${size.id
+                  min="1" class="form-control quantity-variant-all" value="0" 
+                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    onblur="if(this.value === '') this.value = '0'">
+                  </td>
+                  <td>
+                  <input type="file" name="product_variants[${color.id}-${size.id
                 }][image]" class="form-control-file">
-                </td>
-            </tr>`;
+                  </td>
+              </tr>`;
         });
     });
 
@@ -61,48 +65,71 @@ const renderTableVariants = (selectedColors, selectedSizes) => {
 // End
 
 $(document).ready(function () {
+    let colors = [];
+    let sizes = [];
+
     initializeSelect2();
 
-    // Ẩn bảng preview ban đầu
-    $("#table-product-variant-preview").hide();
+    $("#color-name-product").hide();
+    $("#size-name-product").hide();
 
-    // Lắng nghe khi chọn màu và size
-    $("#select-color-product-multiple, #select-size-product-multiple").on("change", function () {
-        const selectedColors = $("#select-color-product-multiple").select2("data");
-        const selectedSizes = $("#select-size-product-multiple").select2("data");
+    fetchProductData().done(function (res) {
+        colors = res.data.productColors;
+        sizes = res.data.productSizes;
 
-        if (selectedColors.length > 0 && selectedSizes.length > 0) {
-            $("#table-product-variant-preview").show();
-            const tableBody = renderTableVariants(selectedColors, selectedSizes);
-            $("#render-tbody-product").html(tableBody);
-        } else {
-            $("#table-product-variant-preview").hide();
-            $("#render-tbody-product").empty();
-        }
+        // ------- \\
+        $("#select-color-product-multiple").html(`${renderOptions(colors)}`);
+        $("#select-size-product-multiple").html(`${renderOptions(sizes)}`);
+        // ------- \\
     });
 
-    if (oldColors.length > 0 && oldSizes.length > 0) {
-        const tableBody = renderTableVariants(
-            oldColors.map(c => ({ id: c.id, text: c.name })),
-            oldSizes.map(s => ({ id: s.id, text: s.name }))
-        );
-        $("#render-tbody-product").html(tableBody);
-        $("#table-product-variant-preview").show();
-    }
+    // ------- \\
 
-    // Áp dụng số lượng cho tất cả biến thể
+    // mặc định hide table product variant preview
+    $("#table-product-variant-preview").hide();
+
+    // lắng nghe sự kiện chọn color, size
+    $("#select-color-product-multiple, #select-size-product-multiple").on(
+        "change",
+        function () {
+            const selectedColors = $("#select-color-product-multiple").select2(
+                "data"
+            );
+            const selectedSizes = $("#select-size-product-multiple").select2("data");
+
+            // Kiểm tra nếu cả màu và size đều được chọn
+            if (selectedColors.length > 0 && selectedSizes.length > 0) {
+                // khi chọn cả color và size thì mới hiển thị table
+                $("#table-product-variant-preview").show();
+
+                const tableBody = renderTableVariants(selectedColors, selectedSizes);
+                $("#render-tbody-product").html(tableBody);
+            } else {
+                $("#table-product-variant-preview").hide();
+                $("#render-tbody-product").empty(); // Xóa bảng nếu không có gì được chọn
+            }
+        }
+    );
+
     $("#apply-quantity-variant-all").on("click", function () {
         let quantityAll = $("#product-quantity-variant-all").val();
+
         if (quantityAll !== "" && !isNaN(quantityAll) && quantityAll >= 1) {
             $(".quantity-variant-all").val(quantityAll);
+            console.log("upload all");
         } else {
             showAlert("error", "Yêu cầu nhập số hợp lệ", "LuxChill Thông Báo!");
         }
+
+        // console.log(`Quantity All: ${quantityAll}`);
     });
+
+    // ------- \\
 
     handleSubmit();
 
     // init form editor
+
     $("#elm1") &&
         tinymce.init({
             selector: "textarea#elm1",
@@ -137,15 +164,15 @@ const addImageGallery = () => {
     let id =
         "gen" + "_" + Math.random().toString(36).substring(2, 15).toLowerCase();
     let html = `
-                <div class="col-md-4" id="${id}_item">
-                    <div class="d-flex">
-                        <input type="file" class="form-control" name="product_galleries[]" id="${id}">
-                        <button type="button" class="btn btn-danger" onclick="removeImageGallery('${id}_item')">
-                            <span class="bx bx-trash"></span>
-                        </button>
-                    </div>
-                </div>
-  `;
+                  <div class="col-md-4" id="${id}_item">
+                      <div class="d-flex">
+                          <input type="file" class="form-control" name="product_galleries[]" id="${id}">
+                          <button type="button" class="btn btn-danger" onclick="removeImageGallery('${id}_item')">
+                              <span class="bx bx-trash"></span>
+                          </button>
+                      </div>
+                  </div>
+    `;
 
     $("#gallery_list").append(html);
 };

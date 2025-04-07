@@ -145,38 +145,53 @@
 
                     <div class="card">
                         <div class="card-body">
-
                             <div class="card-title mb-4">
                                 <h4>Biến Thể</h4>
                             </div>
-
+                    
                             <div class="mb-3">
-
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <span class="form-label">
                                             <span class="text-danger">*</span>
                                             Màu
                                         </span>
-                                        <select id="select-color-product-multiple" class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select color ..." name="colors[]">
+                                        <select id="select-color-product-multiple"
+                                                class="select2 form-control select2-multiple"
+                                                multiple="multiple"
+                                                name="colors[]">
+                                            @foreach($colors as $color)
+                                                <option value="{{ $color->id }}" {{ collect(old('colors'))->contains($color->id) ? 'selected' : '' }}>
+                                                    {{ $color->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                         @error('colors')
                                         <div class="text-danger fst-italic">*{{ $message }}</div>
                                         @enderror
                                     </div>
+                    
                                     <div class="col-lg-6">
                                         <span class="form-label">
                                             <span class="text-danger">*</span>
-                                            Kich thước
+                                            Kích thước
                                         </span>
-                                        <select id="select-size-product-multiple" class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Select size ..." name="sizes[]">
+                                        <select id="select-size-product-multiple"
+                                                class="select2 form-control select2-multiple"
+                                                multiple="multiple"
+                                                name="sizes[]">
+                                            @foreach($sizes as $size)
+                                                <option value="{{ $size->id }}"
+                                                    {{ collect(old('sizes'))->contains($size->id) ? 'selected' : '' }}>
+                                                    {{ $size->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                         @error('sizes')
                                         <div class="text-danger fst-italic">*{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
@@ -234,12 +249,12 @@
                             <div class="mb-3">
                                 <label class="form-label">
                                     <span class="text-danger"></span>
-                                    Select Tags
+                                    Chọn thẻ
                                 </label>
 
                                 <select id="select-tag-product-multiple" class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Choose ..." name="tags[]">
                                     @foreach ($tags as $tag)
-                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                    <option {{ in_array($tag->id, old('tags', [])) ? 'selected' : ''  }} value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -252,9 +267,7 @@
 
                                 <select class="form-control select2-multiple" name="product[category_id]">
                                     @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">
-                                        {{ $category->name }}
-                                    </option>
+                                    <option {{ old("product.category_id") == $category->id ? 'selected' : '' }} value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -267,7 +280,7 @@
                             <div class="mb-3">
                                 <div class="form-check form-switch mb-3">
                                     <label for="{{ $item }}" class="form-check-label">{{ $item }}</label>
-                                    <input id="{{ $item }}" class="form-check-input" value="1" type="checkbox" {{ $item === 'is_active' ? 'checked' : '' }} name="product[{{ $item }}]">
+                                    <input id="{{ $item }}" class="form-check-input" value="1" type="checkbox" {{ old("product.$item") ? 'checked' : '' }} name="product[{{ $item }}]">
                                 </div>
                             </div>
                             @endforeach
@@ -291,8 +304,11 @@
 @endsection
 
 @section('script')
+<script>
+    const oldColors = {!! json_encode($colors->whereIn('id', old('colors', []))->values()) !!};
+    const oldSizes = {!! json_encode($sizes->whereIn('id', old('sizes', []))->values()) !!};
+</script>
 <script src="{{ asset('assets/js/admin/products/create.js') }}"></script>
-
 <!--tinymce js-->
 <script src="https://themesbrand.com/skote/layouts/assets/libs/tinymce/tinymce.min.js"></script>
 @endsection
