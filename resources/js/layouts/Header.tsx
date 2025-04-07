@@ -1,15 +1,45 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import './Header.scss';
+import { useState } from 'react';
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  const handleSearch = () => {
+    if (!searchKeyword.trim()) {
+      navigate('/search');
+    } else {
+      navigate('/search', {
+        state: {
+          initialSearchType: 'name',
+          initialKeyword: searchKeyword.trim()
+        }
+      });
+    }
+    setSearchKeyword('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <header className="py-3">
       <div className="container">
         <div className="row align-items-center">
           <div className="col-md-3">
-            <a style={{ 'textDecoration': 'none' }} href="/"><h1 className="fs-4 fw-bold mb-0">Gundam Impact Galaxy</h1></a>
+            <Link to="/" className="header-logo text-decoration-none">
+              <img
+                src="/logo.svg"
+                alt="Gundam Impact Galaxy Logo"
+              />
+              <h2 className="fw-bold">Gundam Impact Galaxy</h2>
+            </Link>
           </div>
 
           <div className="col-md-5">
@@ -19,8 +49,15 @@ function Header() {
                 className="form-control"
                 placeholder="Tìm kiếm sản phẩm..."
                 aria-label="Tìm kiếm"
+                value={searchKeyword}
+                onChange={(e) => setSearchKeyword(e.target.value)}
+                onKeyPress={handleKeyPress}
               />
-              <button className="btn btn-outline-secondary" type="button">
+              <button
+                className="btn btn-outline-secondary"
+                type="button"
+                onClick={handleSearch}
+              >
                 <i className="fas fa-search me-1"></i> Tìm kiếm
               </button>
             </div>

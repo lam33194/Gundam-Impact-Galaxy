@@ -6,11 +6,24 @@ import { FormatCurrency } from "../utils/FormatCurrency";
 import { addOrder } from "../services/OrderService";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { getUserById } from "../services/UserService";
+import { getProvinces, getDistricts, getWards } from "../services/LocationService";
 
 const Checkout = () => {
+    const { user: authUser } = useAuth();
+    const [isLoading, setIsLoading] = useState(true);
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
-    const nav = useNavigate();
+
+    // Add location states
+    const [provinces, setProvinces] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+
+    const [selectedProvince, setSelectedProvince] = useState("");
+    const [selectedDistrict, setSelectedDistrict] = useState("");
+    const [selectedWard, setSelectedWard] = useState("");
 
     const [formData, setFormData] = useState({
         user_name: "",
@@ -64,8 +77,9 @@ const Checkout = () => {
                 toast.error("Có lỗi xảy ra, vui lòng thử lại!");
             }
         }
-        
+
     };
+
     const getCartDetail = async () => {
         try {
             const res = await getCart();
@@ -81,12 +95,126 @@ const Checkout = () => {
                 console.log(t);
                 setTotal(t);
             }
-        } catch (error) {}
+        } catch (error) { }
+    };
+
+    const loadLocationData = async (city: string, district: string, ward: string) => {
+        const provincesResponse = await getProvinces();
+        setProvinces(provincesResponse.data);
+
+        if (city) {
+            const matchingProvince = provincesResponse.data.find(p => p.name === city);
+            if (matchingProvince) {
+                setSelectedProvince(matchingProvince.id);
+
+                const districtsResponse = await getDistricts(matchingProvince.id);
+                setDistricts(districtsResponse.data);
+
+                if (district) {
+                    const matchingDistrict = districtsResponse.data.find(d => d.name === district);
+                    if (matchingDistrict) {
+                        setSelectedDistrict(matchingDistrict.id);
+
+                        const wardsResponse = await getWards(matchingDistrict.id);
+                        setWards(wardsResponse.data);
+
+                        if (ward) {
+                            const matchingWard = wardsResponse.data.find(w => w.name === ward);
+                            if (matchingWard) {
+                                setSelectedWard(matchingWard.id);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     };
 
     useEffect(() => {
         getCartDetail();
     }, []);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                if (!authUser?.id) return;
+
+                setIsLoading(true);
+                const response = await getUserById(authUser.id, { include: 'addresses' });
+                const userData = response.data.data[0];
+                const userAddress = userData.addresses?.[0];
+
+                setFormData({
+                    ...formData,
+                    user_name: userData.name || '',
+                    user_email: userData.email || '',
+                    user_phone: userData.phone || '',
+                    user_address: userAddress?.address || '',
+                    province: userAddress?.city || '',
+                    district: userAddress?.district || '',
+                    ward: userAddress?.ward || '',
+                });
+
+                await loadLocationData(
+                    userAddress?.city || '',
+                    userAddress?.district || '',
+                    userAddress?.ward || ''
+                );
+            } catch (error) {
+                console.error('Failed to fetch user data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [authUser?.id]);
+
+    useEffect(() => {
+        if (selectedProvince) {
+            const fetchDistricts = async () => {
+                try {
+                    setSelectedWard('');
+                    setWards([]);
+                    setSelectedDistrict('');
+                    setDistricts([]);
+
+                    const response = await getDistricts(selectedProvince);
+                    setDistricts(response.data);
+
+                    setFormData(prev => ({
+                        ...prev,
+                        province: provinces.find(p => p.id === selectedProvince)?.name || '',
+                        district: '',
+                        ward: ''
+                    }));
+                } catch (error) {
+                    console.error('Failed to fetch districts:', error);
+                }
+            };
+            fetchDistricts();
+        }
+    }, [selectedProvince]);
+
+    useEffect(() => {
+        if (selectedDistrict) {
+            const fetchWards = async () => {
+                try {
+                    const response = await getWards(selectedDistrict);
+                    setWards(response.data);
+
+                    setFormData(prev => ({
+                        ...prev,
+                        district: districts.find(d => d.id === selectedDistrict)?.name || '',
+                        ward: ''
+                    }));
+                } catch (error) {
+                    console.error('Failed to fetch wards:', error);
+                }
+            };
+            fetchWards();
+        }
+    }, [selectedDistrict]);
 
     return (
         <div className="checkout container d-flex gap-5">
@@ -152,46 +280,59 @@ const Checkout = () => {
                             </div>
 
                             <div className="form-floating mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="province"
-                                    placeholder="Chọn Tỉnh thành"
-                                    value={formData.province}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <label htmlFor="floatingProvince">
-                                    Tỉnh thành
-                                </label>
+                                <select
+                                    className="form-select"
+                                    value={selectedProvince}
+                                    onChange={(e) => setSelectedProvince(e.target.value)}
+                                >
+                                    <option value="">Chọn Tỉnh/Thành phố</option>
+                                    {provinces.map(province => (
+                                        <option key={province.id} value={province.id}>
+                                            {province.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <label>Tỉnh/Thành phố</label>
                             </div>
 
                             <div className="form-floating mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="district"
-                                    placeholder="Chọn Quận huyện"
-                                    value={formData.district}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <label htmlFor="floatingDistrict">
-                                    Quận huyện
-                                </label>
+                                <select
+                                    className="form-select"
+                                    value={selectedDistrict}
+                                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                                    disabled={!selectedProvince}
+                                >
+                                    <option value="">Chọn Quận/Huyện</option>
+                                    {districts.map(district => (
+                                        <option key={district.id} value={district.id}>
+                                            {district.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <label>Quận/Huyện</label>
                             </div>
 
                             <div className="form-floating mb-3">
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    name="ward"
-                                    placeholder="Chọn Phường xã"
-                                    value={formData.ward}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                <label htmlFor="floatingWard">Phường xã</label>
+                                <select
+                                    className="form-select"
+                                    value={selectedWard}
+                                    onChange={(e) => {
+                                        setSelectedWard(e.target.value);
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            ward: wards.find(w => w.id === e.target.value)?.name || ''
+                                        }));
+                                    }}
+                                    disabled={!selectedDistrict}
+                                >
+                                    <option value="">Chọn Xã/Phường</option>
+                                    {wards.map(ward => (
+                                        <option key={ward.id} value={ward.id}>
+                                            {ward.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <label>Xã/Phường</label>
                             </div>
 
                             <div className="form-floating mb-3">
@@ -285,10 +426,9 @@ const Checkout = () => {
                             <div
                                 className="cart-product-item-image col-2"
                                 style={{
-                                    backgroundImage: `url(${
-                                        item.image ||
+                                    backgroundImage: `url(${item.image ||
                                         "https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243"
-                                    })`,
+                                        })`,
                                     height: "60px",
                                     backgroundSize: "cover",
                                     backgroundPosition: "center",

@@ -44,29 +44,24 @@ const ProductDetail = () => {
         }
     };
 
-    const updateCart = async (index ?: any) => {
+    const updateCart = async () => {
         try {
-            const res = await addToCart({
-                product_variant_id: product!.variants[0].id,
-                quantity: quantity,
-            });
-            if (res && res.data) {
-                if (index === -1){
-                   window.location.href='/cart'
-                }
-                toast.success("Đã thêm vào giỏ hàng!");
+            const { id } = product!.variants[0];
+            const res = await addToCart({ product_variant_id: id, quantity });
+    
+            if (res?.data) {
                 console.log(res.data);
+                toast.success("Đã thêm vào giỏ hàng!");
+
             }
-        } catch (error) {
-                    console.error('Lỗi xảy ra:', error);
-                    if (error.response && error.response.data && error.response.data.message) {
-                        console.log('Thông báo lỗi:', error.response.data.message);
-                        toast.error(error.response.data.message);
-                    } else {
-                        toast.error("Có lỗi xảy ra, vui lòng thử lại!");
-                    }
-                }
+        } catch (error: any) {
+            console.error('Lỗi xảy ra:', error);
+            const errorMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
+            console.log('Thông báo lỗi:', errorMessage);
+            toast.error(errorMessage);
+        }
     };
+    
 
     useEffect(() => {
         if (slug) {
@@ -172,7 +167,6 @@ const ProductDetail = () => {
                             className="fw-bold form-control text-center"
                             value={quantity}
                             aria-label="Quantity"
-                            min="1"
                             readOnly
                         />
 
@@ -189,7 +183,10 @@ const ProductDetail = () => {
                     <div className="d-flex gap-2 pay my-2">
                         <button className="btn btn-dark col-10 d-flex flex-column">
                             <span>Thanh toán online hoặc ship COD</span>
-                            <span className="fw-bold"  onClick={() => updateCart(-1)}>Mua ngay</span>
+                            <span className="fw-bold"  onClick={() => {
+                               nav("/cart");
+                                updateCart();
+                            }}>Mua ngay</span>
                         </button>
                         <button className="btn btn-dark col-2">
                             <i
