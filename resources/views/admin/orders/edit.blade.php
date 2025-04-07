@@ -177,7 +177,7 @@
                                         </td>
 
                                         <td>
-                                            {{ limitTextLeng($orderItem->product_name, 10) }}
+                                            {{ limitTextLeng($orderItem->product_name, 25) }}
                                         </td>
 
                                         <td>
