@@ -25,10 +25,14 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
-        // Lấy data colors và sizes 
-        Route::get('variant-attributes', 'getVariantAttributes');
+        // Lấy all data colors và sizes
+        Route::get('variant-attributes', 'getAllSizesAndColors');
         // Lấy danh sách product theo category
         Route::get('categories/{slug}/products', 'getByCategory');
+        // Sản phẩm top doanh thu
+        Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
+        // Sản phẩm bán chạy
+        Route::get('getTopSellingProducts', 'getTopSellingProducts');
     });
 
     Route::controller(CartItemController::class)->group(function () {
