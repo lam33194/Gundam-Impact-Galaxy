@@ -46,7 +46,13 @@ function Header() {
                       </Link>
                     </li>
                     <li>
-                      <Link className="dropdown-item" to="/orders">
+                      <Link className="dropdown-item" to="/change-password">
+                        <i className="fas fa-key me-2"></i>
+                        Đổi mật khẩu
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/order-history">
                         <i className="fas fa-shopping-bag me-2"></i>
                         Lịch sử mua hàng
                       </Link>
