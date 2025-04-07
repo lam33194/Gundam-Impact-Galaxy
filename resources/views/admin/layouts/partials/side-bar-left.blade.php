@@ -23,7 +23,7 @@
             </li>
 
             <li class="{{ activeMenuLi('admin/users') }}">
-                <a href="#" class="waves-effect {{ activeMenu('admin/users') }}">
+                <a href="{{ route('admin.users.index') }}" class="waves-effect {{ activeMenu('admin/users') }}">
                     <i class="bx bx-user"></i>
                     <span key="t-users">Quản lý tài khoản</span>
                 </a>
@@ -84,7 +84,7 @@
             </li>
 
             <li>
-                <a href="#" class="waves-effect">
+                <a href="{{ route('admin.orders.index') }}" class="waves-effect">
                     <span class="badge rounded-pill bg-danger float-end" key="t-hot">2</span>
                     <i class="bx bx-receipt"></i>
                     <span key="t-orders">Đơn hàng</span>

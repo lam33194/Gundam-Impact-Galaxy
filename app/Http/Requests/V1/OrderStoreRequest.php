@@ -34,7 +34,7 @@ class OrderStoreRequest extends FormRequest
             'ship_user_address' => 'nullable|string|max:255',
             'ship_user_note'    => 'nullable|string|max:255',
 
-            'type_payment'      => 'required|in:cod',
+            'type_payment'      => 'required|in:cod,vnpay',
             'voucher_code'      => 'nullable|exsist:vouchers,code'
         ];
     }

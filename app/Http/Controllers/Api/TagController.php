@@ -3,47 +3,58 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 
 class TagController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // Lấy danh sách tất cả tags
     public function index()
     {
-        //
+        return response()->json(Tag::all());
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    // Thêm tag mới
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|unique:tags'
+        ]);
+
+        $tag = Tag::create([
+            'name' => $request->name
+        ]);
+
+        return response()->json($tag, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    // Lấy chi tiết tag theo ID
+    public function show($id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+        return response()->json($tag);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    // Cập nhật tag
+    public function update(Request $request, $id)
     {
-        //
+        $tag = Tag::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|unique:tags,name,' . $id
+        ]);
+
+        $tag->update([
+            'name' => $request->name
+        ]);
+
+        return response()->json($tag);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    // Xóa tag
+    public function destroy($id)
     {
-        //
+        Tag::destroy($id);
+        return response()->json(['message' => 'Tag deleted']);
     }
 }

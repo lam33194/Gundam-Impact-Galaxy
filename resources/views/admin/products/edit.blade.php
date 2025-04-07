@@ -1,5 +1,5 @@
 @extends('admin.layouts.master')
-@section('title', 'New Product')
+@section('title', 'Edit Product')
 
 @section('style')
 <link rel="stylesheet" href="{{ asset('assets/css/admin/product-create.css') }}">
@@ -9,20 +9,21 @@
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 class="mb-sm-0 font-size-18">Thêm Sảm Phẩm</h4>
+            <h4 class="mb-sm-0 font-size-18">Sửa Sảm Phẩm {{ $product->name }}</h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.products.index') }}">Sản Phẩm</a>
                     </li>
-                    <li class="breadcrumb-item active">Thêm Sản Phẩm</li>
+                    <li class="breadcrumb-item active">Sửa Sản Phẩm</li>
                 </ol>
             </div>
         </div>
 
 
-        <form id="form-create-product" action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="form-create-product" action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+            @method('PUT')
             @csrf
             <div class="row">
                 <div class="col-lg-8">
@@ -36,9 +37,11 @@
                                 @error('product.thumb_image')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
-                                <div class="text-center">
+                                <div class="text-center d-flex align-items-center justify-content-center gap-3">
+                                    <img src="{{ Storage::url($product->thumb_image) }}" width="96" height="96">
+                                    <span> => </span>
                                     <div class="position-relative d-inline-block">
-                                        <div class="position-absolute bottom-0 end-0">
+                                        <div class="position-absolute bottom-0 flex end-0">
                                             <label for="project-image-input" class="mb-0" data-bs-toggle="tooltip" data-bs-placement="right" title="Select Image">
                                                 <div class="avatar-xs">
                                                     <div class="avatar-title bg-light border rounded-circle text-muted cursor-pointer shadow font-size-16">
@@ -64,7 +67,7 @@
                                 </label>
                                 <input name="product[name]" type="text" class="form-control @error('product.name')
                                         is-invalid
-                                    @enderror" placeholder="Enter product name..." value="{{ old('product.name') }}">
+                                    @enderror" placeholder="Enter product name..." value="{{ old('product.name') ?? $product->name }}">
                                 @error('product.name')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
@@ -79,7 +82,7 @@
                                         </label>
                                         <input name="product[price_regular]" type="number" class="form-control @error('product.price_regular')
                                                 is-invalid
-                                            @enderror" placeholder="Enter product price_regular..." value="{{ old('product.price_regular') }}">
+                                            @enderror" placeholder="Enter product price_regular..." value="{{ old('product.price_regular') ?? $product->price_regular }}">
                                         @error('product.price_regular')
                                         <div class="text-danger fst-italic">*{{ $message }}</div>
                                         @enderror
@@ -93,7 +96,7 @@
                                         </label>
                                         <input name="product[price_sale]" type="number" class="form-control @error('product.price_sale')
                                             is-invalid
-                                            @enderror" placeholder="Enter product number..." value="{{ old('product.price_sale') }}">
+                                            @enderror" placeholder="Enter product number..." value="{{ old('product.price_sale') ?? $product->price_sale }}">
                                         @error('product.price_sale')
                                         <div class="text-danger fst-italic">*{{ $message }}</div>
                                         @enderror
@@ -103,12 +106,12 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Mô tả ngắn</label>
-                                <textarea class="form-control @error('product.description') is-invalid @enderror" name="product[description]">{{ old('product.description') }}</textarea>
+                                <textarea class="form-control @error('product.description') is-invalid @enderror" name="product[description]">{{ old('product.description') ?? $product->description }}</textarea>
                             </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Mô tả chi tiết</label>
-                                <textarea id="elm1" name="product[content]">{{ old('product.content') }}</textarea>
+                                <textarea id="elm1" name="product[content]">{{ old('product.content') ?? $product->content }}</textarea>
                                 @error('product.content')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
@@ -126,12 +129,18 @@
                             </h4>
                             <button type="button" class="btn btn-primary" onclick="addImageGallery()">Thêm ảnh</button>
                         </div>
-                        
                         <div class="card-body">
+                            <div class="d-flex gap-3">
+                                @foreach ($product->galleries as $gallery)
+                                <img src="{{ Storage::url($gallery->image) }}" height="100" width="auto" alt="">
+                                @endforeach
+                            </div>
+
                             @error('product_galleries')
                             <div class="text-danger fst-italic">*{{ $message }}</div>
                             @enderror
-                            <div class="live-preview">
+
+                            <div class="mt-3 live-preview">
                                 <div class="row gy-4" id="gallery_list">
                                     <div class="col-md-4" id="gallery_default_item">
                                         <div class="d-flex">
@@ -225,7 +234,7 @@
                                 </label>
                                 <input type="text" name="product[sku]" class="form-control @error('product.sku')
                                         is-invalid
-                                    @enderror" value="{{ old('product.sku') }}">
+                                    @enderror" value="{{ old('product.sku') ?? $product->sku }}">
                                 @error('product.sku')
                                 <div class="text-danger fst-italic">*{{ $message }}</div>
                                 @enderror
@@ -239,7 +248,7 @@
 
                                 <select id="select-tag-product-multiple" class="select2 form-control select2-multiple" multiple="multiple" data-placeholder="Choose ..." name="tags[]">
                                     @foreach ($tags as $tag)
-                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                        <option {{ $product->tags->contains($tag->id) ? 'selected' : '' }} value="{{ $tag->id }}">{{ $tag->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -252,9 +261,9 @@
 
                                 <select class="form-control select2-multiple" name="product[category_id]">
                                     @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">
-                                        {{ $category->name }}
-                                    </option>
+                                        <option {{ $product->category->id == $category->id ? 'selected' : '' }} value="{{ $category->id }}">
+                                            {{ $category->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -267,7 +276,7 @@
                             <div class="mb-3">
                                 <div class="form-check form-switch mb-3">
                                     <label for="{{ $item }}" class="form-check-label">{{ $item }}</label>
-                                    <input id="{{ $item }}" class="form-check-input" value="1" type="checkbox" {{ $item === 'is_active' ? 'checked' : '' }} name="product[{{ $item }}]">
+                                    <input id="{{ $item }}" class="form-check-input" value="1" type="checkbox" {{ $product->$item ? 'checked' : '' }} name="product[{{ $item }}]">
                                 </div>
                             </div>
                             @endforeach
@@ -279,7 +288,7 @@
 
                 <div class="col-lg-8">
                     <div class="text-end mb-4">
-                        <button type="button" id="submit-create-form-product" class="btn btn-primary">Create</button>
+                        <button type="button" id="submit-create-form-product" class="btn btn-primary">Cập nhật</button>
                     </div>
                 </div>
             </div>
