@@ -66,3 +66,27 @@ input {
         font-size: 1rem;
     }
 }
+
+.product-name {
+    font-weight: 500;
+    color: #212529;
+}
+
+.product-variants {
+    font-size: 0.85rem;
+
+    .variant-info {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .variant-separator {
+        font-size: 0.8rem;
+    }
+
+    .color-preview {
+        display: inline-block;
+        margin-bottom: 1px;
+    }
+}

@@ -1,6 +1,6 @@
 import customizeAxios from './customize-axios';
 
-export const addToCart = (data: any): Promise<any> =>{
+export const addToCart = (data: any): Promise<any> => {
     const formData = new FormData();
     formData.append('product_variant_id', data.product_variant_id);
     formData.append('quantity', data.quantity);
@@ -11,7 +11,7 @@ export const addToCart = (data: any): Promise<any> =>{
     });
 }
 
-export const updateCart = (quantity: any, cartItemId: any): Promise<any> =>{
+export const updateCart = (quantity: any, cartItemId: any): Promise<any> => {
     const formData = new FormData();
     formData.append('quantity', quantity);
     formData.append('_method', 'PUT');
@@ -22,6 +22,6 @@ export const updateCart = (quantity: any, cartItemId: any): Promise<any> =>{
     });
 }
 
-export const getCart = (): Promise<any> =>{
-    return customizeAxios.get('api/v1/carts?include=variant.product');
+export const getCart = (): Promise<any> => {
+    return customizeAxios.get('api/v1/carts?include=variant.product,variant.size,variant.color');
 }

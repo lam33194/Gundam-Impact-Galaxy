@@ -154,11 +154,30 @@ const Cart = () => {
                                                 ></div>
 
                                                 <div className="info d-flex flex-column justify-content-center align-items-start">
-                                                    <span>
-                                                        {p?.variant?.product
-                                                            ?.name ||
-                                                            "Mô hình Dragon Girl Loong - Chính hãng Cangtoys"}
+                                                    <span className="product-name mb-1">
+                                                        {p?.variant?.product?.name}
                                                     </span>
+                                                    <div className="product-variants d-flex gap-2 mb-2">
+                                                        <span className="variant-info">
+                                                            <small className="text-muted">Kích thước: </small>
+                                                            <small className="fw-bold">{p.variant.size.name}</small>
+                                                        </span>
+                                                        <span className="variant-separator text-muted">|</span>
+                                                        <span className="variant-info">
+                                                            <small className="text-muted">Màu sắc: </small>
+                                                            <span
+                                                                className="color-preview d-inline-block rounded-circle me-1"
+                                                                style={{
+                                                                    width: '12px',
+                                                                    height: '12px',
+                                                                    backgroundColor: p.variant.color.code,
+                                                                    border: '1px solid #dee2e6',
+                                                                    verticalAlign: 'middle'
+                                                                }}
+                                                            ></span>
+                                                            <small className="fw-bold">{p.variant.color.name}</small>
+                                                        </span>
+                                                    </div>
                                                     <a
                                                         onClick={() =>
                                                             handleQuantityChange(
@@ -166,7 +185,6 @@ const Cart = () => {
                                                                 0
                                                             )
                                                         }
-                                                        style={{ cursor: 'pointer' }}
                                                         className="delete-btn d-flex align-items-center text-decoration-none"
                                                     >
                                                         <i className="fas fa-trash-alt me-1"></i>

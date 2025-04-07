@@ -18,6 +18,8 @@ class CartItemController extends Controller
         'user',
         'variant',
         'variant.product',
+        'variant.size',
+        'variant.color',
     ];
 
     public function index(Request $request)
