@@ -29,18 +29,16 @@ trait LoadRelations
             // Gộp chuỗi thành mảng (vd: ?include=reviews,abc => ['reviews','abc'])
             $queryRelations = explode(',', $request->query('include'));
 
-            foreach ($queryRelations as $relation) {
+            // Lọc các quan hệ hợp lệ và giữ nguyên cấu trúc lồng nhau
+            $validRequestedRelations = array_filter($queryRelations, function ($relation) {
+                return in_array($relation, $this->validRelations);
+            });
 
-                // Nếu nhập tên quan hệ không hợp lệ, chuyển đến vòng lặp tiếp theo
-                if (!in_array($relation, $this->validRelations)) {
-                    continue;
-                }
-
+            if (!empty($validRequestedRelations)) {
                 if ($isInstance) {
-                    $model->load($relation);
+                    $model->load($validRequestedRelations);
                 } else {
-                    // Eager load
-                    $model->with($relation);
+                    $model->with($validRequestedRelations);
                 }
             }
         }
