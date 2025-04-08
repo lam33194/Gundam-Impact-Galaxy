@@ -20,7 +20,7 @@
                     <i class="fas fa-list"></i>
                     <span key="t-categories">Quản lý danh mục</span>
                 </a>
-            </li>
+            </li> 
 
             <li class="{{ activeMenuLi('admin/users') }}">
                 <a href="#" class="waves-effect {{ activeMenu('admin/users') }}">
