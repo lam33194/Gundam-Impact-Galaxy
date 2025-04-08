@@ -70,7 +70,8 @@
             </li>
 
             <li>
-                <a href="#" class="waves-effect">
+                {{-- <a href="{{ activeMenuLi('admin/tags') }}" class="waves-effect"> --}}
+                    <a href="{{ route('admin.tags.index') }}" class="waves-effect {{ activeMenu('admin/tags') }}">
                     <i class="fas fa-bookmark"></i>
                     <span key="t-tags">Quản lý thẻ</span>
                 </a>
