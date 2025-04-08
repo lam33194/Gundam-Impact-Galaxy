@@ -58,7 +58,81 @@
 
                             <tbody>
 
-                               
+                                @foreach ($categories as $category)
+                                    <tr>
+                                        <td class="dtr-control sorting_1" tabindex="0">
+                                            <div class="d-none">{{ $category->id }}</div>
+                                            <div class="form-check font-size-16"> <input class="form-check-input"
+                                                    type="checkbox" id="customerlistcheck-{{ $category->id }}"> <label
+                                                    class="form-check-label"
+                                                    for="customerlistcheck-{{ $category->id }}"></label> </div>
+                                        </td>
+
+                                        <td>
+                                            {{ $category->name }}
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-success font-size-12 p-2">
+                                                {{ $category->status ? 'public' : 'pending' }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-success font-size-12 p-2">
+                                                {{ $category->is_active ? 'Is Active' : 'No Active' }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {{ $category->created_at }}
+                                        </td>
+
+                                        <td>
+                                            {{ $category->updated_at }}
+                                        </td>
+
+                                        <td>
+                                            <div class="dropdown">
+                                                <a href="#" class="dropdown-toggle card-drop"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="mdi mdi-dots-horizontal font-size-18"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end" style="">
+                                                    <li>
+                                                        <a href="{{ route('admin.categories.edit', $category) }}"
+                                                            class="dropdown-item edit-list">
+                                                            <i class="mdi mdi-pencil font-size-16 text-success me-1"></i>
+                                                            Edit
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="{{ route('admin.categories.show', $category) }}"
+                                                            class="dropdown-item edit-list">
+                                                            <i class="fa-regular fa-eye font-size-16 text-warning me-1"
+                                                                style="color: #FFD43B;"></i>
+                                                            Show
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        {{ $categories->links('admin.layouts.components.pagination') }}
+                    </div>
+                    <!-- end table responsive -->
+                </div>
+                <!-- end card body -->
+            </div>
+            <!-- end card -->
+        </div>
+        <!-- end col -->
+    </div>
 @endsection
 
 @section('script')
