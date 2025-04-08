@@ -57,4 +57,20 @@ class TagController extends Controller
             return back();
         }
     }
+
+    public function destroy($id){
+        try {
+            $product = Tag::query()->findOrFail($id);
+            $product->delete();
+            return back()->with('success','Xoathanhcong');
+            
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success'=> false,
+                'message' => 'Khong thay',
+            ]);
+            
+        }
+    }
 }
