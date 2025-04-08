@@ -31,15 +31,5 @@ class CategoryController extends Controller
         // return $this->ok('Lấy danh sách danh mục thành công', $categories->paginate(10));
     }
 
-    public function show(string $slug)
-    {
-        $category = Category::whereSlug($slug)->first();
-
-        if (!$category) return $this->not_found("Danh mục không tồn tại");
-
-        $this->loadRelations($category, request(), true);
-
-        return response()->json($category);
-        // return $this->ok("Lấy thông tin danh mục thành công", $category);
-    }
+  
 }

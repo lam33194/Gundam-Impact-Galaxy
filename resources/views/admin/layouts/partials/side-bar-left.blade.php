@@ -16,7 +16,7 @@
             <li class="menu-title" key="t-administration">Administration</li>
 
             <li>
-                <a href="#" class="waves-effect">
+                <a href="{{ route('admin.categories.index') }}" class="waves-effect">
                     <i class="fas fa-list"></i>
                     <span key="t-categories">Quản lý danh mục</span>
                 </a>
