@@ -74,3 +74,35 @@
             </div>
         </div>
     </div>
+    <div class="col-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <strong>Trạng thái:</strong>
+                            <span class="badge font-size-12 {{ $voucher->is_active ? 'badge-soft-success' : 'badge-soft-danger' }}">
+                                {{ $voucher->is_active ? 'Đang hoạt động' : 'Không hoạt động' }}
+                            </span>
+                        </div>
+                        <div class="mb-3 d-flex gap-2">
+                            <div class="d-flex justify-content-end mt-3">
+                                <a href="{{ route('admin.vouchers.edit', $voucher) }}" class="btn btn-warning btn-sm me-2">
+                                    <i class="fas fa-edit"></i> Chỉnh sửa
+                                </a>
+                                {{-- <form action="{{ route('admin.vouchers.destroy', $voucher) }}" method="POST" class="d-inline-block">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa mã giảm giá này?')">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form> --}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
