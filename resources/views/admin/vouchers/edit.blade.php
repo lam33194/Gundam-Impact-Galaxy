@@ -88,7 +88,7 @@
                                     </label>
                                     <input type="datetime-local" name="start_date_time" id="start_date_time"
                                         class="form-control"
-                                        value="{{ old('start_date_time', $voucher->start_date_time ? $voucher->start_date_time->format('Y-m-d\TH:i') : '') }}">
+                                        value="{{ old('start_date_time', $voucher->start_date_time ?\Carbon\Carbon::parse($voucher->start_date_time)->format('Y-m-d\TH:i') : '') }}">
                                     @error('start_date_time')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror
@@ -102,7 +102,7 @@
                                     </label>
                                     <input type="datetime-local" name="end_date_time" id="end_date_time"
                                         class="form-control"
-                                        value="{{ old('end_date_time', $voucher->end_date_time ? $voucher->end_date_time->format('Y-m-d\TH:i') : '') }}">
+                                        value="{{ old('end_date_time', $voucher->end_date_time ? \Carbon\Carbon::parse($voucher->end_date_time)->format('Y-m-d\TH:i') : '') }}">
                                     @error('end_date_time')
                                         <div class="text-danger">{{ $message }}</div>
                                     @enderror

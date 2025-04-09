@@ -29,6 +29,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::resource('products', ProductController::class);
     Route::resource('vouchers', VoucherController::class);
+    Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
+
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');

@@ -46,7 +46,7 @@ class VoucherController extends Controller
               $data['discount'] = $data['discount'] ?? 0;
               $vouchers = Voucher::create($data);
               session()->forget('voucher_code');
-              Toastr::success('',"them ma giam gia thanh cong");
+              Toastr::success('',"thêm mã giảm giá thành công");
               return redirect()->route('admin.vouchers.index');
 
 
@@ -73,11 +73,29 @@ class VoucherController extends Controller
             $data = $request->all();
                $data['discount'] = (int) str_replace(',','', $request->input('discount'));
                $voucher -> update($data);
-               return redirect()->route('admin.vouchers.index')->with('success','cap nhat ma giam gia thanh cong');
+               return redirect()->route('admin.vouchers.index')->with('success','cập nhật mã giảm giá thành công');
         } catch (\Throwable $th) {
            return redirect()->back()->with('errror','da xay ra loi'. $th->getMessage());
         }
-        
-
+    }
+    public function destroy(Voucher $voucher){
+            try {
+                $voucher->delete();
+                return back()->with('success','xóa thành công');
+            } catch (\Throwable $th) {
+                return back()->with('error',$th->getMessage());
+            }
+    }
+    // viet trang thai hoaot dong cua voucher
+    public function toggleStatus($id ,Request $request){
+ 
+        try {
+            $voucher = Voucher::findOrFail($id);
+            $voucher ->is_active = $request->has('is_active');
+            $voucher ->save();
+            return back()->with('success','thao tác thành công');
+        } catch (\Throwable $th) {
+            return back()->with('error','thao tác không thành công');
+        }
     }
 }
