@@ -109,6 +109,42 @@
                                 </div>
                             </div>
 
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">
+                                        <span class="required">*</span> Tiêu đề
+                                    </label>
+                                    <input type="text" name="title" id="title" class="form-control"
+                                        placeholder="Nhập tiêu đề" value="{{ old('title', $voucher->title) }}">
+                                    @error('title')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Mô tả</label>
+                                    <textarea name="description" id="description" class="form-control" rows="4"
+                                        placeholder="Nhập mô tả">{{ old('description', $voucher->description) }}</textarea>
+                                    @error('description')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <button class="btn btn-primary">
+                                Cập nhật
+                            </button>
+                            <a href="{{ route('admin.vouchers.index') }}" class="btn btn-danger">
+                                Hủy
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Right Content -->
             {{-- <div class="col-lg-3">

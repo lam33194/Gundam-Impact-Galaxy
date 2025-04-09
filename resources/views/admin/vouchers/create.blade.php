@@ -206,7 +206,12 @@
                 }
             });
 
-           
+            formattedInput.addEventListener("blur", function(e) {
+                if (e.target.value === "") {
+                    e.target.value = "0";
+                    hiddenInput.value = "0";
+                }
+            });
         });
     </script>
 @endsection

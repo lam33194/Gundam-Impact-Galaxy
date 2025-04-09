@@ -34,7 +34,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
-    
+    // Route::resource('user-vouchers', UserVoucherController::class);
 
 
 });
