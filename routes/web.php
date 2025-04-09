@@ -38,8 +38,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/login', [LoginController::class, 'login']);
 
     Route::resource('user_vouchers', UserVoucherController::class);
-
-
+    
+   
 });
+
 
 
