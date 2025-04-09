@@ -9,6 +9,7 @@ const Product = ({p}) => {
         style={{
           backgroundImage:
             "url(https://bizweb.dktcdn.net/thumb/large/100/456/060/products/adee7807-6673-4ecc-a99a-4f111563836f-1706888678630.jpg?v=1732090977817)",
+            // "url(http://127.0.0.1:8000/storage/"+p.thumb_image+")",
         }}
       ></div>
       </div>
@@ -19,10 +20,26 @@ const Product = ({p}) => {
           Bản */}
           {p.name}
         </span>
-        <span className="product-price">
-        {/* 4.500.000đ */}
-        {FormatCurrency(p.price_sale)}đ
-        </span>
+        {/* <span className="product-price">
+          { 4.500.000đ }
+          {FormatCurrency(p.price_sale)}đ
+        </span> */}
+
+        {p.price_sale != 0 ? (
+          <div>
+            <span>
+              <s>{FormatCurrency(p.price_regular)}đ</s>
+            </span>
+            <br />
+            <span className="product-price">
+              {FormatCurrency(p.price_sale)}đ
+            </span>
+          </div>
+        ) : (
+          <span className="product-price">
+            {FormatCurrency(p.price_regular)}đ
+          </span>
+        )} <br />
       </div>
 
       <div className="buy">
