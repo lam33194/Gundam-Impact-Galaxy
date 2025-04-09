@@ -62,7 +62,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" key="t-level-1-1">
+                        <a href="{{ route('admin.user_vouchers.index') }}" key="t-level-1-1">
                             Quản lý user voucher
                         </a>
                     </li>

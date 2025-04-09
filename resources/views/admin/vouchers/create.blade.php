@@ -50,7 +50,7 @@
                             <div class="col-lg-6">
                                 <div class="mb-3">
                                     <label for="code" class="form-label">
-                                        <span class="required">*</span> Mã giảm giá (Tự động)
+                                        <span class="required">*</span> Mã voucher (Tự động)
                                     </label>
                                     <input type="text" name="code" id="code"
                                         class="form-control {{ $errors->has('code') ? 'is-invalid' : (old('code') ? 'is-valid' : '') }}"

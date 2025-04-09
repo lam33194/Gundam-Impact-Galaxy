@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\UserVoucherController;
 use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -36,7 +37,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
-    // Route::resource('user-vouchers', UserVoucherController::class);
+    Route::resource('user_vouchers', UserVoucherController::class);
 
 
 });
