@@ -85,4 +85,9 @@ class Order extends Model
     {
         return $query->where('status_payment', $status);
     }
+
+    public function scopePaid($query)
+    {
+        return $query->where('status_payment', self::STATUS_PAYMENT_PAID);
+    }
 }

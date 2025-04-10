@@ -32,7 +32,7 @@
             <li>
                 <a href="javascript: void(0);" class="has-arrow waves-effect">
                     <i class="bx bx-share-alt"></i>
-                    <span key="t-multi-level">Sản phẩm</span>
+                    <span key="t-multi-level">Quản lý sản phẩm</span>
                 </a>
                 <ul class="sub-menu" aria-expanded="true">
                     <li>
@@ -91,6 +91,14 @@
                 </a>
             </li>
 
+            <!-- <li class="menu-title" key="t-administration">Thống kê</li> -->
+
+            <li>
+                <a href="{{ route('admin.stats.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê</span>
+                </a>
+            </li>
         </ul>
     </div>
     <!-- Sidebar -->
