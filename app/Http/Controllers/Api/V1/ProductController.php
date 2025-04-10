@@ -140,17 +140,4 @@ class ProductController extends Controller
             }
         }
     }
-
-    public function getAllSizesAndColors()
-    {
-        $productColor = ProductColor::query()->latest('id')->select(['id', 'name'])->get();
-        $productSize  = ProductSize::query()->latest('id')->select(['id', 'name'])->get();
-
-        return response()->json([
-            'data' => [
-                'productColors' => $productColor,
-                'productSizes'  => $productSize,
-            ]
-        ]);
-    }
 }

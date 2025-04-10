@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\VoucherController;
@@ -32,6 +33,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('users', UserController::class);
     Route::resource('tags', TagController::class);
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
+
+    Route::controller(StatController::class)->group(function() {
+        Route::get('stats', 'index')->name('stats.index');
+    });
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
