@@ -40,6 +40,7 @@ class CategoryController extends Controller
         $this->loadRelations($category, request(), true);
 
         return response()->json($category);
+        
         // return $this->ok("Lấy thông tin danh mục thành công", $category);
     }
 }
