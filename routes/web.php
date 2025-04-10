@@ -24,13 +24,11 @@ Route::get('/{any}', function () {
 })->where('any', '^(?!admin).*');
 
 Route::prefix('admin')->name('admin.')->group(function() {
-    Route::view('/', 'admin.dashboard')->name('dashboard');
-    Route::get('/admin', [DashboardController::class,'dashboard']);
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('categories', CategoryController::class);
 
     Route::resource('products', ProductController::class);
     Route::resource('vouchers', VoucherController::class);
-    Route::delete('/admin/vouchers/{id}', [VoucherController::class, 'destroy'])->name('admin.vouchers.destroy');
 
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
