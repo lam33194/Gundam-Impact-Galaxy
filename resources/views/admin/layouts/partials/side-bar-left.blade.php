@@ -23,7 +23,7 @@
             </li> 
 
             <li class="{{ activeMenuLi('admin/users') }}">
-                <a href="#" class="waves-effect {{ activeMenu('admin/users') }}">
+                <a href="{{ route('admin.users.index') }}" class="waves-effect {{ activeMenu('admin/users') }}">
                     <i class="bx bx-user"></i>
                     <span key="t-users">Quản lý tài khoản</span>
                 </a>
@@ -32,7 +32,7 @@
             <li>
                 <a href="javascript: void(0);" class="has-arrow waves-effect">
                     <i class="bx bx-share-alt"></i>
-                    <span key="t-multi-level">Sản phẩm</span>
+                    <span key="t-multi-level">Quản lý sản phẩm</span>
                 </a>
                 <ul class="sub-menu" aria-expanded="true">
                     <li>
@@ -70,7 +70,8 @@
             </li>
 
             <li>
-                <a href="#" class="waves-effect">
+                {{-- <a href="{{ activeMenuLi('admin/tags') }}" class="waves-effect"> --}}
+                    <a href="{{ route('admin.tags.index') }}" class="waves-effect {{ activeMenu('admin/tags') }}">
                     <i class="fas fa-bookmark"></i>
                     <span key="t-tags">Quản lý thẻ</span>
                 </a>
@@ -84,13 +85,21 @@
             </li>
 
             <li>
-                <a href="#" class="waves-effect">
+                <a href="{{ route('admin.orders.index') }}" class="waves-effect">
                     <span class="badge rounded-pill bg-danger float-end" key="t-hot">2</span>
                     <i class="bx bx-receipt"></i>
                     <span key="t-orders">Đơn hàng</span>
                 </a>
             </li>
 
+            <!-- <li class="menu-title" key="t-administration">Thống kê</li> -->
+
+            <li>
+                <a href="{{ route('admin.stats.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê</span>
+                </a>
+            </li>
         </ul>
     </div>
     <!-- Sidebar -->

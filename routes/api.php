@@ -5,8 +5,9 @@ use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\TagController;
-use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,10 +25,12 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
-        // Lấy data colors và sizes 
-        Route::get('variant-attributes', 'getVariantAttributes');
         // Lấy danh sách product theo category
         Route::get('categories/{slug}/products', 'getByCategory');
+        // Sản phẩm top doanh thu
+        Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
+        // Sản phẩm bán chạy
+        Route::get('getTopSellingProducts', 'getTopSellingProducts');
     });
 
     Route::controller(CartItemController::class)->group(function () {
@@ -51,11 +54,36 @@ Route::prefix('v1')->group(function () {
             Route::get ('orders', 'index');
             // Hủy đặt hàng
             Route::put ('orders/{id}', 'update');
+            // Chi tiết đơn hàng
+            Route::get ('orders/{id}', 'show');
         });
+    });
+
+    Route::controller(UserController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('users',      'index');
+        // Chi tiết user
+        Route::get('users/{id}', 'show');
+        // Cập nhật thông tin user
+        Route::put('users',      'update')->middleware('auth:sanctum');
+    });
+
+    Route::controller(PaymentController::class)->group(function(){
+        // Tạo đường dẫn thanh toán online
+        Route::get('orders/{id}/payment', 'createPayment')->middleware('auth:sanctum');
+        Route::get('vnpay/return', 'vnpayReturn');
     });
 
     Route::prefix('auth')->group(function () {
         // Đăng ký
         Route::post('register', [AuthController::class, 'register']);   
+        Route::post('login',    [AuthController::class, 'login']);   
+
+        Route::middleware('auth:sanctum')->group(function () {
+            // Đăng xuất
+            Route::post('logout', [AuthController::class, 'logout']);
+            // Đổi mật khẩu
+            Route::post('change-password', [AuthController::class, 'changePassword']);
+        });
     });
 });

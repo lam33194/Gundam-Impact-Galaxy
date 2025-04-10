@@ -4,12 +4,13 @@
     <div class="row mb-4">
         <div class="col-lg-12">
             <div class="d-flex align-items-center">
-                <img src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}" alt=""
-                    class="avatar-sm rounded">
+                <img src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}" alt="" class="avatar-sm rounded">
+
                 <div class="ms-3 flex-grow-1">
                     <h5 class="mb-2 card-title">Hello, Henry Franklin</h5>
                     <p class="text-muted mb-0">Ready to jump back in?</p>
                 </div>
+
                 <div>
                     <a href="javascript:void(0);" class="btn btn-primary">
                         <i class="bx bx-plus align-middle"></i>
@@ -18,9 +19,7 @@
                 </div>
             </div>
         </div>
-        <!--end col-->
     </div>
-    <!--end row-->
 
     <div class="row">
         <div class="col-lg-3">
@@ -50,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <!--end col-->
+
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -61,8 +60,7 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr"
-                                id="new_application_charts">
+                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="new_application_charts">
                             </div>
                         </div>
                     </div>
@@ -78,7 +76,7 @@
                 </div>
             </div>
         </div>
-        <!--end col-->
+
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -89,8 +87,7 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr"
-                                id="total_approved_charts">
+                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="total_approved_charts">
                             </div>
                         </div>
                     </div>
@@ -102,7 +99,7 @@
                 </div>
             </div>
         </div>
-        <!--end col-->
+
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -113,8 +110,7 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-danger", "--bs-transparent"]' dir="ltr"
-                                id="total_rejected_charts">
+                            <div data-colors='["--bs-danger", "--bs-transparent"]' dir="ltr" id="total_rejected_charts">
                             </div>
                         </div>
                     </div>
@@ -126,9 +122,7 @@
                 </div>
             </div>
         </div>
-        <!--end col-->
     </div>
-    <!--end row-->
 
     <div class="row">
         <div class="col-lg-8">
@@ -151,34 +145,36 @@
                         </div>
                     </div>
 
-                    <div data-colors='["--bs-primary", "--bs-success", "--bs-warning", "--bs-info"]' dir="ltr"
-                        id="chart">
+                    <div data-colors='["--bs-primary", "--bs-success", "--bs-warning", "--bs-info"]' dir="ltr" id="chart">
                     </div>
                 </div>
             </div>
         </div>
-        <!--end col-->
+
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex">
                         <div>
                             <h4 class="card-title mb-3">Invite your friends to Skote</h4>
-                            <p class="text-muted">Nor again is there anyone who loves or pursues or
-                                desires to obtain pain of itself, because it is pain, but because
-                                occasionally.</p>
+                            <p class="text-muted">
+                                Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because
+                                it is pain, but because occasionally.
+                            </p>
                             <div>
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm"><i
-                                        class='bx bx-user-plus align-middle'></i> Invite Friends</a>
+                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">
+                                    <i class='bx bx-user-plus align-middle'></i> Invite Friends
+                                </a>
                             </div>
                         </div>
+
                         <div>
                             <img src="/assets/theme/admin/images/jobs.png" alt="" height="130">
                         </div>
                     </div>
                 </div>
             </div>
-            <!--end card-->
+
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-3">Popular Candidate</h4>
@@ -355,23 +351,21 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
     </div>
-    <!--end row-->
 
     <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
                 <div>
-                    <a href="job-list.html" class="btn btn-primary btn-sm">View All <i
-                            class="bx bx-right-arrow-alt"></i></a>
+                    <a href="job-list.html" class="btn btn-primary btn-sm">
+                        View All <i class="bx bx-right-arrow-alt"></i>
+                    </a>
                 </div>
             </div>
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
@@ -390,9 +384,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
@@ -410,9 +403,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
@@ -430,9 +422,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
@@ -450,15 +441,13 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
                     <div class="text-center mb-3">
-                        <img src="/assets/theme/admin/images/companies/adobe-photoshop.svg" alt=""
-                            class="avatar-sm">
+                        <img src="/assets/theme/admin/images/companies/adobe-photoshop.svg" alt="" class="avatar-sm">
                         <a href="job-details.html" class="text-body">
                             <h5 class="mt-4 mb-2 font-size-15">Product Sales Specialist</h5>
                         </a>
@@ -471,9 +460,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-2">
             <div class="card">
                 <div class="card-body p-4">
@@ -491,11 +479,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
     </div>
-    <!--end row-->
 
     <div class="row">
         <div class="col-lg-4">
@@ -504,8 +489,7 @@
                     <div class="d-flex">
                         <h4 class="card-title">Applications Received Time</h4>
                         <div class="dropdown ms-auto">
-                            <a class="text-muted font-size-16" role="button" data-bs-toggle="dropdown"
-                                aria-haspopup="true">
+                            <a class="text-muted font-size-16" role="button" data-bs-toggle="dropdown" aria-haspopup="true">
                                 <i class="mdi mdi-dots-horizontal"></i>
                             </a>
 
@@ -524,9 +508,8 @@
                         id="application-received-time"></div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -638,9 +621,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
+
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -670,8 +652,7 @@
                             </div>
 
                             <div class="d-flex">
-                                <img src="/assets/theme/admin/images/companies/sass.svg" alt="" height="40"
-                                    class="rounded">
+                                <img src="/assets/theme/admin/images/companies/sass.svg" alt="" height="40" class="rounded">
                                 <div class="ms-2 flex-grow-1">
                                     <h6 class="mb-1 font-size-15"><a href="job-details.html" class="text-body">Frontend
                                             Developer</a></h6>
@@ -760,8 +741,8 @@
                                 </div>
                             </div>
                             <div class="d-flex">
-                                <img src="/assets/theme/admin/images/companies/mailchimp.svg" alt=""
-                                    height="40" class="rounded">
+                                <img src="/assets/theme/admin/images/companies/mailchimp.svg" alt="" height="40"
+                                    class="rounded">
                                 <div class="ms-2 flex-grow-1">
                                     <h6 class="mb-1 font-size-15"><a href="job-details.html" class="text-body">Marketing
                                             Director</a></h6>
@@ -829,11 +810,8 @@
                     </div>
                 </div>
             </div>
-            <!--end card-->
         </div>
-        <!--end col-->
     </div>
-    <!--end row-->
 @endsection
 
 @section('script')

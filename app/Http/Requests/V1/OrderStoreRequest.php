@@ -23,18 +23,18 @@ class OrderStoreRequest extends FormRequest
     {
         return [
             'user_name'         => 'required|string|max:255',
-            'user_email'        => ['required', 'email', 'exists:users,email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'user_email'        => ['required', 'email', 'exists:users,email', 'regex:/^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
             'user_phone'        => ['required', 'string', 'regex:/^0[0-9]{9,10}$/'],
             'user_address'      => 'required|string|max:255',
             'user_note'         => 'nullable|string|max:255',
 
             'ship_user_name'    => 'nullable|string|max:255',
-            'ship_user_email'   => ['nullable', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
+            'ship_user_email'   => ['nullable', 'email', 'regex:/^[a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/'],
             'ship_user_phone'   => ['nullable', 'string', 'regex:/^0[0-9]{9,10}$/'],
             'ship_user_address' => 'nullable|string|max:255',
             'ship_user_note'    => 'nullable|string|max:255',
 
-            'type_payment'      => 'required|in:cod',
+            'type_payment'      => 'required|in:cod,vnpay',
             'voucher_code'      => 'nullable|exsist:vouchers,code'
         ];
     }
