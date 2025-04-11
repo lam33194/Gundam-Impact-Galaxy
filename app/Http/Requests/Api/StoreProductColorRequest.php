@@ -23,6 +23,7 @@ class StoreProductColorRequest extends FormRequest
     {
         return [
             'name' => 'required|max:255|unique:product_colors',
+            'code' => 'required|string|max:255',
         ];
     }
 }

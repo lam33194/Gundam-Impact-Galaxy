@@ -62,7 +62,7 @@ class TagController extends Controller
         try {
             $product = Tag::query()->findOrFail($id);
             $product->delete();
-            return back()->with('success','Xoathanhcong');
+            return back()->with('success','Xoa thanh cong');
             
             
         } catch (\Throwable $th) {

@@ -33,7 +33,7 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('users', UserController::class);
     Route::resource('tags', TagController::class);
     Route::resource('product-colors', ProductColorController::class);
-
+    
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
