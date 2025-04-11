@@ -49,7 +49,7 @@ class TagController extends Controller
     {
         try {
             $tag->update($request->validated());
-            Toastr::success(null, 'Sửa size thành công');
+            Toastr::success(message: null, title: 'Sửa size thành công');
             return back();
         } catch (\Exception $e) {
             Log::error($e->getMessage());

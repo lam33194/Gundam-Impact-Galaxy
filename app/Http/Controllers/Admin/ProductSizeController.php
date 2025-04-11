@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Helper\Toastr;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreProductSizeRequest;
+use App\Http\Requests\UpdateProductSizeRequest;
+use App\Models\ProductSize;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class ProductSizeController extends Controller
+{
+    private const VIEW_PATH = "admin.product_size.";
+
+    public function index()
+    {
+        $productSizes = ProductSize::query()->latest('id')->paginate(10);
+        return view(self::VIEW_PATH . __FUNCTION__, compact('productSizes'));
+    }
+
+    public function create()
+    {
+        return view(self::VIEW_PATH . __FUNCTION__);
+    }
+
+    
+
+    public function edit(ProductSize $productSize) {
+        return view(self::VIEW_PATH . __FUNCTION__, compact('productSize'));
+    }
+
+    public function destroy($id){
+        try {
+            $product = ProductSize::query()->findOrFail($id);
+            $product->delete();
+            return back()->with('success','Xoa thanh cong');
+            
+            
+        } catch (\Throwable $th) {
+            return response()->json([
+                'success'=> false,
+                'message' => 'Khong thay',
+            ]);
+            
+        }
+    }
+}
