@@ -25,10 +25,33 @@ class ProductSizeController extends Controller
         return view(self::VIEW_PATH . __FUNCTION__);
     }
 
-    
+    public function store(StoreProductSizeRequest $request)
+    {
+        try {
+            ProductSize::create($request->validated());
+            Toastr::success(null, 'Thêm size thành công');
+            return redirect()->route('admin.product-sizes.index');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Toastr::error(null, 'Thêm size không thành công');
+            return back();
+        }
+    }
 
     public function edit(ProductSize $productSize) {
         return view(self::VIEW_PATH . __FUNCTION__, compact('productSize'));
+    }
+
+    public function update(UpdateProductSizeRequest $request, ProductSize $productSize) {
+        try {
+            $productSize->update($request->validated());
+            Toastr::success(null, 'Sửa size thành công');
+            return back();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Toastr::error(null, 'Sửa size không thành công');
+            return back();
+        }
     }
 
     public function destroy($id){
