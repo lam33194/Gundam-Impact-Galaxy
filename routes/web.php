@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\UserVoucherController;
@@ -36,6 +37,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/login', [LoginController::class, 'login']);
 
     Route::resource('user_vouchers', UserVoucherController::class);
+    
+   
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
+    Route::resource('comments', CommentController::class);
     
    
 });
