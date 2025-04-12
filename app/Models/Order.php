@@ -13,7 +13,7 @@ class Order extends Model
         self::STATUS_ORDER_PENDING    => 'Chờ xác nhận',
         self::STATUS_ORDER_CONFIRMED  => 'Đã xác nhận',
         self::STATUS_ORDER_PREPARING  => 'Đang chuẩn bị hàng',
-        self::STATUS_ORDER_SHIPPING   => 'Đang vận chuyển',
+        self::STATUS_ORDER_SHIPPING   => 'Đang giao hàng',
         self::STATUS_ORDER_DELIVERED  => 'Đã giao hàng',
         self::STATUS_ORDER_CANCELED   => 'Đơn hàng đã bị hủy',
     ];
@@ -78,6 +78,16 @@ class Order extends Model
     // Scope
     public function scopeStatusOrderFilter($query, $status)
     {
-        return $query->where('status_order', '=', $status);
+        return $query->where('status_order', $status);
+    }
+
+    public function scopeStatusPaymentFilter($query, $status)
+    {
+        return $query->where('status_payment', $status);
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->where('status_payment', self::STATUS_PAYMENT_PAID);
     }
 }

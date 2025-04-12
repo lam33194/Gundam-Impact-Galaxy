@@ -70,7 +70,7 @@ class CategoryController extends Controller
             Toastr::success(null, 'Thao tác thành công');
             return redirect()->back();
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            Log::error($th->getMessage()); 
         }
     }
   
