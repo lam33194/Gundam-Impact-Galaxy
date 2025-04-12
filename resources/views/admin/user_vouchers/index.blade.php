@@ -69,7 +69,7 @@
                             <thead>
                                 <tr>
                                     <th>ID</th>
-                                    <th> id Người dùng</th>
+                                    <th> Tên Người dùng</th>
                                     <th>Mã voucher</th>
                                     <th>Tên voucher</th>
                                     <th>Số lần sử dụng</th>
