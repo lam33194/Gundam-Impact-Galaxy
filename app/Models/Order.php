@@ -10,17 +10,18 @@ class Order extends Model
     use HasFactory;
 
     public const STATUS_ORDER = [
-        'pending'     => 'Chờ xác nhận',
-        'confirmed'   => 'Đã xác nhận',
-        'preparing'   => 'Đang chuẩn bị hàng',
-        'shipping'    => 'Đang vận chuyển',
-        'delivered'   => 'Đã giao hàng',
-        // 'canceled'    => 'Đơn hàng đã bị hủy',
+        self::STATUS_ORDER_PENDING    => 'Chờ xác nhận',
+        self::STATUS_ORDER_CONFIRMED  => 'Đã xác nhận',
+        self::STATUS_ORDER_PREPARING  => 'Đang chuẩn bị hàng',
+        self::STATUS_ORDER_SHIPPING   => 'Đang giao hàng',
+        self::STATUS_ORDER_DELIVERED  => 'Đã giao hàng',
+        self::STATUS_ORDER_CANCELED   => 'Đơn hàng đã bị hủy',
     ];
 
     public const STATUS_PAYMENT = [
-        'unpaid' => "Chưa thanh toán",
-        'paid'   => "Đã thanh toán"
+        self::STATUS_PAYMENT_UNPAID => "Chưa thanh toán",
+        self::STATUS_PAYMENT_PAID   => "Đã thanh toán",
+        self::STATUS_PAYMENT_FAILED => "Thanh toán thất bại",
     ];
 
     public const TYPE_PAYMENT = [
@@ -38,6 +39,7 @@ class Order extends Model
     
     public const STATUS_PAYMENT_UNPAID = 'unpaid';
     public const STATUS_PAYMENT_PAID = 'paid';
+    public const STATUS_PAYMENT_FAILED = 'failed';
 
     public const TYPE_PAYMENT_VNPAY = 'vnpay';
     public const TYPE_PAYMENT_MOMO = 'momo';
@@ -70,6 +72,22 @@ class Order extends Model
 
     public function user()
     {
-        return $this->belongsTo(Order::class);
+        return $this->belongsTo(User::class);
+    }
+
+    // Scope
+    public function scopeStatusOrderFilter($query, $status)
+    {
+        return $query->where('status_order', $status);
+    }
+
+    public function scopeStatusPaymentFilter($query, $status)
+    {
+        return $query->where('status_payment', $status);
+    }
+
+    public function scopePaid($query)
+    {
+        return $query->where('status_payment', self::STATUS_PAYMENT_PAID);
     }
 }

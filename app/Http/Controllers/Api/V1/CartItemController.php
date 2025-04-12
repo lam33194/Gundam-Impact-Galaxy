@@ -18,6 +18,8 @@ class CartItemController extends Controller
         'user',
         'variant',
         'variant.product',
+        'variant.size',
+        'variant.color',
     ];
 
     public function index(Request $request)
@@ -51,6 +53,8 @@ class CartItemController extends Controller
 
             $cartItem->increment('quantity', $data['quantity']);
 
+            $cartItem->unsetRelation('variant');
+
             $this->loadRelations($cartItem, $request, true);
 
             return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
@@ -62,6 +66,8 @@ class CartItemController extends Controller
             return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
         $cartItem = $request->user()->cartItems()->create($data);
+
+        $cartItem->unsetRelation('variant');
 
         $this->loadRelations($cartItem, $request, true);
 

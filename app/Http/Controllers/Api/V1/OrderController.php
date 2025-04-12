@@ -26,11 +26,24 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = $request->user()->orders();
+        $orders = $request->user()->orders()->latest();
 
         $this->loadRelations($orders, $request);
 
+        $this->applyFilters($orders, $request->query());
+
         return response()->json($orders->paginate(10));
+    }
+
+    public function show(Request $request, string $id)
+    {
+        $order = $request->user()->orders()->find($id);
+
+        if (!$order) return $this->not_found('Đơn hàng không tồn tại');
+
+        $this->loadRelations($order, $request);
+
+        return response()->json($order);
     }
 
     public function store(OrderStoreRequest $request)
@@ -128,5 +141,13 @@ class OrderController extends Controller
             
             return $this->ok("Cập nhật hóa đơn thành công", $order);
         });
+    }
+
+    private function applyFilters($orders, $queryParams)
+    {
+        // Tìm kiếm theo status
+        if (!empty($queryParams['status_order'])) {
+            $orders->statusOrderFilter($queryParams['status_order']);
+        }
     }
 }
