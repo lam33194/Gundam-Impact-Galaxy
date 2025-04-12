@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
+import { FormatCurrency } from "../utils/FormatCurrency";
 
 const ProductDetail = () => {
 
@@ -53,7 +54,7 @@ const ProductDetail = () => {
         }
     };
 
-    const updateCart = async () => {
+    const updateCart = async (index?: any) => {
         try {
             if (!selectedSize || !selectedColor) {
                 toast.error("Vui lòng chọn kích thước và màu sắc!");
@@ -77,12 +78,16 @@ const ProductDetail = () => {
             if (res?.data) {
                 toast.success("Đã thêm vào giỏ hàng!");
             }
+            if (index === -1){
+                nav("/cart");
+            }
         } catch (error: any) {
             console.error('Lỗi xảy ra:', error);
             const errorMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
             toast.error(errorMessage);
         }
     };
+
 
     useEffect(() => {
         if (slug) {
@@ -152,7 +157,7 @@ const ProductDetail = () => {
                         </span>
                     </div>
                     <span className="price">
-                        {product !== null ? product.price_sale : ""}đ
+                        {product !== null ? FormatCurrency(product.price_sale) : ""}đ
                     </span>
                     <div className="line mb-2 mt-1"></div>
                     <span>5 Mã Giảm Giá</span>
@@ -245,17 +250,13 @@ const ProductDetail = () => {
                     </div>
 
                     <div className="d-flex gap-2 pay my-2">
-                        <button className="btn btn-dark col-10 d-flex flex-column">
+                        <button className="btn btn-dark col-10 d-flex flex-column" onClick={() => updateCart(-1)}>
                             <span>Thanh toán online hoặc ship COD</span>
-                            <span className="fw-bold" onClick={() => {
-                                nav("/cart");
-                                updateCart();
-                            }}>Mua ngay</span>
+                            <span className="fw-bold">Mua ngay</span>
                         </button>
-                        <button className="btn btn-dark col-2">
+                        <button className="btn btn-dark col-2"  onClick={() => updateCart()}>
                             <i
                                 className="fa-solid fa-cart-shopping"
-                                onClick={() => updateCart()}
                             ></i>
                         </button>
                     </div>
