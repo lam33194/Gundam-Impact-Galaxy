@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreProductColorRequest extends FormRequest
+class UpdateProductSizeRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +23,10 @@ class StoreProductColorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|max:255|unique:product_colors',
+            'name' => [
+                'required',
+                Rule::unique('product_sizes')->ignore($this->route('product_size')->id)
+            ]
         ];
     }
 }

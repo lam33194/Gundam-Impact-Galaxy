@@ -2482,22 +2482,22 @@
         },
         {
             "name": "php-flasher/flasher-laravel",
-            "version": "v1.15.14",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-flasher/flasher-laravel.git",
-                "reference": "c2777483fd7074087c16f861ce2191a95088e7c6"
+                "reference": "3c30111075488c6333c5775a2233dc3695d4335d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-flasher/flasher-laravel/zipball/c2777483fd7074087c16f861ce2191a95088e7c6",
-                "reference": "c2777483fd7074087c16f861ce2191a95088e7c6",
+                "url": "https://api.github.com/repos/php-flasher/flasher-laravel/zipball/3c30111075488c6333c5775a2233dc3695d4335d",
+                "reference": "3c30111075488c6333c5775a2233dc3695d4335d",
                 "shasum": ""
             },
             "require": {
-                "illuminate/support": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0 || ^11.0",
+                "illuminate/support": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.0 || ^10.0",
                 "php": ">=5.3",
-                "php-flasher/flasher": "^1.15.14"
+                "php-flasher/flasher": "^1.15"
             },
             "type": "library",
             "extra": {
@@ -2553,7 +2553,7 @@
                 "yoeunes"
             ],
             "support": {
-                "source": "https://github.com/php-flasher/flasher-laravel/tree/v1.15.14"
+                "source": "https://github.com/php-flasher/flasher-laravel/tree/v1.15.0"
             },
             "funding": [
                 {
@@ -2577,7 +2577,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-03-16T15:25:14+00:00"
+            "time": "2023-06-06T00:36:57+00:00"
         },
         {
             "name": "php-flasher/flasher-sweetalert",
@@ -2672,22 +2672,22 @@
         },
         {
             "name": "php-flasher/flasher-sweetalert-laravel",
-            "version": "v1.15.14",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-flasher/flasher-sweetalert-laravel.git",
-                "reference": "3fe4c180a9d49688dc4986c929f9144d4cc4ae07"
+                "reference": "6aeb89a4c5ab0c2a665aeabd094d60bc5373e4d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-flasher/flasher-sweetalert-laravel/zipball/3fe4c180a9d49688dc4986c929f9144d4cc4ae07",
-                "reference": "3fe4c180a9d49688dc4986c929f9144d4cc4ae07",
+                "url": "https://api.github.com/repos/php-flasher/flasher-sweetalert-laravel/zipball/6aeb89a4c5ab0c2a665aeabd094d60bc5373e4d8",
+                "reference": "6aeb89a4c5ab0c2a665aeabd094d60bc5373e4d8",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
-                "php-flasher/flasher-laravel": "^1.15.14",
-                "php-flasher/flasher-sweetalert": "^1.15.14"
+                "php-flasher/flasher-laravel": "^1.15",
+                "php-flasher/flasher-sweetalert": "^1.15"
             },
             "type": "library",
             "extra": {
@@ -2743,7 +2743,7 @@
                 "yoeunes"
             ],
             "support": {
-                "source": "https://github.com/php-flasher/flasher-sweetalert-laravel/tree/v1.15.14"
+                "source": "https://github.com/php-flasher/flasher-sweetalert-laravel/tree/v1.15.0"
             },
             "funding": [
                 {
@@ -2767,7 +2767,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-03-16T15:25:14+00:00"
+            "time": "2023-06-06T00:36:57+00:00"
         },
         {
             "name": "php-flasher/flasher-toastr",
@@ -2862,22 +2862,22 @@
         },
         {
             "name": "php-flasher/flasher-toastr-laravel",
-            "version": "v1.15.14",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-flasher/flasher-toastr-laravel.git",
-                "reference": "fe24ad128ac4a42adb5f7b2cd54e349c1b0235c4"
+                "reference": "a7d13b456249acef0cc2955954c203c1e09d2e96"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-flasher/flasher-toastr-laravel/zipball/fe24ad128ac4a42adb5f7b2cd54e349c1b0235c4",
-                "reference": "fe24ad128ac4a42adb5f7b2cd54e349c1b0235c4",
+                "url": "https://api.github.com/repos/php-flasher/flasher-toastr-laravel/zipball/a7d13b456249acef0cc2955954c203c1e09d2e96",
+                "reference": "a7d13b456249acef0cc2955954c203c1e09d2e96",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
-                "php-flasher/flasher-laravel": "^1.15.14",
-                "php-flasher/flasher-toastr": "^1.15.14"
+                "php-flasher/flasher-laravel": "^1.15",
+                "php-flasher/flasher-toastr": "^1.15"
             },
             "type": "library",
             "extra": {
@@ -2933,7 +2933,7 @@
                 "yoeunes"
             ],
             "support": {
-                "source": "https://github.com/php-flasher/flasher-toastr-laravel/tree/v1.15.14"
+                "source": "https://github.com/php-flasher/flasher-toastr-laravel/tree/v1.15.0"
             },
             "funding": [
                 {
@@ -2957,7 +2957,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-03-16T15:25:14+00:00"
+            "time": "2023-06-06T00:36:57+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -8911,12 +8911,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.6.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
 }

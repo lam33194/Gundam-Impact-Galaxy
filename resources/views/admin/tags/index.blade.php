@@ -74,7 +74,7 @@
                                         style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button onclick="return confirm('Chắc chắn xóa')" type="submit" class="btn btn-danger">Xóa</button>
+                                        <button class="dropdown-item remove-list"onclick="return confirm('Chắc chắn xóa')" type="submit" class="btn btn-danger"><i class="mdi mdi-trash-can font-size-12 text-danger me-1"></i></button>
                                     </form>
                                 </td>
                             </tr>

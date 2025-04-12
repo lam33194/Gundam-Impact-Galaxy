@@ -49,7 +49,7 @@ class TagController extends Controller
     {
         try {
             $tag->update($request->validated());
-            Toastr::success(null, 'Sửa size thành công');
+            Toastr::success(message: null, title: 'Sửa size thành công');
             return back();
         } catch (\Exception $e) {
             Log::error($e->getMessage());
@@ -62,7 +62,7 @@ class TagController extends Controller
         try {
             $product = Tag::query()->findOrFail($id);
             $product->delete();
-            return back()->with('success','Xoathanhcong');
+            return back()->with('success','Xoa thanh cong');
             
             
         } catch (\Throwable $th) {

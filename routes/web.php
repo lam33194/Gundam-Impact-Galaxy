@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\UserVoucherController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductColorController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductSizeController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -39,7 +40,9 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('users', UserController::class);
     Route::resource('tags', TagController::class);
     Route::resource('product-colors', ProductColorController::class);
+    Route::resource('product-sizes', ProductSizeController::class);
 
+    
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::controller(StatController::class)->group(function() {
@@ -50,9 +53,4 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/login', [LoginController::class, 'login']);
 
     Route::resource('user_vouchers', UserVoucherController::class);
-    
-   
 });
-
-
-

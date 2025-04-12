@@ -6,6 +6,7 @@ use App\Helper\Alert;
 use App\Helper\Toastr;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductColorRequest;
+use App\Http\Requests\UpdateProductColorRequest;
 use App\Models\ProductColor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ class ProductColorController extends Controller
     public function index()
     {
         $productColors = ProductColor::query()->latest('id')->paginate(10);
-        return view(self::VIEW_PATH . __FUNCTION__, data: compact('productColors'));
+        return view(self::VIEW_PATH . __FUNCTION__, compact('productColors'));
     }
 
     public function create()
@@ -43,11 +44,23 @@ class ProductColorController extends Controller
         return view(self::VIEW_PATH . __FUNCTION__, compact('productColor'));
     }
 
+    public function update(UpdateProductColorRequest $request, ProductColor $productColor) {
+        try {
+            $productColor->update($request->validated());
+            Toastr::success(null, 'Sửa màu thành công');
+            return redirect()->route('admin.product-colors.index');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            Alert::error('Lỗi khi sửa', " Thông Báo");
+            return back();
+        }
+    }
+
     public function destroy($id){
         try {
             $product = ProductColor::query()->findOrFail($id);
             $product->delete();
-            return back()->with('success','Xoathanhcong');
+            return back()->with('success','Xoa thanh cong');
             
             
         } catch (\Throwable $th) {
@@ -58,4 +71,5 @@ class ProductColorController extends Controller
             
         }
     }
+    
 }
