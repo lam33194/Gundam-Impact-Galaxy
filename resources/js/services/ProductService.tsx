@@ -11,3 +11,11 @@ export const getAllByCategory = (category_slug: any): Promise<any> => {
 export const getDetail = (slug: any): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${slug}?include=category,variants.size,variants.color`);
 }
+
+export const getTopRevenue = (): Promise<any> => {
+    return customizeAxios.get(`/api/v1/getTopRevenueProducts`)
+}
+
+export const getTopSelling = (): Promise<any> => {
+    return customizeAxios.get(`/api/v1/getTopSellingProducts`)
+}

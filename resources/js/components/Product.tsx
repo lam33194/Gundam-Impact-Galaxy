@@ -30,7 +30,7 @@ const Product = ({p}) => {
             <span>
               <s>{FormatCurrency(p.price_regular)}đ</s>
             </span>
-            <br />
+            &ensp;
             <span className="product-price">
               {FormatCurrency(p.price_sale)}đ
             </span>

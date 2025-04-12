@@ -4,10 +4,12 @@ import Product from "../components/Product";
 import Coupon from "../components/Coupon";
 import Blog from "../components/Blog";
 import { useEffect, useState } from "react";
-import { getAll } from "../services/ProductService";
+import { getAll, getTopRevenue, getTopSelling } from "../services/ProductService";
 
 function Home() {
     const [products, setProducts] = useState([]);
+    const [revenueProducts, setRevenueProducts] = useState([]);
+    const [sellingProducts, setSellingProducts] = useState([]);
     const getAllProducts = async () => {
         try {
             const res = await getAll();
@@ -20,12 +22,39 @@ function Home() {
         }
     };
 
+    const getTopRevenueProducts = async () => {
+        try {
+            const res = await getTopRevenue();
+            if (res.data && res.data.data) {
+                console.log(res.data.data);
+                setRevenueProducts(res.data.data);
+            }
+        } catch (error) {
+            console.log("Detected error:", error);
+        }
+    };
+
+    const getTopSellingProducts = async () => {
+        try {
+            const res = await getTopSelling();
+            if (res.data && res.data.data) {
+                console.log(res.data.data);
+                setSellingProducts(res.data.data);
+            }
+        } catch (error) {
+            console.log("Detected error:", error);
+        }
+    };
+    
+
     const redirectToDetail = (slug: any) => {
         window.location.href = "/product/" + slug;
     };
 
     useEffect(()=>{
         getAllProducts();
+        getTopRevenueProducts();
+        getTopSellingProducts();
     }, [])
     return (
         <div className="home-container container flex-column d-flex gap-5">
@@ -52,8 +81,8 @@ function Home() {
                     Sản phẩm bán chạy
                 </h4>
                 <div className="product-list">
-                    {products &&
-                        products.map((p, index) => {
+                    {sellingProducts &&
+                        sellingProducts.map((p, index) => {
                             return (
                                 <div className=""   onClick={() => redirectToDetail(p.slug)}>
                                      <Product key={index} p={p} />
