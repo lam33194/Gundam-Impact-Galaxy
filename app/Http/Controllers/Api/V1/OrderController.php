@@ -143,11 +143,11 @@ class OrderController extends Controller
         });
     }
 
-    private function applyFilters($order, $queryParams)
+    private function applyFilters($orders, $queryParams)
     {
         // Tìm kiếm theo status
         if (!empty($queryParams['status_order'])) {
-            $order->statusOrderFilter($queryParams['status_order']);
+            $orders->statusOrderFilter($queryParams['status_order']);
         }
     }
 }

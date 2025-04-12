@@ -34,17 +34,23 @@
                         <div class="row mb-4">
                             <div class="col-sm-3">
                                 <div class="text-sm-end">
-                                    @php
-                                        $currentStatusIndex = array_search($order->status_order, array_keys($orderStatus));
-                                    @endphp
+                                @php
+                                    $orderStatusKeys = array_keys($orderStatus); // Get the array of status keys
+                                    $currentStatusIndex = array_search($order->status_order, $orderStatusKeys); // Current status index
+                                    $nextStatusIndex = $currentStatusIndex + 1; // Index of the next allowed status
+                                @endphp
 
                                     <select name="status_order"
                                         class="form-select w-100 waves-effect waves-light mb-2 me-2 addCustomers-modal">
                                         @foreach ($orderStatus as $key => $status)
                                             @php
-                                                $statusIndex = array_search($key, array_keys($orderStatus));
-                                            $isDisabled = $statusIndex < $currentStatusIndex; @endphp <option value="{{ $key }}"
-                                                {{ $order->status_order === $key ? 'selected' : '' }} {{ $isDisabled ? 'disabled' : '' }}>
+                                                $statusIndex = array_search($key, $orderStatusKeys);
+                                                // Disable all statuses except the current one and the next one
+                                                $isDisabled = $statusIndex !== $currentStatusIndex && $statusIndex !== $nextStatusIndex;
+                                            @endphp
+                                            <option value="{{ $key }}"
+                                                {{ $order->status_order === $key ? 'selected' : '' }}
+                                                {{ $isDisabled ? 'disabled' : '' }}>
                                                 {{ $status }}
                                             </option>
                                         @endforeach
@@ -62,50 +68,49 @@
                         </div>
                     </form>
 
-                    <div class="">
-
+                    <div>
                         @php
-                            $orderStatus = [
-                                'pending' => [
-                                    'title' => 'Chờ xác nhận',
-                                    'description' => 'New common language will be more simple and regular than the existing.',
-                                    'icon' => 'bx-copy-alt'
-                                ],
-                                'confirmed' => [
-                                    'title' => 'Đã xác nhận',
-                                    'description' => 'To achieve this, it would be necessary to have uniform grammar.',
-                                    'icon' => 'bx-badge-check'
-                                ],
-                                'preparing' => [
-                                    'title' => 'Đang chuẩn bị hàng',
-                                    'description' => 'To an English person, it will seem like simplified English.',
-                                    'icon' => 'bx-package'
-                                ],
-                                'shipping' => [
-                                    'title' => 'Đang vận chuyển',
-                                    'description' => 'It will be as simple as Occidental in fact, it will be Occidental.',
-                                    'icon' => 'bx-car'
-                                ],
-                                'delivered' => [
-                                    'title' => 'Đã giao hàng',
-                                    'description' => 'To an English person, it will seem like simplified English.',
-                                    'icon' => 'bx-badge-check'
-                                ],
-                            ];
-
-                            $currentStatus = $order->status_order;
+                        $orderStatus = [
+                            'pending' => [
+                                'title' => 'Chờ xác nhận',
+                                'description' => 'New common language will be more simple and regular than the existing.',
+                                'icon' => 'bx-copy-alt'
+                            ],
+                            'confirmed' => [
+                                'title' => 'Đã xác nhận',
+                                'description' => 'To achieve this, it would be necessary to have uniform grammar.',
+                                'icon' => 'bx-badge-check'
+                            ],
+                            'preparing' => [
+                                'title' => 'Đang chuẩn bị hàng',
+                                'description' => 'To an English person, it will seem like simplified English.',
+                                'icon' => 'bx-package'
+                            ],
+                            'shipping' => [
+                                'title' => 'Đang vận chuyển',
+                                'description' => 'It will be as simple as Occidental in fact, it will be Occidental.',
+                                'icon' => 'bx-car'
+                            ],
+                            'delivered' => [
+                                'title' => 'Đã giao hàng',
+                                'description' => 'To an English person, it will seem like simplified English.',
+                                'icon' => 'bx-badge-check'
+                            ],
+                        ];
+                        $currentStatus = $order->status_order;
                         @endphp
                         <ul class="verti-timeline list-unstyled">
                             @foreach ($orderStatus as $key => $status)
                                 <li class="event-list {{ $key === $currentStatus ? 'active' : '' }}">
                                     <div class="event-timeline-dot">
-                                        <i
-                                            class="bx bx-right-arrow-circle {{ $key === $currentStatus ? 'bx-fade-right' : '' }}"></i>
+                                        <i class="bx bx-right-arrow-circle {{ $key === $currentStatus ? 'bx-fade-right' : '' }}"></i>
                                     </div>
+
                                     <div class="d-flex">
                                         <div class="flex-shrink-0 me-3">
                                             <i class="bx {{ $status['icon'] }} h2 text-primary"></i>
                                         </div>
+
                                         <div class="flex-grow-1">
                                             <div>
                                                 <h5>{{ $status['title'] }}</h5>
@@ -177,7 +182,7 @@
                                         </td>
 
                                         <td>
-                                            {{ limitTextLeng($orderItem->product_name, 10) }}
+                                            {{ limitTextLeng($orderItem->product_name, 25) }}
                                         </td>
 
                                         <td>

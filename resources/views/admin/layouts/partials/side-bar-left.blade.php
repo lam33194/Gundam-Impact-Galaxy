@@ -16,11 +16,11 @@
             <li class="menu-title" key="t-administration">Administration</li>
 
             <li>
-                <a href="#" class="waves-effect">
+                <a href="{{ route('admin.categories.index') }}" class="waves-effect">
                     <i class="fas fa-list"></i>
                     <span key="t-categories">Quản lý danh mục</span>
                 </a>
-            </li>
+            </li> 
 
             <li class="{{ activeMenuLi('admin/users') }}">
                 <a href="{{ route('admin.users.index') }}" class="waves-effect {{ activeMenu('admin/users') }}">
@@ -32,7 +32,7 @@
             <li>
                 <a href="javascript: void(0);" class="has-arrow waves-effect">
                     <i class="bx bx-share-alt"></i>
-                    <span key="t-multi-level">Sản phẩm</span>
+                    <span key="t-multi-level">Quản lý sản phẩm</span>
                 </a>
                 <ul class="sub-menu" aria-expanded="true">
                     <li>
@@ -62,7 +62,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="#" key="t-level-1-1">
+                        <a href="{{ route('admin.user_vouchers.index') }}" key="t-level-1-1">
                             Quản lý user voucher
                         </a>
                     </li>
@@ -92,6 +92,14 @@
                 </a>
             </li>
 
+            <!-- <li class="menu-title" key="t-administration">Thống kê</li> -->
+
+            <li>
+                <a href="{{ route('admin.stats.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê</span>
+                </a>
+            </li>
         </ul>
     </div>
     <!-- Sidebar -->

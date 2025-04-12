@@ -52,12 +52,14 @@ class ProductController extends Controller
         $sizes = ProductSize::all();
         $tags = Tag::all();
 
-        $product->with(['galleries', 'tags', 'variants']);
-        return view('admin.products.edit', compact('product', 'tags', 'categories', 'colors', 'sizes'));
+        $product->loadMissing(['galleries', 'tags', 'variants', 'category', 'variants.color', 'variants.size']);
+        return view('admin.products.edit', compact(['product', 'categories', 'tags', 'colors', 'sizes']));
     }
 
     public function store(ProductStoreRequest $request)
     {
+        // dd($request->all());
+
         [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleData($request);
 
         try {

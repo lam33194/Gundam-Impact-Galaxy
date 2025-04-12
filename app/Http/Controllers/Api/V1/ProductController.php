@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductColor;
 use App\Models\ProductSize;
+// use App\Models\ProductVariant;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -66,6 +68,47 @@ class ProductController extends Controller
         return response()->json($products->paginate($perPage)->appends($request->query()));
     }
 
+    public function getTopRevenueProducts()
+    {
+        $perPage = request()->query('per_page', 10);
+
+        $topProducts = Product::select('products.*')
+            ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+            ->join('order_items', 'product_variants.id', '=', 'order_items.product_variant_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status_order', Order::STATUS_ORDER_DELIVERED)
+            ->selectRaw('SUM(
+                CASE 
+                    WHEN order_items.product_price_sale > 0 THEN order_items.product_price_sale 
+                    ELSE order_items.product_price_regular 
+                END * order_items.quantity
+            ) as total_revenue')
+            ->groupBy('products.id', 'products.name', 'products.slug')
+            ->orderByDesc('total_revenue');
+
+        $this->loadRelations($topProducts, request());
+
+        return response()->json($topProducts->paginate($perPage));
+    }
+
+    function getTopSellingProducts()
+    {
+        $perPage = request()->query('per_page', 10);
+
+        $topProducts = Product::select('products.*')
+            ->join('product_variants', 'products.id', '=', 'product_variants.product_id')
+            ->join('order_items', 'product_variants.id', '=', 'order_items.product_variant_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status_order', Order::STATUS_ORDER_DELIVERED)
+            ->selectRaw('SUM(order_items.quantity) as total_quantity')
+            ->groupBy('products.id', 'products.name', 'products.slug')
+            ->orderByDesc('total_quantity');
+
+        $this->loadRelations($topProducts, request());
+
+        return response()->json($topProducts->paginate($perPage));
+    }
+
     // còn thiếu: lọc theo price_sale. Sắp xếp theo views, time, price
     private function applyFilters($product, $queryParams)
     {
@@ -96,18 +139,5 @@ class ProductController extends Controller
                 $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
             }
         }
-    }
-
-    public function getVariantAttributes()
-    {
-        $productColor = ProductColor::query()->latest('id')->select(['id', 'name'])->get();
-        $productSize  = ProductSize::query()->latest('id')->select(['id', 'name'])->get();
-
-        return response()->json([
-            'data' => [
-                'productColors' => $productColor,
-                'productSizes'  => $productSize,
-            ]
-        ]);
     }
 }
