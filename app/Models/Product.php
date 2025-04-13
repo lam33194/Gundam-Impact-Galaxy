@@ -43,6 +43,22 @@ class Product extends Model
         'is_show_home' => 0,
     ];
 
+    // Accessor cho trung bình rating
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->comments()
+            ->where('rating', '>', 0)
+            ->avg('rating'), 1) ?: 0;
+    }
+
+    // Accessor cho tổng số bình luận
+    public function getTotalCommentsAttribute(): int
+    {
+        return $this->comments()
+            ->whereNotNull('content')
+            ->count();
+    }
+
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
@@ -56,6 +72,11 @@ class Product extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
     public function category()
