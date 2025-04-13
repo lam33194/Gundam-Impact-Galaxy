@@ -39,11 +39,7 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware(['auth:sanctum'])->group(function() {
             // Thêm bình luận
-            Route::post('products/{slug}/comments', 'storeComment');
-            // Thêm & update rating
-            Route::post('products/{slug}/ratings',  'storeRating');
-            // Sửa bình luận
-            // Xóa bình luận
+            Route::post('products/{slug}/comments', 'store');
         });
     });
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\CommentStoreRequest;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
@@ -31,56 +32,24 @@ class CommentController extends Controller
         return response()->json($comments->paginate($perPage)->appends($request->query()));
     }
 
-    public function storeComment(Request $request, string $slug)
+    public function store(CommentStoreRequest $request, string $slug)
     {
-        $products = Product::whereSlug($slug)->first();
-
-        if(!$products) return $this->not_found('Sản phẩm không tồn tại');
-
-        $data = $request->validate([
-            'content' => 'required|string|max:255',
-        ]);
-        
-        $comment = $products->comments()->create(array_merge(
-            $data,
-            ['user_id' => $request->user()->id,]
-        ));
-
-        return $this->created('Thêm bình luận thành công', $comment);
-    }
-
-    public function storeRating(Request $request, string $slug)
-    {
-        // tìm sản phẩm
         $product = Product::whereSlug($slug)->first();
 
-        if(!$product) return $this->not_found('Sản phẩm không tồn tại');
-
-        $data = $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-        ]);
+        $data = $request->validated();
         
-        // user đang đăng nhập
-        $user = $request->user();
-
-        // kiểm tra user đã đánh giá sản phẩm chưa
-        $existingComment = $product->comments()
-            ->where('user_id', $user->id)
-            ->first();
-
-        // nếu có, update rating
-        if ($existingComment) {
-            $existingComment->update([
-                'rating'  => $data['rating'],
-            ]);
-    
-            return $this->ok('Cập nhật đánh giá sản phẩm thành công', $existingComment);
+        if ($product->comments()->where('user_id', $request->user()->id)->exists()) {
+            return $this->failedValidation('Bạn đã bình luận sản phẩm này');
         }
 
-        $comment = $product->comments()->create(array_merge(
-            $data,
-            ['user_id' => $user->id,]
-        ));
+        // Tạo bình luận mới
+        $comment = $product->comments()->create([
+            'user_id' => $request->user()->id,
+            'content' => $data['content'] ?? null,
+            'rating'  => $data['rating'] ?? null,
+        ]);
+
+        $this->loadRelations($comment, $request, true);
 
         return $this->created('Đánh giá sản phẩm thành công', $comment);
     }
