@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateCategoryRequest extends FormRequest
+class UpdateProductColorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +23,11 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'slug' => 'max:190'
+            'name' => [
+                'required',
+                Rule::unique('product_colors')->ignore($this->route('product_color')->id)
+            ],
+            'code' => 'required'
         ];
     }
 }

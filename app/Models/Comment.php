@@ -16,6 +16,11 @@ class Comment extends Model
         'rating'
     ];
 
+    public function commentImages()
+    {
+        return $this->hasMany(CommentImage::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-sm-auto">
                             <div class="mb-4">
-                                <a href="#" class="btn btn-primary me-2">+ Thêm mới</a>
+                                <a href="{{ route('admin.vouchers.create') }}" class="btn btn-primary me-2">+ Thêm mới</a>
                             </div>
                         </div>
                     </div>
@@ -96,19 +96,19 @@
                                     </form>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#">
+                                        <a href="{{route('admin.vouchers.show', $voucher)}}">
                                             <button title="Chi tiết" class="btn btn-success btn-sm" type="button">
                                                 <i class="fas fa-eye"></i>
                                             </button>
                                         </a>
 
-                                        <a href="#">
+                                        <a href="{{ route('admin.vouchers.edit', $voucher) }}">
                                             <button title="Sửa" class="btn btn-warning btn-sm" type="button">
                                                 <i class="fas fa-edit"></i>
                                             </button>
                                         </a>
 
-                                        {{-- <form method="POST" action="" class="d-inline-block">
+                                        {{-- <form method="POST" action="{{ route('admin.vouchers.destroy', $voucher->id) }}" class="d-inline-block" >
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm"
