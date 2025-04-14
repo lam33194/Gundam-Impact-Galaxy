@@ -48,6 +48,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::controller(StatController::class)->group(function() {
         Route::get('stats', 'index')->name('stats.index');
+        Route::get('stats-user', 'user')->name('stats.user');
+       
     });
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
@@ -57,5 +59,4 @@ Route::prefix('admin')->name('admin.')->group(function() {
    
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
     Route::resource('comments', CommentController::class);
-
 });

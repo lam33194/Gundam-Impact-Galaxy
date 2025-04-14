@@ -100,6 +100,14 @@
                     <span key="t-multi-level">Thống kê</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{{ route('admin.stats.user') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê người dùng</span>
+                </a>
+            </li>
+           
         </ul>
     </div>
     <!-- Sidebar -->
