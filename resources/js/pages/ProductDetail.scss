@@ -1,0 +1,142 @@
+.product-detail {
+    gap: 20px;
+
+    .line {
+        height: 0.6px;
+        background-color: #dad9d9;
+    }
+
+    .detail {
+
+        button,
+        input {
+            border-radius: 0;
+        }
+
+        .img {
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 360px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .price {
+            font-size: 1.4rem;
+            color: #e00000;
+            font-weight: bold;
+        }
+
+        .info {
+            font-size: 0.9rem;
+
+            .coupon {
+                cursor: pointer;
+                border: 1px solid #ccc;
+
+                &:hover {
+                    color: #71717192;
+                }
+            }
+
+            .quantity-selector {
+                gap: 1px;
+
+                i {
+                    color: red;
+                }
+
+                button,
+                input {
+                    border: 0.3px solid #ccc;
+                }
+            }
+
+            .pay {
+                span:nth-child(1) {
+                    font-size: 0.85rem;
+                }
+
+                span:nth-child(2) {
+                    font-size: 1rem;
+                }
+
+                i {
+                    font-size: 1.2rem;
+                }
+            }
+
+            .share {
+                .pinterest {
+                    background-color: #ff94a6;
+                }
+
+                .facebook {
+                    background-color: #4bb3ff;
+                }
+
+                .twitter {
+                    background-color: #1da1f2;
+                }
+            }
+        }
+    }
+
+    .blog-article {
+        position: sticky;
+        top: 1000px;
+
+        .service {
+            border-bottom: 1px solid #75757543;
+
+            img {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    }
+}
+
+.slick-next:before {
+    color: black !important;
+}
+
+.slick-prev:before {
+    color: black !important;
+}
+
+.product-variant {
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+.variant-selection {
+    .btn-outline-dark {
+        font-size: 0.875rem;
+        padding: 0.375rem 0.75rem;
+        min-height: 32px;
+
+        &:hover {
+            background-color: #212529;
+            color: white;
+        }
+
+        &.active {
+            background-color: #212529;
+            color: white;
+        }
+    }
+
+    .color-options {
+        .btn {
+            min-width: 90px;
+
+            .color-preview {
+                width: 16px;
+                height: 16px;
+                min-width: 16px;
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.blog-list{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+.line{
+    height: 0.7px;
+    background-color: #92929246;
+    width: 90%;
+}

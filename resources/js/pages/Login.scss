@@ -1,0 +1,74 @@
+.login-container{
+    border: 1px solid #001;
+    input, button{
+        border-radius: 0.25rem;
+        &:focus{
+            outline: none;
+            box-shadow: none;
+        }
+        &::placeholder{
+            opacity: 0.4;
+            font-size: 1rem;
+        }
+        font-size: 1rem;
+    }
+    label{
+        font-size: 1.1rem;
+    }
+
+
+    a{
+        text-decoration: none;
+    }
+
+    .left{
+        .line{
+            height: 0.5px;
+           
+            background-color: #9292926c;
+        }
+
+        .oauth{
+            button{
+                border-radius: 0;
+            }
+            span{
+                font-size: 0.9rem;
+            }
+        }
+    }
+    .right{
+        background-color: #3E3E3E;
+        ul{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+           padding-left: 0;
+            i{
+                color: red;
+
+            }
+            li{ margin: 0;
+                list-style: none;
+                font-size: 1rem;
+            }
+        }
+        button{
+            border: 1px solid #fff;
+            background-color: #3E3E3E;
+            color: #fff;
+
+            &:hover{
+                background-color: #5d5d5d;
+            }
+        }
+    }
+}
+
+
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%; 
+}
