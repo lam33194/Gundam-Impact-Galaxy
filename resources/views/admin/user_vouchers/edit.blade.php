@@ -78,7 +78,40 @@
                             </div>
                         </div>
 
-                        
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="voucher_id" class="form-label">
+                                    <span class="required">*</span> Voucher
+                                </label>
+                                <select name="voucher_id" id="voucher_id" class="form-select">
+                                    <option value="">Chọn voucher</option>
+                                    @foreach ($vouchers as $voucher)
+                                        <option value="{{ $voucher->id }}" {{ $User_voucher->voucher_id == $voucher->id ? 'selected' : '' }}>
+                                            {{ $voucher->title }} ({{ $voucher->code }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('voucher_id')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="usage_count" class="form-label">
+                                    <span class="required">*</span> Số lần sử dụng
+                                </label>
+                                <input type="number" name="usage_count" id="usage_count" 
+                                       class="form-control" 
+                                       placeholder="Nhập số lần sử dụng" 
+                                       value="{{ old('usage_count', $User_voucher->usage_count) }}">
+                                @error('usage_count')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="card-footer">
                         <button class="btn btn-primary">

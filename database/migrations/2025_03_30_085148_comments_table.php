@@ -18,8 +18,7 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->nullable()->nullOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->string('content', 255)->nullable();
-            $table->string('image', 255)->nullable();
-            $table->integer('rating')->default(0);
+            $table->unsignedTinyInteger('rating')->nullable()->between(1, 5);
             $table->timestamps();
         });
     }

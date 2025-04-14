@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Category extends Model
+class CommentImage extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        "name",
-        "description",
-        "slug",
-        "is_active",
+        'comment_id',
+        'image'
     ];
-    
-    public function products()
+
+    public function comment()
     {
-        return $this->hasMany(Product::class);
+        return $this->belongsTo(Comment::class);
     }
 }
