@@ -60,7 +60,7 @@ if (!function_exists('matchStatusOrder')) {
         return match ($status) {
             'pending' => 'Chờ xác nhận',
             'confirmed' => 'Đã xác nhận',
-            'preparing_goods' => 'Đang chuẩn bị hàng',
+            'preparing' => 'Đang chuẩn bị hàng',
             'shipping' => 'Đang vận chuyển',
             'delivered' => 'Đã giao hàng',
             'canceled' => 'Đơn hàng đã bị hủy',
@@ -84,7 +84,7 @@ if (!function_exists('statusOrderClass')) {
         return match ($status) {
             'pending' => 'bg-warning text-white',
             'confirmed' => 'bg-primary text-white',
-            'preparing_goods' => 'bg-info text-white',
+            'preparing' => 'bg-info text-white',
             'shipping' => 'bg-secondary text-white',
             'delivered' => 'bg-success text-white',
             'canceled' => 'bg-danger text-white',

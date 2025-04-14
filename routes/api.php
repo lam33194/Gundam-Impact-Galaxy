@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
-use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
@@ -25,14 +25,22 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
-        // Lấy all data colors và sizes
-        Route::get('variant-attributes', 'getAllSizesAndColors');
         // Lấy danh sách product theo category
         Route::get('categories/{slug}/products', 'getByCategory');
         // Sản phẩm top doanh thu
         Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
         // Sản phẩm bán chạy
         Route::get('getTopSellingProducts', 'getTopSellingProducts');
+    });
+
+    Route::controller(CommentController::class)->group(function () {
+        // Danh sách bình luận của products
+        Route::get('products/{slug}/comments', 'index');
+
+        Route::middleware(['auth:sanctum'])->group(function() {
+            // Thêm bình luận
+            Route::post('products/{slug}/comments', 'store');
+        });
     });
 
     Route::controller(CartItemController::class)->group(function () {

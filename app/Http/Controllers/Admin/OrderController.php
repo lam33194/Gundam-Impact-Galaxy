@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Helper\Toastr;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -10,9 +9,40 @@ use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::latest()->paginate(20);
+        $query = Order::query();
+
+        // Apply date filters
+        if ($request->filled('start_date')) {
+            $query->whereDate('created_at', '>=', $request->start_date);
+        }
+
+        if ($request->filled('end_date')) {
+            $query->whereDate('created_at', '<=', $request->end_date);
+        }
+
+        // Apply order status filter
+        if ($request->filled('status_order')) {
+            $query->statusOrderFilter($request->status_order);
+        }
+
+        // Apply payment status filter
+        if ($request->filled('status_payment')) {
+            $query->statusPaymentFilter($request->status_order);
+        }
+
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('order_sku', 'like', "%{$search}%")
+                ->orWhere('user_name', 'like', "%{$search}%")
+                ->orWhere('id',        'like', "%{$search}%");
+            });
+        }
+
+        $orders = $query->latest()->paginate(15);
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -40,7 +70,6 @@ class OrderController extends Controller
             break;
         }
 
-        Toastr::success('Success', 'Cập nhật trạng thái thành công');
-        return back();
+        return back()->with('success', 'Cập nhật trạng thái thành công');
     }
 }

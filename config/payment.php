@@ -10,5 +10,11 @@ return [
 
     'momo' => [
         // 
-    ]
+    ],
+
+    'frontend' => [
+        'payment_success_url' => env('FRONTEND_PAYMENT_SUCCESS_URL', 'http://gundam-impact-galaxy.test/order-history'),
+        'payment_failed_url' => env('FRONTEND_PAYMENT_FAILED_URL', 'http://gundam-impact-galaxy.test/order-history'),
+    ],
+
 ];

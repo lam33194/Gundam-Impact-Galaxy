@@ -41,13 +41,13 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $products = Product::whereSlug($slug)->first();
+        $product = Product::whereSlug($slug)->first();
 
-        if(!$products) return $this->not_found('Sản phẩm không tồn tại');
+        if(!$product) return $this->not_found('Sản phẩm không tồn tại');
 
-        $this->loadRelations($products, request(), true);
+        $this->loadRelations($product, request(), true);
 
-        return response()->json($products);
+        return response()->json($product);
     }
 
     // Lấy danh sách products của category 
@@ -139,18 +139,5 @@ class ProductController extends Controller
                 $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
             }
         }
-    }
-
-    public function getAllSizesAndColors()
-    {
-        $productColor = ProductColor::query()->latest('id')->select(['id', 'name'])->get();
-        $productSize  = ProductSize::query()->latest('id')->select(['id', 'name'])->get();
-
-        return response()->json([
-            'data' => [
-                'productColors' => $productColor,
-                'productSizes'  => $productSize,
-            ]
-        ]);
     }
 }

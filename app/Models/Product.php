@@ -27,6 +27,8 @@ class Product extends Model
         'is_show_home'
     ];
 
+    protected $appends = ['average_rating', 'total_comments', 'total_ratings'];
+
     protected $casts = [
         'is_active' => 'boolean',
         'is_hot_deal' => 'boolean',
@@ -43,6 +45,24 @@ class Product extends Model
         'is_show_home' => 0,
     ];
 
+    // Accessor cho trung bình rating
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->comments()->whereNotNull('rating')->avg('rating'), 2) ?? 0;
+    }
+
+    // Accessor cho tổng lượt đánh giá
+    public function getTotalRatingsAttribute(): int
+    {
+        return $this->comments()->whereNotNull('rating')->count();
+    }
+
+    // Accessor cho tổng số bình luận
+    public function getTotalCommentsAttribute(): int
+    {
+        return $this->comments()->whereNotNull('content')->count();
+    }
+
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
@@ -58,6 +78,11 @@ class Product extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
@@ -66,11 +91,11 @@ class Product extends Model
     // Scope
     public function scopeNameFilter($query, $name)
     {
-        return $query->where('name','LIKE',"%$name%");
+        return $query->where('name', 'LIKE', "%$name%");
     }
     public function scopeSlugFilter($query, $slug)
     {
-        return $query->where('slug','LIKE',"%$slug%");
+        return $query->where('slug', 'LIKE', "%$slug%");
     }
     public function scopeSkuFilter($query, $sku)
     {

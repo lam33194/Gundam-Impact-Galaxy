@@ -23,9 +23,30 @@ class ProductController extends Controller
 {
     use StorageFile;
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::query()->latest('id')->paginate(10);
+        $query = Product::query();
+
+        // Apply search filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('id', $search);
+            });
+        }
+
+        // Apply boolean filters
+        $booleanFilters = ['is_active', 'is_hot_deal', 'is_good_deal', 'is_new', 'is_show_home'];
+
+        foreach ($booleanFilters as $filter) {
+            if ($request->filled($filter)) {
+                $query->where($filter, 1);
+            }
+        }
+
+        $products = $query->latest()->paginate(10);
 
         return view('admin.products.index', compact('products'));
     }
@@ -52,12 +73,14 @@ class ProductController extends Controller
         $sizes = ProductSize::all();
         $tags = Tag::all();
 
-        $product->with(['galleries', 'tags', 'variants']);
-        return view('admin.products.edit', compact('product', 'tags', 'categories', 'colors', 'sizes'));
+        $product->loadMissing(['galleries', 'tags', 'variants', 'category', 'variants.color', 'variants.size']);
+        return view('admin.products.edit', compact(['product', 'categories', 'tags', 'colors', 'sizes']));
     }
 
     public function store(ProductStoreRequest $request)
     {
+        // dd($request->all());
+
         [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleData($request);
 
         try {
