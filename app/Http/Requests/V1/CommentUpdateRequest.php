@@ -2,19 +2,19 @@
 
 namespace App\Http\Requests\V1;
 
-use App\Models\Order;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
-class CommentStoreRequest extends FormRequest
+class CommentUpdateRequest extends FormRequest
 {
     use ApiResponse;
-
-    public function authorize()
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
     {
-        // Lấy slug từ route
         $product = Product::whereSlug($this->route('slug'))->first();
 
         if (!$product) {
@@ -23,18 +23,22 @@ class CommentStoreRequest extends FormRequest
             );
         }
 
-        // Kiểm tra xem người dùng có đơn hàng đã giao chứa sản phẩm này không
-        return Order::where('user_id', auth('sanctum')->id())
-            ->where('status_order', Order::STATUS_ORDER_DELIVERED)
-            ->whereHas('orderItems', function ($query) use ($product) {
-                // Kiểm tra qua ProductVariant liên kết với Product
-                $query->whereHas('variant', function ($variantQuery) use ($product) {
-                    $variantQuery->where('product_id', $product->id);
-                });
-            })
-            ->exists();
+        $comment = $product->comments()->find($this->route('id'));
+
+        if (!$comment) {
+            throw new HttpResponseException(
+                $this->not_found('Bình luận không tồn tại')
+            );
+        }
+
+        return $comment->user_id == auth('sanctum')->id();
     }
 
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
     public function rules()
     {
         return [
@@ -56,7 +60,7 @@ class CommentStoreRequest extends FormRequest
     protected function failedAuthorization()
     {
         throw new HttpResponseException(
-            $this->error('Bạn chỉ có thể bình luận sau khi nhận hàng')
+            $this->forbidden('Bạn không có quyền chỉnh sửa bình luận này')
         );
     }
 }

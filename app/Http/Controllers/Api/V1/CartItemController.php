@@ -106,7 +106,7 @@ class CartItemController extends Controller
 
     public function destroy()
     {
-        request()->user()->cartItems()->delete();
+        auth('sanctum')->user()->cartItems()->delete();
 
         return response()->json(['message' => 'Xóa giỏ hàng thành công']);
     }
