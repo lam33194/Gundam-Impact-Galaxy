@@ -48,6 +48,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::controller(StatController::class)->group(function() {
+        Route::get('stats', 'index')->name('stats.index');
+        Route::get('stats-user', 'user')->name('stats.user');
         Route::get('stats-revenue', 'revenue')->name('stats.revenue');
     });
 
