@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class StatController extends Controller
 {
     // Dùng Eloquent
-    public function index()
+    public function revenue()
     {
         // Dữ liệu theo ngày (7 ngày gần nhất)
         $dailyData = [];

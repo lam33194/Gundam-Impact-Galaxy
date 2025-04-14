@@ -23,9 +23,30 @@ class ProductController extends Controller
 {
     use StorageFile;
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::query()->latest('id')->paginate(10);
+        $query = Product::query();
+
+        // Apply search filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('sku', 'like', "%{$search}%")
+                    ->orWhere('id', $search);
+            });
+        }
+
+        // Apply boolean filters
+        $booleanFilters = ['is_active', 'is_hot_deal', 'is_good_deal', 'is_new', 'is_show_home'];
+
+        foreach ($booleanFilters as $filter) {
+            if ($request->filled($filter)) {
+                $query->where($filter, 1);
+            }
+        }
+
+        $products = $query->latest()->paginate(10);
 
         return view('admin.products.index', compact('products'));
     }

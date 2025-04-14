@@ -41,13 +41,13 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $products = Product::whereSlug($slug)->first();
+        $product = Product::whereSlug($slug)->first();
 
-        if(!$products) return $this->not_found('Sản phẩm không tồn tại');
+        if(!$product) return $this->not_found('Sản phẩm không tồn tại');
 
-        $this->loadRelations($products, request(), true);
+        $this->loadRelations($product, request(), true);
 
-        return response()->json($products);
+        return response()->json($product);
     }
 
     // Lấy danh sách products của category 
