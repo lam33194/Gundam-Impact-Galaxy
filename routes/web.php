@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductColorController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSizeController;
+use App\Http\Controllers\Admin\ProductStatisticsController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -48,6 +49,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::controller(StatController::class)->group(function() {
         Route::get('stats-revenue', 'revenue')->name('stats.revenue');
+    });
+
+    Route::controller(ProductStatisticsController::class)->group(function() {
+        Route::get('product_statistics', 'index')->name('product_statistics.index');
     });
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');

@@ -100,6 +100,13 @@
                     <span key="t-multi-level">Thống kê doanh thu</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{{ route('admin.product_statistics.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê sản phẩm</span>
+                </a>
+            </li>
         </ul>
     </div>
     <!-- Sidebar -->
