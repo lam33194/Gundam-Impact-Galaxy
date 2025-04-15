@@ -91,7 +91,7 @@ class StatController extends Controller
         $weeklyRevenue = array_sum(array_values($weeklyData));
         $monthlyRevenue = array_sum(array_values($monthlyData));
 
-        return view('admin.stats.index', compact(
+        return view('admin.stats.revenue', compact(
             'dailyData',
             'weeklyData',
             'monthlyData',
