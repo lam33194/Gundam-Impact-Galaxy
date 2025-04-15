@@ -86,7 +86,7 @@
 
             <li>
                 <a href="{{ route('admin.orders.index') }}" class="waves-effect">
-                    <span class="badge rounded-pill bg-danger float-end" key="t-hot">2</span>
+                    <span class="badge rounded-pill bg-danger float-end fs-6" key="t-hot">{{ \App\Models\Order::pending()->count() }}</span>
                     <i class="bx bx-receipt"></i>
                     <span key="t-orders">Đơn hàng</span>
                 </a>
@@ -95,11 +95,26 @@
             <!-- <li class="menu-title" key="t-administration">Thống kê</li> -->
 
             <li>
-                <a href="{{ route('admin.stats.index') }}" class="waves-effect">
+                <a href="{{ route('admin.stats.revenue') }}" class="waves-effect">
                     <i class="bx bx-share-alt"></i>
-                    <span key="t-multi-level">Thống kê</span>
+                    <span key="t-multi-level">Thống kê doanh thu</span>
                 </a>
             </li>
+
+            <li>
+                <a href="{{ route('admin.product_statistics.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê sản phẩm</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('admin.stats.user') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê người dùng</span>
+                </a>
+            </li>
+           
         </ul>
     </div>
     <!-- Sidebar -->
