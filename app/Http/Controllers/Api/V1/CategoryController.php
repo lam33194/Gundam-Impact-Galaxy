@@ -33,7 +33,7 @@ class CategoryController extends Controller
 
     public function show(string $slug)
     {
-        $category = Category::whereSlug($slug)->first();
+        $category = Category::whereSlug($slug)->withCount('products')->first();
 
         if (!$category) return $this->not_found("Danh mục không tồn tại");
 

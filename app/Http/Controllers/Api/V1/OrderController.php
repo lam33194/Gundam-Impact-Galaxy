@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\OrderStoreRequest;
 use App\Http\Requests\V1\OrderUpdateRequest;
 use App\Models\Order;
+use App\Models\Voucher;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -26,7 +27,10 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
-        $orders = $request->user()->orders()->latest();
+        /** @var \App\Models\User */
+        $user = auth('sanctum')->user();
+
+        $orders = $user->orders()->latest()->getQuery();
 
         $this->loadRelations($orders, $request);
 
@@ -37,7 +41,10 @@ class OrderController extends Controller
 
     public function show(Request $request, string $id)
     {
-        $order = $request->user()->orders()->find($id);
+        /** @var \App\Models\User */
+        $user = auth('sanctum')->user();
+
+        $order = $user->orders()->find($id);
 
         if (!$order) return $this->not_found('Đơn hàng không tồn tại');
 
@@ -50,15 +57,32 @@ class OrderController extends Controller
     {
         $data = $request->validated();
  
-        $user = $request->user();
+        /** @var \App\Models\User */
+        $user = auth('sanctum')->user();
 
         // lấy thông tin giỏ hàng
-        $cartItems = $user->cartItems()->with(['variant.product', 'variant.size', 'variant.color'])->get();
-
-        if (empty($cartItems->toArray())) return $this->error('Giỏ hàng của bạn đang trống');
+        $cartItems = $user->cartItems()->with([
+            'variant.product:id,name,sku,thumb_image,price_regular,price_sale', 
+            'variant.size:id,name', 
+            'variant.color:id,name,code'
+        ])->get();
 
         // Bắt đầu transaction
         return DB::transaction(function () use ($user, $data, $cartItems) {
+            $totalPrice = $user->total_price;
+
+            // kiểm tra nếu có voucher
+            if ($data['voucher_code'] ?? false) {
+                $voucher = Voucher::whereCode($data['voucher_code'])->first();
+
+                $totalPrice -= (int) $voucher->discount;
+
+                $voucher->increment('used_count');
+
+                if ($voucher->max_usage !== null && $voucher->used_count >= $voucher->max_usage) {
+                    $voucher->update(['is_active' => false]);
+                }
+            }
 
             // tạo order
             $order = $user->orders()->create(array_merge(
@@ -67,7 +91,7 @@ class OrderController extends Controller
                     'order_sku'      => 'ORD-' . strtoupper(uniqid()),
                     'status_order'   => Order::STATUS_ORDER_PENDING,
                     'status_payment' => Order::STATUS_PAYMENT_UNPAID,
-                    'total_price'    => $user->total_price,
+                    'total_price'    => $totalPrice,
                 ]
             ));
 

@@ -49,7 +49,7 @@ class CartItemController extends Controller
         // Nếu sản phẩm đã tồn tại, tăng quantity sp đó trong giỏ hàng
         if ($cartItem) {
             if ($cartItem->quantity + $data['quantity'] > $cartItem->variant->quantity)
-                return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+                return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
             $cartItem->increment('quantity', $data['quantity']);
 
@@ -63,7 +63,7 @@ class CartItemController extends Controller
         $variant = ProductVariant::find($data['product_variant_id']);
 
         if ($data['quantity'] > $variant->quantity)
-            return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+            return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
         $cartItem = $request->user()->cartItems()->create($data);
 
@@ -90,7 +90,7 @@ class CartItemController extends Controller
         }
 
         if ($data['quantity'] > $cartItem->variant->quantity) {
-            return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+            return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
         };
 
         $cartItem->update([
