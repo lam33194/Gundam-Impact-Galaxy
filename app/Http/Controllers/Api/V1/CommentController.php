@@ -52,7 +52,7 @@ class CommentController extends Controller
         $data = $request->validated();
         
         if ($product->comments()->where('user_id', $request->user()->id)->exists()) {
-            return $this->failedValidation('Bạn đã bình luận sản phẩm này');
+            return $this->failed_validation('Bạn đã bình luận sản phẩm này');
         }
 
         // Tạo bình luận mới

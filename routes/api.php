@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,11 @@ Route::prefix('v1')->group(function () {
         Route::get('users/{id}', 'show');
         // Cập nhật thông tin user
         Route::put('users',      'update')->middleware('auth:sanctum');
+    });
+
+    Route::controller(VoucherController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('vouchers', 'index');
     });
 
     Route::controller(PaymentController::class)->group(function(){

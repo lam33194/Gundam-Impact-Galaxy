@@ -20,6 +20,8 @@ class User extends Authenticatable
         false => 'No Active'
     ];
 
+    protected $appends = ['total_price'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -68,7 +70,7 @@ class User extends Authenticatable
             $this->load('cartItems.variant.product');
         }
 
-        return $this->cartItems->sum(function ($cartItem) {
+        $total = $this->cartItems->sum(function ($cartItem) {
             $variant = $cartItem->variant;
             $product = $variant->product;
 
@@ -77,6 +79,9 @@ class User extends Authenticatable
 
             return $price * $cartItem->quantity;
         });
+
+        $this->unsetRelations();
+        return $total;
     }
 
     public function cartItems()
