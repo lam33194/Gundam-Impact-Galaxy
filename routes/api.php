@@ -38,8 +38,14 @@ Route::prefix('v1')->group(function () {
         Route::get('products/{slug}/comments', 'index');
 
         Route::middleware(['auth:sanctum'])->group(function() {
+            // Danh sách comment của user
+            Route::get('getUserComments', 'getUserComments');
             // Thêm bình luận
             Route::post('products/{slug}/comments', 'store');
+            // Sửa bình luận
+            Route::put('products/{slug}/comments/{id}', 'update');
+            // Xóa bình luận
+            Route::delete('comments/{id}', 'destroy');
         });
     });
 
