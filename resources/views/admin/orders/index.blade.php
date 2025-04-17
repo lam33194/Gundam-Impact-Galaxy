@@ -60,9 +60,9 @@
                                 <select name="status_order" class="form-select">
                                     <option value="">Tất cả trạng thái</option>
 
-                                    @foreach (\App\Models\Order::STATUS_ORDER as $key => $value)
+                                    @foreach (\App\Models\Order::STATUS_ORDER_DETAILS as $key => $value)
                                         <option value="{{$key}}" {{ request('status_order') == $key ? 'selected' : '' }}>
-                                            {{$value}}
+                                            {{$value->title}}
                                         </option>
                                     @endforeach
                                 </select>

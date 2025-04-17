@@ -61,11 +61,15 @@ class OrderController extends Controller
 
     public function edit(Order $order)
     {
-        $orderStatus = Order::STATUS_ORDER;
+        // Lấy danh sách trạng thái
+        $orderStatus = Order::STATUS_ORDER_DETAILS;
 
         $order->load(['orderItems.variant:id,image']);
 
-        return view('admin.orders.edit', compact('order', 'orderStatus'));
+        // Xác định các trạng thái có thể chọn
+        $allowedStatuses = $this->getAllowedStatuses($order->status_order);
+
+        return view('admin.orders.edit', compact('order', 'orderStatus', 'allowedStatuses'));
     }
 
     public function update(Request $request, Order $order)
@@ -146,5 +150,20 @@ class OrderController extends Controller
 
             default: return redirect()->back()->with('error', 'Thao tác không hợp lệ');
         };
+    }
+
+    private function getAllowedStatuses($currentStatus)
+    {
+        $statusKeys = array_keys(Order::STATUS_ORDER_DETAILS);
+
+        $currentIndex = array_search($currentStatus, $statusKeys);
+
+        $allowed = [
+            $currentStatus, // Trạng thái hiện tại
+            $statusKeys[$currentIndex + 1] ?? null, // Trạng thái tiếp theo
+            Order::STATUS_ORDER_CANCELED // Trạng thái hủy
+        ];
+
+        return array_filter($allowed); // Loại bỏ null
     }
 }
