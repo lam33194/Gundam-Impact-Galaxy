@@ -95,5 +95,9 @@ Route::prefix('v1')->group(function () {
             // Đổi mật khẩu
             Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Quên mật khẩu
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');
     });
 });

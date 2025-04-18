@@ -7,8 +7,12 @@ use App\Http\Requests\V1\LoginRequest;
 use App\Http\Requests\V1\RegisterRequest;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use App\Http\Requests\V1\ResetPasswordRequest;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -51,8 +55,6 @@ class AuthController extends Controller
 
     public function changePassword(Request $request)
     {
-        $data = $request->all();
-
         $request->validate([
                 'current_password'      => 'required|current_password',
                 'password'              => 'required|confirmed|min:8',
@@ -72,5 +74,46 @@ class AuthController extends Controller
         $request->user()->update(['password' => $request->password]);
 
         return $this->ok('Đổi mật khẩu thành công');
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'exists:users'],
+        ], [
+            'email.*'      => 'Email không hợp lệ',
+            'email.exists' => 'Email không tồn tại',
+        ]);
+
+        $status = Password::sendResetLink(
+            $request->only('email')
+        );
+
+        return $status === Password::RESET_LINK_SENT
+            ? $this->ok('Check your email')
+            : $this->error('Something gone wrong');
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $request->validated();
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->update([
+                    'password' => $password,
+                    'remember_token' => Str::random(60)
+                ]);
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return match ($status) {
+            Password::PASSWORD_RESET => $this->ok('Mật khẩu đã được đặt lại thành công'),
+            Password::INVALID_TOKEN  => $this->error('Token không hợp lệ hoặc đã hết hạn'),
+            default                  => $this->error('Có lỗi xảy ra khi đặt lại mật khẩu'),
+        };
     }
 }
