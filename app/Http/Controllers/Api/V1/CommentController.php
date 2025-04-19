@@ -50,10 +50,6 @@ class CommentController extends Controller
         $product = Product::whereSlug($slug)->first();
 
         $data = $request->validated();
-        
-        if ($product->comments()->where('user_id', $request->user()->id)->exists()) {
-            return $this->failed_validation('Bạn đã bình luận sản phẩm này');
-        }
 
         // Tạo bình luận mới
         $comment = $product->comments()->create([
@@ -118,12 +114,10 @@ class CommentController extends Controller
 
     private function deleteCommentImages(Comment $comment)
     {
-        $comment->load('commentImages');
+        $comment->load('commentImages:image');
 
         foreach ($comment->commentImages as $commentImage) {
             $this->delete_storage_file($commentImage, 'image');
-            // Do quên ko thêm cascade on delete ở bảng CommentImages + lười
-            $commentImage->delete();
         }
 
         $comment->unsetRelation('commentImages');

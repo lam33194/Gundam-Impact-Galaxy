@@ -82,6 +82,15 @@ class OrderController extends Controller
                 if ($voucher->max_usage !== null && $voucher->used_count >= $voucher->max_usage) {
                     $voucher->update(['is_active' => false]);
                 }
+
+                // (Tùy chọn) Cập nhật user_vouchers nếu là voucher cá nhân hóa
+                // if (\App\Models\UserVoucher::where('user_id', $user->id)->where('voucher_id', $voucher->id)->exists()) {
+                    // $userVoucher = \App\Models\UserVoucher::where('user_id', $user->id)
+                        // ->where('voucher_id', $voucher->id)
+                        // ->first();
+                    // $userVoucher->increment('usage_count');
+                    // $userVoucher->update(['is_used' => true]); // Đánh dấu đã dùng
+                // }
             }
 
             // tạo order
@@ -175,3 +184,25 @@ class OrderController extends Controller
         }
     }
 }
+
+// try {
+//     DB::transaction(function () use ($request) {
+//         // create ...
+//     });
+//     return $this->craeted('User and profile created successfully');
+// } catch (\Exception $e) {
+//     return $this->error('Error occurred: ' . $e->getMessage());
+// }
+
+// or
+
+// DB::beginTransaction();
+// try {
+//     // create...
+//     DB::commit();
+// 
+//     return $this->craeted('User and profile created successfully'); 
+// } catch (\Exception $e) {
+//     DB::rollBack();
+//     return $this->error('Error occurred: ' . $e->getMessage()); 
+// }

@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="row">
         <div class="col-lg-3">
@@ -190,7 +190,7 @@
                 </div> -->
             </div>
         </div>
-    </div> --}}
+    </div>
 
     {{-- <div class="row">
         <div class="col-lg-8">
@@ -880,8 +880,6 @@
             </div>
         </div>
     </div> --}}
-
-
 
 @endsection
 
