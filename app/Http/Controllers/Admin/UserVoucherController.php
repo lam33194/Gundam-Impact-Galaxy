@@ -49,7 +49,7 @@ use App\Models\User;
                 if(!empty($insertData)){
                     $vouchers = UserVoucher::insert($insertData);
                     Toastr::success('', 'Thêm mới User Voucher thành công');
-                    return redirect()->route('admin.user_voucher.index');
+                    return redirect()->route('admin.user_vouchers.index');
                 }else{
                     return redirect()->bach()->with('eror','tất cả người dùng đã nhận voucher này');
                 }

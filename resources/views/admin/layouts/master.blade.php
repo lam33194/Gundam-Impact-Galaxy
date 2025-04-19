@@ -14,6 +14,7 @@
     <title>@yield('title')</title>
 </head>
 
+@stack('scripts')
 <body data-sidebar="dark">
 
     <div id="layout-wrapper">
