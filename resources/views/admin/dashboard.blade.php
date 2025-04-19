@@ -21,7 +21,7 @@
         </div>
     </div> --}}
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -136,7 +136,7 @@
                 </div> -->
             </div>
         </div>
-    </div> --}}
+    </div>
 
     {{-- <div class="row">
         <div class="col-lg-8">
@@ -826,8 +826,6 @@
             </div>
         </div>
     </div> --}}
-
-
 
 @endsection
 

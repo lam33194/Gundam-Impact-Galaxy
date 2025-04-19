@@ -136,6 +136,21 @@ class OrderStoreRequest extends FormRequest
             if ($voucher->max_usage !== null && $voucher->used_count >= $voucher->max_usage) throw new HttpResponseException(
                 $this->error("Voucher này đã được sử dụng hết số lần cho phép")
             );
+            
+
+            // Kiểm tra voucher cá nhân user_vouchers
+            /*
+            $userId = auth('sanctum')->id();
+            $userVoucher = \App\Models\UserVoucher::where('user_id', $userId)
+                ->where('voucher_id', $voucher->id)
+                ->first();
+
+            if ($userVoucher && $userVoucher->is_used) {
+                throw new HttpResponseException(
+                    $this->error("Bạn đã sử dụng hết voucher này.")
+                );
+            }
+            */
         }
     }
 }

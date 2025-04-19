@@ -21,6 +21,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
+                    <!-- Filter form -->
                     <form action="{{ route('admin.orders.index') }}" method="GET">
                         <div class="row mb-3">
                             <div class="col-md-auto mb-2">
@@ -48,28 +49,31 @@
                                 <input type="date" name="start_date" class="form-control"
                                     value="{{ request('start_date') }}">
                             </div>
+
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">Đến ngày</label>
                                 <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
                             </div>
+
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">Trạng thái đơn hàng</label>
                                 <select name="status_order" class="form-select">
                                     <option value="">Tất cả trạng thái</option>
 
-                                    @foreach (\App\Models\Order::STATUS_ORDER as $key => $value)
+                                    @foreach (\App\Models\Order::STATUS_ORDER_DETAILS as $key => $value)
                                         <option value="{{$key}}" {{ request('status_order') == $key ? 'selected' : '' }}>
-                                            {{$value}}
+                                            {{$value->title}}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">Trạng thái thanh toán</label>
                                 <select name="status_payment" class="form-select">
                                     <option value="">Tất cả trạng thái</option>
                                     @foreach (\App\Models\Order::STATUS_PAYMENT as $key => $value)
-                                        <option value="{{$key}}" {{ request('status_order') == $key ? 'selected' : '' }}>
+                                        <option value="{{$key}}" {{ request('status_payment') == $key ? 'selected' : '' }}>
                                             {{$value}}
                                         </option>
                                     @endforeach
@@ -78,31 +82,84 @@
                         </div>
                     </form>
 
-                    <div class="table-responsive min-vh-100">
+                    <!-- Display errors -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <div class="table-responsive">
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
-                                    <th>#</th>
+                                    <th class="text-end">
+                                        <div class="font-size-16">
+                                            <input class="form-check-input" id="checkbox-all" type="checkbox">
+                                        </div>
+                                    </th>
                                     <th>ID</th>
                                     <th>Mã đơn hàng</th>
                                     <th>Người đặt</th>
                                     <th>Phương thức thanh toán</th>
                                     <th>Trạng thái đơn hàng</th>
                                     <th>Trạng thái thanh toán</th>
-                                    <th>Tổng tiền</th>
-                                    <th>Thời gian</th>
-                                    <th>Thao tác</th>
+                                    <th>Tổng tiền 
+                                        <a href={{ route('admin.orders.index', array_merge(request()->query(), [
+                                            'sort_by' => 'total_price',
+                                            'sort_direction' => ($sortBy == 'total_price' && $sortDirection == 'asc') ? 'desc' : 'asc'
+                                        ])) }}>
+                                        {{ $sortBy == 'total_price' ? ($sortDirection == 'asc' ? '↑' : '↓') : '⇵' }}
+                                        </a>
+                                    </th>
+                                    <th>Thời gian 
+                                        <a href={{ route('admin.orders.index', array_merge(request()->query(), [
+                                            'sort_by' => 'created_at',
+                                            'sort_direction' => ($sortBy == 'created_at' && $sortDirection == 'asc') ? 'desc' : 'asc'
+                                        ])) }}>
+                                            {{ $sortBy == 'created_at' ? ($sortDirection == 'asc' ? '↑' : '↓') : '⇵' }}
+                                        </a>
+                                    </th>
+
+                                    <th>Thao tác
+                                        <span class="dropdown">
+                                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                                <li>
+                                                    <form action="{{route('admin.orders.bulk')}}" method="POST" id="bulkForm">
+                                                        @csrf
+                                                        {{-- @foreach (\App\Models\Order::STATUS_ORDER as $key => $label)
+                                                        <button type="submit" name="action" value="{{ $key }}" class="dropdown-item">{{ $label }}</button>
+                                                        @endforeach --}}
+
+                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_CONFIRMED }}" class="dropdown-item">Xác nhận</button>
+
+                                                        {{-- <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_PREPARING }}" class="dropdown-item">Chuẩn bị hàng</button>
+                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_SHIPPING }}" class="dropdown-item">Đang giao hàng</button>
+                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_DELIVERED }}" class="dropdown-item">Đã giao hàng</button>
+                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_CANCELED }}" class="dropdown-item">Hủy đơn</button> --}}
+                                                    </form>
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    </th>
                                 </tr>
                             </thead>
 
                             <tbody>
                                 @foreach ($orders as $order)
                                     <tr>
-                                        <td class="dtr-control sorting_1" tabindex="0">
-                                            <div class="d-none">{{ $order->id }}</div>
-                                            <div class="form-check font-size-16"> <input class="form-check-input"
-                                                    type="checkbox" id="customerlistcheck-11"> <label class="form-check-label"
-                                                    for="customerlistcheck-11"></label> </div>
+                                        <td class="dtr-control sorting_1">
+                                            <div class="font-size-16">
+                                                <input class="checkbox-item form-check-input" form="bulkForm" 
+                                                name="ids[]" value="{{$order -> id}}" type="checkbox">
+                                            </div>
                                         </td>
 
                                         <td>{{ $order->id }}</td>
@@ -131,10 +188,19 @@
                                         <td>{{ $order->created_at->diffForHumans() }}</td>
 
                                         <td>
-                                            <a href="{{ route('admin.orders.edit', $order->id) }}"
+                                            <a title="Cập nhật" href="{{ route('admin.orders.edit', $order->id) }}"
                                                 class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+
+                                            @if($order->status_order == \App\Models\Order::STATUS_ORDER_PENDING)
+                                            <form class="d-inline" action="{{ route('admin.orders.confirm', $order->id) }}" method="POST">
+                                                @csrf
+                                                <button title="Xác nhận" type="submit" class="btn btn-info btn-sm">
+                                                    <i class="fa-regular fa-circle-check"></i>
+                                                </button>
+                                            </form>
+                                            @endcan
                                         </td>
                                     </tr>
                                 @endforeach
@@ -168,6 +234,24 @@
                     }
                 }
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllCheckbox = document.getElementById('checkbox-all');
+            const checkboxes = document.querySelectorAll('.checkbox-item');
+
+            selectAllCheckbox.addEventListener('change', function() {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+                    selectAllCheckbox.checked = allChecked;
+                });
+            });
         });
     </script>
 @endsection

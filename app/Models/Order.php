@@ -9,13 +9,37 @@ class Order extends Model
 {
     use HasFactory;
 
-    public const STATUS_ORDER = [
-        self::STATUS_ORDER_PENDING    => 'Chờ xác nhận',
-        self::STATUS_ORDER_CONFIRMED  => 'Đã xác nhận',
-        self::STATUS_ORDER_PREPARING  => 'Đang chuẩn bị hàng',
-        self::STATUS_ORDER_SHIPPING   => 'Đang giao hàng',
-        self::STATUS_ORDER_DELIVERED  => 'Đã giao hàng',
-        self::STATUS_ORDER_CANCELED   => 'Đơn hàng đã bị hủy',
+    public const STATUS_ORDER_DETAILS = [
+        self::STATUS_ORDER_PENDING => [
+            'title'       => 'Chờ xác nhận',
+            'description' => 'Đơn hàng đang chờ xác nhận từ quản trị viên',
+            'icon'        => 'bx-copy-alt'
+        ],
+        self::STATUS_ORDER_CONFIRMED => [
+            'title'       => 'Đã xác nhận',
+            'description' => 'Đơn hàng đã được xác nhận',
+            'icon'        => 'bx-badge-check'
+        ],
+        self::STATUS_ORDER_PREPARING => [
+            'title'       => 'Đang chuẩn bị hàng',
+            'description' => 'Đơn hàng đang được chuẩn bị để giao',
+            'icon'        => 'bx-package'
+        ],
+        self::STATUS_ORDER_SHIPPING => [
+            'title'       => 'Đang giao hàng',
+            'description' => 'Đơn hàng đang được vận chuyển',
+            'icon'        => 'bx-car'
+        ],
+        self::STATUS_ORDER_DELIVERED => [
+            'title'       => 'Đã giao hàng',
+            'description' => 'Đơn hàng đã được giao thành công',
+            'icon'        => 'bx-badge-check'
+        ],
+        self::STATUS_ORDER_CANCELED => [
+            'title'       => 'Đơn hàng đã bị hủy',
+            'description' => 'Đơn hàng đã bị hủy',
+            'icon'        => 'bx-x-circle'
+        ],
     ];
 
     public const STATUS_PAYMENT = [
@@ -26,7 +50,6 @@ class Order extends Model
 
     public const TYPE_PAYMENT = [
         'vnpay' => "VNPAY",
-        'momo'  => "MOMO",
         'cod'   => "Thanh toán khi nhận hàng"
     ];
 

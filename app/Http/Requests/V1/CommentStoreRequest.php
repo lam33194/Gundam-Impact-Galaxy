@@ -23,6 +23,12 @@ class CommentStoreRequest extends FormRequest
             );
         }
 
+        if ($product->comments()->where('user_id', auth('sanctum')->id())->exists()) {
+            throw new HttpResponseException(
+                $this->forbidden('Bạn đã bình luận sản phẩm này')
+            );
+        }
+
         // Kiểm tra xem người dùng có đơn hàng đã giao chứa sản phẩm này không
         return Order::where('user_id', auth('sanctum')->id())
             ->where('status_order', Order::STATUS_ORDER_DELIVERED)
@@ -56,7 +62,7 @@ class CommentStoreRequest extends FormRequest
     protected function failedAuthorization()
     {
         throw new HttpResponseException(
-            $this->error('Bạn chỉ có thể bình luận sau khi nhận hàng')
+            $this->forbidden('Bạn chỉ có thể bình luận sau khi nhận hàng')
         );
     }
 }
