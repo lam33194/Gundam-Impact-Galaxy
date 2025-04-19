@@ -61,4 +61,10 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('orders-bulk', [OrderController::class, 'bulkAction'])->name('orders.bulk');
+
+    Route::get('test', function() {
+        return view('admin.test', [
+            'user' => App\Models\User::find(12),
+        ]);
+    });
 });

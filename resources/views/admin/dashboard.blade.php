@@ -136,60 +136,6 @@
                 </div> -->
             </div>
         </div>
-
-        <div class="col-lg-3">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">Tổng đơn hàng đã hoàn thành</p>
-                            <h4 class="mb-0">{{ $totalOrderDelivered }}</h4>
-                        </div>
-
-                        <i class="fa-regular fa-circle-check fs-2 text-success"></i>
-
-                        <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="new_application_charts">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div class="card-body border-top py-3">
-                    <p class="mb-0">
-                        <span class="badge badge-soft-success me-1">
-                            <i class="bx bx-trending-up align-bottom me-1"></i>
-                            24.07%
-                        </span>
-                        Increase
-                    </p>
-                </div> -->
-            </div>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">Tổng đơn hàng bị hủy</p>
-                            <h4 class="mb-0">{{ $totalOrderCanceled }}</h4>
-                        </div>
-                        
-                        <i class="fa-solid fa-ban fs-2 text-danger"></i>
-
-                        <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="total_approved_charts">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- <div class="card-body border-top py-3">
-                    <p class="mb-0"> <span class="badge badge-soft-success me-1"><i
-                                class="bx bx-trending-up align-bottom me-1"></i> 8.41%</span> Increase
-                        last month</p>
-                </div> -->
-            </div>
-        </div>
     </div>
 
     {{-- <div class="row">
