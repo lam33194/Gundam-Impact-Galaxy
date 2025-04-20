@@ -1,6 +1,14 @@
 import Product from "../components/Product";
 import "./BlogDetails.scss";
 function BlogDetail() {
+    const product = 
+        {
+            id: 1,
+            name: "GUndam galaxy ",
+            price: 1000,
+            image: "https://i.imgur.com/6yQXxuB.jpg",
+        }
+    
     return (
         <div className="blog-detail container d-flex flex-column gap-4">
             <div className="nav d-flex align-items-center">
@@ -59,7 +67,7 @@ function BlogDetail() {
 
                     <h4>SẢN PHẨM NỔI BẬT</h4>
                     <div className="outstanding-products d-flex flex-column gap-3">
-                        <Product/>
+                        <Product p={product}/>
                         <Product/>
                         <Product/>
                         <Product/>

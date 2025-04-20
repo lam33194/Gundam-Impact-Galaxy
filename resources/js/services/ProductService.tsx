@@ -19,3 +19,17 @@ export const getTopRevenue = (): Promise<any> => {
 export const getTopSelling = (): Promise<any> => {
     return customizeAxios.get(`/api/v1/getTopSellingProducts`)
 }
+
+export const addCommentForProduct = (data: any, productSlug: any): Promise<any> => {
+    return customizeAxios.post(`/api/v1/products/${productSlug}/comments`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json'
+        },
+    });
+}
+
+export const getCommentForProduct = (productSlug: any): Promise<any> => {
+    return customizeAxios.get(`/api/v1/products/${productSlug}/comments`);
+}
+
