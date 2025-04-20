@@ -17,25 +17,17 @@ class CartItemController extends Controller
     protected $validRelations = [
         'user',
         'variant',
-        'variant.product',
-        'variant.size',
-        'variant.color',
     ];
 
     public function index(Request $request)
     {
-        $carts = $request->user()->cartItems;
+        $carts = $request->user()->cartItems()->getQuery();
 
-        // Tính tổng tiền
-        // $total = $carts->sum(function ($cartItem) {
-            // $product = $cartItem->productVariant->product;
-            // $price = $product->price_sale > 0 ? $product->price_sale : $product->price_regular;
-            // return $price * $cartItem->quantity;
-        // });
+        $this->loadRelations($carts, $request);
 
-        $this->loadRelations($carts, $request, true);
+        $this->loadSubRelations($carts);
 
-        return $this->ok('Lấy dữ liệu giỏ hàng thành công', $carts);
+        return $this->ok('Lấy dữ liệu giỏ hàng thành công', $carts->get());
     }
 
     public function store(CartStoreRequest $request)
@@ -53,11 +45,11 @@ class CartItemController extends Controller
 
             $cartItem->increment('quantity', $data['quantity']);
 
-            $cartItem->unsetRelation('variant');
+            // $cartItem->unsetRelation('variant');
 
-            $this->loadRelations($cartItem, $request, true);
-
-            return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
+            // $this->loadRelations($cartItem, $request, true);
+            
+            return $this->created('Thêm vào giỏ hàng thành công');
         }
 
         $variant = ProductVariant::find($data['product_variant_id']);
@@ -67,11 +59,11 @@ class CartItemController extends Controller
 
         $cartItem = $request->user()->cartItems()->create($data);
 
-        $cartItem->unsetRelation('variant');
+        // $cartItem->unsetRelation('variant');
 
-        $this->loadRelations($cartItem, $request, true);
+        // $this->loadRelations($cartItem, $request, true);
 
-        return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
+        return $this->created('Thêm vào giỏ hàng thành công');
     }
 
     public function update(Request $request, string $id)
@@ -101,6 +93,8 @@ class CartItemController extends Controller
 
         $this->loadRelations($cartItem, $request, true);
 
+        $this->loadSubRelations($cartItem, true);
+
         return $this->ok('Cập nhật số lượng sản phẩm thành cônng', $cartItem);
     }
 
@@ -108,6 +102,21 @@ class CartItemController extends Controller
     {
         auth('sanctum')->user()->cartItems()->delete();
 
-        return response()->json(['message' => 'Xóa giỏ hàng thành công']);
+        return $this->no_content();
+    }
+
+    private function loadSubRelations($cartItem, bool $isInstance = false)
+    {
+        $getMethod = $isInstance ? 'getRelations' : 'getEagerLoads';
+
+        $loadMethod = $isInstance ? 'loadMissing' : 'with';
+       
+        if (array_key_exists('variant', $cartItem->$getMethod())) {
+            $cartItem->$loadMethod([
+                'variant.product',
+                'variant.size',
+                'variant.color',
+            ]);
+        }
     }
 }

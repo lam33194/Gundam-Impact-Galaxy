@@ -15,9 +15,11 @@ class UserController extends Controller
     use ApiResponse, StorageFile, LoadRelations;
 
     protected $validRelations = [
-        'cartItems',
         'orders',
         'orders.orderItems',
+        'orders.orderItems.variant.product',
+        'orders.orderItems.variant.size',
+        'orders.orderItems.variant.color',
         'addresses',
         'comments',
         'comments.product',
@@ -43,9 +45,7 @@ class UserController extends Controller
 
         $this->loadRelations($user, request(), true);
 
-        return $this->ok("Lấy thông tin người dùng thành công", [
-            $user
-        ]);
+        return $this->ok("Lấy thông tin người dùng thành công", $user);
     }
 
     public function update(UserUpdateRequest $request)
@@ -63,20 +63,6 @@ class UserController extends Controller
         }
 
         $user->update($data);
-
-        // Cập nhật user_addresses
-        $user->addresses()->updateOrCreate([
-                'user_id'    => $user->id,
-                // 'is_primary' => $request->is_primary,
-            ],
-            [
-                'address'    => $data['address'],
-                'ward'       => $data['ward'],
-                'district'   => $data['district'],
-                'city'       => $data['city'],
-                // 'is_primary' => $data['is_primary'],
-            ]
-        );
 
         $this->loadRelations($user, $request, true);
 
