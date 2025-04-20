@@ -263,6 +263,7 @@
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Kích thước</th>
                                     <th>Màu</th>
                                     <th>Số lượng</th>
@@ -273,6 +274,10 @@
                             <tbody>
                                 @foreach ($product->variants as $variant)
                                     <tr>
+                                        <td>
+                                            {{ $variant->id }}
+                                        </td>
+
                                         <td>
                                             {{ $variant->size->name }}
                                         </td>
