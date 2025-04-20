@@ -39,6 +39,8 @@ function Profile() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [activeTab, setActiveTab] = useState('personal'); // 'personal' or 'address'
+
     const DateDisplay: React.FC<{ label: string; icon: string; date: string }> = ({ label, icon, date }) => (
         <div className="mb-2">
             <i className={`fas ${icon} me-2`}></i>
@@ -105,8 +107,8 @@ function Profile() {
                 if (!authUser?.id) return;
 
                 setIsLoading(true);
-                const response = await getUserById(authUser.id, { include: 'addresses' });
-                const userData = response.data.data[0] as UserData;
+                const response = await getUserById(authUser.id);
+                const userData = response.data.data as UserData;
                 const userAddress = userData.addresses?.[0];
 
                 setFormData(setUserFormData(userData, userAddress));
@@ -436,32 +438,55 @@ function Profile() {
                 <div className="col-md-8">
                     <div className="card shadow-sm profile-card">
                         <div className="card-body p-4">
-                            <h5 className="card-title mb-4">Thông tin cá nhân</h5>
+                            <ul className="nav nav-tabs mb-4">
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link ${activeTab === 'personal' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('personal')}
+                                    >
+                                        Thông tin cá nhân
+                                    </button>
+                                </li>
+                                <li className="nav-item">
+                                    <button
+                                        className={`nav-link ${activeTab === 'address' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('address')}
+                                    >
+                                        Thông tin địa chỉ
+                                    </button>
+                                </li>
+                            </ul>
+
                             <form>
-                                <InfoField
-                                    label="Email"
-                                    id="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                                <InfoField
-                                    label="Họ tên"
-                                    id="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                                <InfoField
-                                    label="Số điện thoại"
-                                    id="phone"
-                                    type="tel"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                                {renderAddressSection()}
+                                {activeTab === 'personal' ? (
+                                    <>
+                                        <InfoField
+                                            label="Email"
+                                            id="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            disabled
+                                        />
+                                        <InfoField
+                                            label="Họ tên"
+                                            id="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
+                                            disabled={!isEditing}
+                                        />
+                                        <InfoField
+                                            label="Số điện thoại"
+                                            id="phone"
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            disabled={!isEditing}
+                                        />
+                                    </>
+                                ) : (
+                                    renderAddressSection()
+                                )}
                             </form>
                         </div>
                     </div>
