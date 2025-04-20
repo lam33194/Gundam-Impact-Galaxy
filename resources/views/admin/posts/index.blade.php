@@ -39,6 +39,7 @@
                                 <th>#</th>
                                 <th>Tiêu đề</th>
                                 <th>Nội dung</th>
+                                <th>  </th>
                                 <th>Ảnh</th>
                                 <th>Thời gian tạo</th>
                                 <th>Thời gian sửa</th>
