@@ -125,7 +125,7 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                                {{ $users->links() }}
+                                {{ $users->links('admin.layouts.components.pagination') }}
                             </div>
                         @else
                             <div class="min-vh-100 text-center">

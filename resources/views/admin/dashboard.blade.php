@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 @section('title', 'GunDam DashBoard')
 @section('content')
-    <div class="row mb-4">
+    {{-- <div class="row mb-4">
         <div class="col-lg-12">
             <div class="d-flex align-items-center">
                 <img src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}" alt="" class="avatar-sm rounded">
@@ -19,87 +19,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <div class="row">
-        <div class="col-lg-3">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">Job View</p>
-                            <h4 class="mb-0">14,487</h4>
-                        </div>
-
-                        <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr"
-                                id="eathereum_sparkline_charts">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body border-top py-3">
-                    <p class="mb-0">
-                        <span class="badge badge-soft-success me-1">
-                            <i class="bx bx-trending-up align-bottom me-1"></i>
-                            18.89%
-                        </span>
-                        Increase
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">New Application</p>
-                            <h4 class="mb-0">7,402</h4>
-                        </div>
-
-                        <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="new_application_charts">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body border-top py-3">
-                    <p class="mb-0">
-                        <span class="badge badge-soft-success me-1">
-                            <i class="bx bx-trending-up align-bottom me-1"></i>
-                            24.07%
-                        </span>
-                        Increase
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="card mini-stats-wid">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">Total Approved</p>
-                            <h4 class="mb-0">12,487</h4>
-                        </div>
-
-                        <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="total_approved_charts">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body border-top py-3">
-                    <p class="mb-0"> <span class="badge badge-soft-success me-1"><i
-                                class="bx bx-trending-up align-bottom me-1"></i> 8.41%</span> Increase
-                        last month</p>
-                </div>
-            </div>
-        </div>
-
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -110,21 +32,113 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-danger", "--bs-transparent"]' dir="ltr" id="total_rejected_charts">
+                            <div data-colors='["--bs-danger", "--bs-transparent"]' dir="ltr" id="total_rejected_charts"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body border-top py-3">
+                    <p class="mb-0">
+                        <span class="badge badge-soft-danger me-1">
+                            <i class="bx bx-trending-down align-bottom me-1"></i>20.63%
+                        </span>
+                        Decrease last month
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card mini-stats-wid">
+                <div class="card-body">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <p class="text-muted fw-medium">Đơn hàng mới</p>
+                            <h3 class="mb-0">{{ $newOrderThisMonth }}</h3>
+                        </div>
+
+                        <div class="flex-shrink-0 align-self-center">
+                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="newOrdersChart">
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body border-top py-3">
-                    <p class="mb-0"> <span class="badge badge-soft-danger me-1"><i
-                                class="bx bx-trending-down align-bottom me-1"></i> 20.63%</span>
-                        Decrease last month</p>
+                    <p class="mb-0">
+                        @if($percentageChange >= 0)
+                            Tăng
+                            <span class="badge badge-soft-success me-1">
+                                <i class="bx bx-trending-up align-bottom me-1"></i>
+                                {{ $percentageChange }}%
+                            </span>
+                            so với tháng trước: <b>{{ $newOrderLastMonth }}</b>
+                        @else
+                            <span class="badge badge-soft-danger me-1">
+                                <i class="bx bx-trending-down align-bottom me-1"></i>
+                                {{ abs($percentageChange) }}%
+                            </span>
+                            Giảm
+                        @endif
+                    </p>
                 </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card mini-stats-wid">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-muted fw-medium">Tổng đơn hàng đã hoàn thành</p>
+                            <h4 class="mb-0">{{ $totalOrderDelivered }}</h4>
+                        </div>
+
+                        <i class="fa-regular fa-circle-check fs-2 text-success"></i>
+
+                        <div class="flex-shrink-0 align-self-center">
+                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="new_application_charts">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="card-body border-top py-3">
+                    <p class="mb-0">
+                        <span class="badge badge-soft-success me-1">
+                            <i class="bx bx-trending-up align-bottom me-1"></i>
+                            24.07%
+                        </span>
+                        Increase
+                    </p>
+                </div> -->
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card mini-stats-wid">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-muted fw-medium">Tổng đơn hàng bị hủy</p>
+                            <h4 class="mb-0">{{ $totalOrderCanceled }}</h4>
+                        </div>
+                        
+                        <i class="fa-solid fa-ban fs-2 text-danger"></i>
+
+                        <div class="flex-shrink-0 align-self-center">
+                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="total_approved_charts">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="card-body border-top py-3">
+                    <p class="mb-0"> <span class="badge badge-soft-success me-1"><i
+                                class="bx bx-trending-up align-bottom me-1"></i> 8.41%</span> Increase
+                        last month</p>
+                </div> -->
             </div>
         </div>
     </div>
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
@@ -352,9 +366,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
@@ -480,9 +494,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -811,10 +825,15 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
+
 @endsection
 
 @section('script')
-    <!-- dashboard blog init -->
+    <script>
+        // Pass PHP data to JavaScript
+        var orderChartData = @json($orderChartData);
+    </script>
+
     <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
 @endsection

@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('comment_images', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Comment::class);
+            $table->foreignIdFor(Comment::class)->constrained()->cascadeOnDelete();
             $table->string('image', 255)->nullable();
             $table->timestamps();
         });

@@ -19,6 +19,9 @@ class UserController extends Controller
         'orders',
         'orders.orderItems',
         'addresses',
+        'comments',
+        'comments.product',
+        'comments.commentImages',
     ];
 
     public function index(Request $request)

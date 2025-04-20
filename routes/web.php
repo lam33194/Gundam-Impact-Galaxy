@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\ProductColorController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSizeController;
+use App\Http\Controllers\Admin\ProductStatisticsController;
 use App\Http\Controllers\Admin\StatController;
 use App\Http\Controllers\Admin\TagController;
 use App\Http\Controllers\Admin\UserController;
@@ -32,30 +33,38 @@ Route::get('/{any}', function () {
 
 Route::prefix('admin')->name('admin.')->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('categories', CategoryController::class);
 
+    Route::resource('categories', CategoryController::class);
     Route::resource('products', ProductController::class);
     Route::resource('vouchers', VoucherController::class);
-
     Route::resource('orders', OrderController::class);
     Route::resource('users', UserController::class);
     Route::resource('tags', TagController::class);
     Route::resource('product-colors', ProductColorController::class);
     Route::resource('product-sizes', ProductSizeController::class);
+    Route::resource('user_vouchers', UserVoucherController::class);
+    Route::resource('comments', CommentController::class);
 
-    
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::controller(StatController::class)->group(function() {
-        Route::get('stats', 'index')->name('stats.index');
+        Route::get('stats-user', 'user')->name('stats.user');
+        Route::get('stats-revenue', 'revenue')->name('stats.revenue');
+    });
+
+    Route::controller(ProductStatisticsController::class)->group(function() {
+        Route::get('product_statistics', 'index')->name('product_statistics.index');
     });
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
 
-    Route::resource('user_vouchers', UserVoucherController::class);
-   
-    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('admin.comments.destroy');
-    Route::resource('comments', CommentController::class);
+    Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('orders-bulk', [OrderController::class, 'bulkAction'])->name('orders.bulk');
 
+    Route::get('test', function() {
+        return view('admin.test', [
+            'user' => App\Models\User::find(12),
+        ]);
+    });
 });

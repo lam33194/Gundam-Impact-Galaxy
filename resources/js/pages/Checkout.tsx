@@ -383,7 +383,8 @@ const Checkout = () => {
                                 name="type_payment"
                                 id="momoPaymentMethod"
                                 className="form-check-input"
-                                value={formData.type_payment}
+                                checked={formData.type_payment === "momo"}
+                                value="momo"
                                 onChange={handleChange}
                             />
                             <label
@@ -400,7 +401,8 @@ const Checkout = () => {
                                 name="type_payment"
                                 id="vnpayPaymentMethod"
                                 className="form-check-input"
-                                value={formData.type_payment}
+                                checked={formData.type_payment === "vnpay"}
+                                value="vnpay"
                                 onChange={handleChange}
                             />
                             <label

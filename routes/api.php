@@ -1,13 +1,14 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\CommentController;
 use App\Http\Controllers\Api\V1\OrderController;
 use App\Http\Controllers\Api\V1\CartItemController;
 use App\Http\Controllers\Api\V1\ProductController;
-use App\Http\Controllers\Api\TagController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\VoucherController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,22 @@ Route::prefix('v1')->group(function () {
         Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
         // Sản phẩm bán chạy
         Route::get('getTopSellingProducts', 'getTopSellingProducts');
+    });
+
+    Route::controller(CommentController::class)->group(function () {
+        // Danh sách bình luận của products
+        Route::get('products/{slug}/comments', 'index');
+
+        Route::middleware(['auth:sanctum'])->group(function() {
+            // Danh sách comment của user
+            Route::get('getUserComments', 'getUserComments');
+            // Thêm bình luận
+            Route::post('products/{slug}/comments', 'store');
+            // Sửa bình luận
+            Route::put('products/{slug}/comments/{id}', 'update');
+            // Xóa bình luận
+            Route::delete('comments/{id}', 'destroy');
+        });
     });
 
     Route::controller(CartItemController::class)->group(function () {
@@ -68,6 +85,11 @@ Route::prefix('v1')->group(function () {
         Route::put('users',      'update')->middleware('auth:sanctum');
     });
 
+    Route::controller(VoucherController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('vouchers', 'index');
+    });
+
     Route::controller(PaymentController::class)->group(function(){
         // Tạo đường dẫn thanh toán online
         Route::get('orders/{id}/payment', 'createPayment')->middleware('auth:sanctum');
@@ -85,5 +107,9 @@ Route::prefix('v1')->group(function () {
             // Đổi mật khẩu
             Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Quên mật khẩu
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');
     });
 });

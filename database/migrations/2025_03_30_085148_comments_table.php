@@ -15,11 +15,10 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->nullable()->nullOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->string('content', 255)->nullable();
-            $table->string('image', 255)->nullable();
-            $table->integer('rating')->default(0);
+            $table->unsignedTinyInteger('rating')->nullable()->between(1, 5);
             $table->timestamps();
         });
     }
