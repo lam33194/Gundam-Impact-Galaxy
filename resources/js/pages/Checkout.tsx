@@ -82,7 +82,7 @@ const Checkout = () => {
 
     const getCartDetail = async () => {
         try {
-            const res = await getCart();
+            const res = await getCart({ include: 'variant' });
             if (res && res.data) {
                 console.log("iudie", res.data.data);
                 setCart(res.data.data);
