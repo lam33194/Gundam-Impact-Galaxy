@@ -22,6 +22,13 @@ export const updateCart = (quantity: any, cartItemId: any): Promise<any> => {
     });
 }
 
-export const getCart = (): Promise<any> => {
-    return customizeAxios.get('api/v1/carts?include=variant.product,variant.size,variant.color');
+export const getCart = (params?: Record<string, any>): Promise<any> => {
+    let url = '/api/v1/carts';
+    if (params && Object.keys(params).length > 0) {
+        const queryString = Object.entries(params)
+            .map(([key, value]) => `${key}=${value}`)
+            .join('&');
+        url += `?${queryString}`;
+    }
+    return customizeAxios.get(url);
 }

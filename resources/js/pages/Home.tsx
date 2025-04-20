@@ -45,13 +45,13 @@ function Home() {
             console.log("Detected error:", error);
         }
     };
-    
+
 
     const redirectToDetail = (slug: any) => {
         window.location.href = "/product/" + slug;
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         getAllProducts();
         getTopRevenueProducts();
         getTopSellingProducts();
@@ -62,7 +62,7 @@ function Home() {
                 <Carousel.Item>
                     <img
                         className="d-block w-100"
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/slider_2.jpg?1740630578329" // Thay thế bằng URL hình ảnh sản phẩm
+                        src="https://bizweb.dktcdn.net/100/456/060/themes/1004041/assets/slider_1.jpg?1744256862985"
                         alt="First slide"
                     />
                 </Carousel.Item>
@@ -70,7 +70,7 @@ function Home() {
                 <Carousel.Item>
                     <img
                         className="d-block w-100"
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/slider_2.jpg?1740630578329"
+                        src="https://bizweb.dktcdn.net/100/456/060/themes/1004041/assets/slider_1.jpg?1744256862985"
                         alt="Second slide"
                     />
                 </Carousel.Item>
@@ -84,8 +84,8 @@ function Home() {
                     {sellingProducts &&
                         sellingProducts.map((p, index) => {
                             return (
-                                <div className=""   onClick={() => redirectToDetail(p.slug)}>
-                                     <Product key={index} p={p} />
+                                <div className="" onClick={() => redirectToDetail(p.slug)}>
+                                    <Product key={index} p={p} />
                                 </div>
                             );
                         })}
@@ -128,8 +128,8 @@ function Home() {
                     {products &&
                         products.map((p, index) => {
                             return (
-                                <div className=""   onClick={() => redirectToDetail(p.slug)}>
-                                     <Product key={index} p={p} />
+                                <div className="" onClick={() => redirectToDetail(p.slug)}>
+                                    <Product key={index} p={p} />
                                 </div>
                             );
                         })}
