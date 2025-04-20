@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserVoucherController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductColorController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSizeController;
@@ -44,6 +45,8 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('product-sizes', ProductSizeController::class);
     Route::resource('user_vouchers', UserVoucherController::class);
     Route::resource('comments', CommentController::class);
+    Route::resource('posts', PostController::class);
+
 
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 

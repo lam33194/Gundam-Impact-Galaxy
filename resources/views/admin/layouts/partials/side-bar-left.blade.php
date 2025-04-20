@@ -3,17 +3,17 @@
     <div id="sidebar-menu">
         <!-- Left Menu Start -->
         <ul class="metismenu list-unstyled" id="side-menu">
-            <li class="menu-title" key="t-menu">Dashboards</li>
+            <li class="menu-title" key="t-menu">Trang chủ</li>
 
 
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="waves-effect">
                     <i class="bx bx-home-circle"></i>
-                    <span key="t-chat">Dashboards</span>
+                    <span key="t-chat">Trang chủ</span>
                 </a>
             </li>
 
-            <li class="menu-title" key="t-administration">Administration</li>
+            <li class="menu-title" key="t-administration">Admin</li>
 
             <li>
                 <a href="{{ route('admin.categories.index') }}" class="waves-effect">
@@ -85,6 +85,13 @@
             </li>
 
             <li>
+                <a href="{{ route('admin.posts.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Quản lý bài viết</span>
+                </a>
+            </li>
+
+            <li>
                 <a href="{{ route('admin.orders.index') }}" class="waves-effect">
                     <span class="badge rounded-pill bg-danger float-end fs-6" key="t-hot">{{ \App\Models\Order::pending()->count() }}</span>
                     <i class="bx bx-receipt"></i>
@@ -107,6 +114,7 @@
                     <span key="t-multi-level">Thống kê sản phẩm</span>
                 </a>
             </li>
+            
         </ul>
     </div>
     <!-- Sidebar -->

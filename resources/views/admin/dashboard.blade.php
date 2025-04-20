@@ -1,7 +1,7 @@
 @extends('admin.layouts.master')
 @section('title', 'GunDam DashBoard')
 @section('content')
-    {{-- <div class="row mb-4">
+    <div class="row mb-4">
         <div class="col-lg-12">
             <div class="d-flex align-items-center">
                 <img src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}" alt="" class="avatar-sm rounded">
@@ -19,9 +19,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -122,9 +122,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
@@ -352,9 +352,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
@@ -480,9 +480,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -811,7 +811,7 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
 
 
