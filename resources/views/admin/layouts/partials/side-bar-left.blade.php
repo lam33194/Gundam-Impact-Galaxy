@@ -3,17 +3,16 @@
     <div id="sidebar-menu">
         <!-- Left Menu Start -->
         <ul class="metismenu list-unstyled" id="side-menu">
-            <li class="menu-title" key="t-menu">Dashboards</li>
-
+            <!-- <li class="menu-title" key="t-menu">Dashboards</li> -->
 
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="waves-effect">
                     <i class="bx bx-home-circle"></i>
-                    <span key="t-chat">Dashboards</span>
+                    <span key="t-chat">Tổng quan</span>
                 </a>
             </li>
 
-            <li class="menu-title" key="t-administration">Administration</li>
+            <li class="menu-title" key="t-administration">Quản lý</li>
 
             <li>
                 <a href="{{ route('admin.categories.index') }}" class="waves-effect">

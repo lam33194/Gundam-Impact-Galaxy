@@ -2,16 +2,23 @@
 
 namespace App\Http\Requests\V1;
 
+use App\Models\Voucher;
+use App\Traits\ApiResponse;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class OrderStoreRequest extends FormRequest
 {
+    use ApiResponse;
+
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $cartItems = auth('sanctum')->user()->cartItems()->get()->toArray();
+
+        return !empty($cartItems);
     }
 
     /**
@@ -35,7 +42,7 @@ class OrderStoreRequest extends FormRequest
             'ship_user_note'    => 'nullable|string|max:255',
 
             'type_payment'      => 'required|in:cod,vnpay',
-            'voucher_code'      => 'nullable|exsist:vouchers,code'
+            'voucher_code'      => 'nullable|exists:vouchers,code'
         ];
     }
 
@@ -87,4 +94,63 @@ class OrderStoreRequest extends FormRequest
         ];
     }
     
+    protected function failedAuthorization()
+    {
+        throw new HttpResponseException(
+            $this->failed_validation('Giỏ hàng của bạn đang trống')
+        );
+    }
+
+    protected function passedValidation()
+    {
+        $voucherCode = $this->input('voucher_code');
+
+        if ($voucherCode) {
+            /** @var \App\Models\User $user */
+            $totalPrice = auth('sanctum')->user()->total_price;
+
+            $voucher = Voucher::where('code', $voucherCode)->first();
+
+            // Kiểm tra trạng thái hoạt động (is_active)
+            if (!$voucher->is_active) throw new HttpResponseException(
+                $this->error("Voucher này hiện không hoạt động")
+            );
+
+            // Kiểm tra thời gian hiệu lực (start_date_time & end_date_time)
+            $now = now();
+            if ($now > $voucher->end_date_time) throw new HttpResponseException(
+                $this->error("Voucher đã hết hiệu lực")
+            );
+
+            if ($now < $voucher->start_date_time) throw new HttpResponseException(
+                $this->error("Voucher này chưa có hiệu lực")
+            );
+
+            // Kiểm tra giá trị tối thiểu (min_order_amount)
+            if ($totalPrice < $voucher->min_order_amount) throw new HttpResponseException(
+                $this->error("Để sử dụng voucher này, đơn hàng của bạn phải có tổng giá ít nhất " . 
+                number_format($voucher->min_order_amount, 0, ',', '.') . ' VNĐ')
+            );
+
+            // Kiểm tra số lần sử dụng tối đa
+            if ($voucher->max_usage !== null && $voucher->used_count >= $voucher->max_usage) throw new HttpResponseException(
+                $this->error("Voucher này đã được sử dụng hết số lần cho phép")
+            );
+            
+
+            // Kiểm tra voucher cá nhân user_vouchers
+            /*
+            $userId = auth('sanctum')->id();
+            $userVoucher = \App\Models\UserVoucher::where('user_id', $userId)
+                ->where('voucher_id', $voucher->id)
+                ->first();
+
+            if ($userVoucher && $userVoucher->is_used) {
+                throw new HttpResponseException(
+                    $this->error("Bạn đã sử dụng hết voucher này.")
+                );
+            }
+            */
+        }
+    }
 }
