@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Blog from "../components/Blog";
 import "./ProductDetail.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     addCommentForProduct,
     getCommentForProduct,
@@ -13,6 +13,10 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { FormatCurrency } from "../utils/FormatCurrency";
+import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
+import { useScrollable } from "../hooks/useScrollable";
+import Voucher from "../components/Voucher";
+import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
 
 const ProductDetail = () => {
@@ -22,8 +26,24 @@ const ProductDetail = () => {
         dots: true,
         infinite: true,
         speed: 500,
-        slidesToShow: 2,
+        slidesToShow: 3,
         slidesToScroll: 1,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 2,
+                    slidesToScroll: 1,
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     };
 
     const [content, setContent] = useState("");
@@ -31,6 +51,33 @@ const ProductDetail = () => {
     const [hoverRating, setHoverRating] = useState(0);
     const [images, setImages] = useState<any>([]);
     const [imagePreviews, setImagePreviews] = useState<any>([]);
+    const [vouchers, setVouchers] = useState([]);
+    const { slug } = useParams();
+    const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState<any>(null);
+    const [productVariant, setProductVariant] = useState({});
+    const [selectedSize, setSelectedSize] = useState<number | null>(null);
+    const [selectedColor, setSelectedColor] = useState<number | null>(null);
+    const [commentList, setCommentList] = useState<any>([]);
+
+    const voucherListId = 'productVoucherList';
+    const canScrollVouchers = useScrollable(voucherListId, 4, vouchers);
+    useHorizontalScroll(voucherListId, canScrollVouchers, 0.5);
+
+    const scrollVouchers = useCallback((direction: 'left' | 'right') => {
+        const container = document.getElementById(voucherListId);
+        if (!container) return;
+
+        const scrollAmount = 400;
+        const scrollPosition = direction === 'left'
+            ? container.scrollLeft - scrollAmount
+            : container.scrollLeft + scrollAmount;
+
+        container.scrollTo({
+            left: scrollPosition,
+            behavior: 'smooth'
+        });
+    }, [voucherListId]);
 
     const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
@@ -53,9 +100,14 @@ const ProductDetail = () => {
         setImages(newImages);
 
         const newPreviews = [...imagePreviews];
-        URL.revokeObjectURL(newPreviews[index]); // Giải phóng bộ nhớ
+        URL.revokeObjectURL(newPreviews[index]);
         newPreviews.splice(index, 1);
         setImagePreviews(newPreviews);
+    };
+
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        console.log({ content, rating, images });
     };
 
     const handleSubmitComment = async (e: any) => {
@@ -68,7 +120,7 @@ const ProductDetail = () => {
             if (res && res.data) {
                 toast.success("Thêm comment thành công!");
             }
-        } catch (error) {}
+        } catch (error) { }
         console.log({ content, rating, images });
     };
 
@@ -78,16 +130,8 @@ const ProductDetail = () => {
             if (res && res.data) {
                 setCommentList(res.data.data);
             }
-        } catch (error) {}
+        } catch (error) { }
     };
-
-    const { slug } = useParams();
-    const [quantity, setQuantity] = useState(1);
-    const [product, setProduct] = useState<any>(null);
-    const [productVariant, setProductVariant] = useState({});
-    const [selectedSize, setSelectedSize] = useState<number | null>(null);
-    const [selectedColor, setSelectedColor] = useState<number | null>(null);
-    const [commentList, setCommentList] = useState<any>([]);
 
     const getUniqueSizes = () => {
         if (!product?.variants) return [];
@@ -111,6 +155,17 @@ const ProductDetail = () => {
             }
         } catch (error) {
             console.log(error);
+        }
+    };
+
+    const getAllVouchers = async () => {
+        try {
+            const res = await getVouchers();
+            if (res.data && res.data.data) {
+                setVouchers(res.data.data);
+            }
+        } catch (error) {
+            console.log("Error fetching vouchers:", error);
         }
     };
 
@@ -143,13 +198,12 @@ const ProductDetail = () => {
                 nav("/cart");
             }
         } catch (error: any) {
-            console.error("Lỗi xảy ra:", error);
-            const errorMessage =
-                error.response?.data?.message ||
-                "Có lỗi xảy ra, vui lòng thử lại!";
+            console.error('Lỗi xảy ra:', error);
+            const errorMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
             toast.error(errorMessage);
         }
     };
+
 
     useEffect(() => {
         if (slug) {
@@ -165,6 +219,10 @@ const ProductDetail = () => {
             setSelectedColor(firstVariant.color.id);
         }
     }, [product]);
+
+    useEffect(() => {
+        getAllVouchers();
+    }, []);
 
     return (
         <div className="product-detail container d-flex">
@@ -185,20 +243,12 @@ const ProductDetail = () => {
                                     className="product-variant"
                                 >
                                     <img
-                                        className="product-variant"
-                                        src={
-                                            variant.imageu ||
-                                            "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
-                                        }
-                                        alt={`Slide ${variant.id}`}
-                                        style={{
-                                            width: "120px",
-                                            height: "120px",
-                                        }}
-                                        onClick={() =>
-                                            setProductVariant(variant)
-                                        }
+                                        src={variant.image || "default-image-url"}
+                                        alt={`Variant ${variant.id}`}
+                                        className="w-100 h-100 object-fit-cover" // Thêm class
+                                        onClick={() => setProductVariant(variant)}
                                     />
+
                                 </div>
                             ))}
                         </Slider>
@@ -228,12 +278,32 @@ const ProductDetail = () => {
                         đ
                     </span>
                     <div className="line mb-2 mt-1"></div>
-                    <span>5 Mã Giảm Giá</span>
-                    <div className="coupon-lists d-flex gap-2">
-                        <div className="coupon py-1 px-2 col-2">Giảm 5%</div>
-                        <div className="coupon py-1 px-2 col-2">Giảm 5%</div>
-                        <div className="coupon py-1 px-2 col-2">Giảm 5%</div>
-                        <div className="coupon py-1 px-2 col-2">Giảm 5%</div>
+                    <span>{vouchers.length} Mã Giảm Giá</span>
+                    <div className="voucher-section position-relative">
+                        {canScrollVouchers && (
+                            <div className="scroll-button scroll-left" onClick={() => scrollVouchers('left')}>
+                                <i className="fas fa-chevron-left"></i>
+                            </div>
+                        )}
+
+                        <div
+                            className="coupon-list gap-2"
+                            id={voucherListId}
+                            style={{
+                                overflowX: canScrollVouchers ? 'auto' : 'hidden',
+                                cursor: canScrollVouchers ? 'grab' : 'default'
+                            }}
+                        >
+                            {vouchers.map((voucher, index) => (
+                                <Voucher key={index} voucher={voucher} />
+                            ))}
+                        </div>
+
+                        {canScrollVouchers && (
+                            <div className="scroll-button scroll-right" onClick={() => scrollVouchers('right')}>
+                                <i className="fas fa-chevron-right"></i>
+                            </div>
+                        )}
                     </div>
                     <div className="line mb-2 mt-2"></div>
 
@@ -244,9 +314,8 @@ const ProductDetail = () => {
                             {getUniqueSizes().map((size: any) => (
                                 <button
                                     key={size.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${
-                                        selectedSize === size.id ? "active" : ""
-                                    }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
+                                        }`}
                                     onClick={() => setSelectedSize(size.id)}
                                 >
                                     {size.name}
@@ -262,11 +331,10 @@ const ProductDetail = () => {
                             {getUniqueColors().map((color: any) => (
                                 <button
                                     key={color.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${
-                                        selectedColor === color.id
-                                            ? "active"
-                                            : ""
-                                    }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id
+                                        ? "active"
+                                        : ""
+                                        }`}
                                     onClick={() => setSelectedColor(color.id)}
                                 >
                                     <span
@@ -375,7 +443,7 @@ const ProductDetail = () => {
                                             style={{
                                                 color:
                                                     star <=
-                                                    (hoverRating || rating)
+                                                        (hoverRating || rating)
                                                         ? "#ffc107"
                                                         : "#ddd",
                                             }}
@@ -501,7 +569,7 @@ const ProductDetail = () => {
                                             </div>
                                         </div>
 
-                             
+
                                         {comment.rating && (
                                             <div className="mb-2">
                                                 {[...Array(5)].map((_, i) => (
@@ -522,12 +590,12 @@ const ProductDetail = () => {
                                             </div>
                                         )}
 
-                                 
+
                                         <p className="card-text mb-3">
                                             {comment.content}
                                         </p>
 
-                                  
+
                                         {comment.images &&
                                             comment.images.length > 0 && (
                                                 <div className="d-flex flex-wrap gap-2">
@@ -536,9 +604,8 @@ const ProductDetail = () => {
                                                             <img
                                                                 key={imgIndex}
                                                                 src={img}
-                                                                alt={`Ảnh ${
-                                                                    imgIndex + 1
-                                                                }`}
+                                                                alt={`Ảnh ${imgIndex + 1
+                                                                    }`}
                                                                 className="img-thumbnail"
                                                                 style={{
                                                                     width: "80px",
