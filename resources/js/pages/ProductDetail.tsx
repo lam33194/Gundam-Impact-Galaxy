@@ -2,13 +2,18 @@ import { useNavigate, useParams } from "react-router-dom";
 import Blog from "../components/Blog";
 import "./ProductDetail.scss";
 import { useEffect, useState } from "react";
-import { getDetail } from "../services/ProductService";
+import {
+    addCommentForProduct,
+    getCommentForProduct,
+    getDetail,
+} from "../services/ProductService";
 import { addToCart } from "../services/CartService";
 import { toast } from "react-toastify";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { FormatCurrency } from "../utils/FormatCurrency";
+import { FormatDate } from "../utils/FormatDate";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -53,10 +58,27 @@ const ProductDetail = () => {
         setImagePreviews(newPreviews);
     };
 
-    const handleSubmit = (e: any) => {
+    const handleSubmitComment = async (e: any) => {
         e.preventDefault();
-        // Xử lý submit ở đây
+        try {
+            const res = await addCommentForProduct(
+                { "content": content, "rating": rating, "images[]": images },
+                slug
+            );
+            if (res && res.data) {
+                toast.success("Thêm comment thành công!");
+            }
+        } catch (error) {}
         console.log({ content, rating, images });
+    };
+
+    const getAllCommentsOfProduct = async () => {
+        try {
+            const res = await getCommentForProduct(slug);
+            if (res && res.data) {
+                setCommentList(res.data.data);
+            }
+        } catch (error) {}
     };
 
     const { slug } = useParams();
@@ -65,6 +87,7 @@ const ProductDetail = () => {
     const [productVariant, setProductVariant] = useState({});
     const [selectedSize, setSelectedSize] = useState<number | null>(null);
     const [selectedColor, setSelectedColor] = useState<number | null>(null);
+    const [commentList, setCommentList] = useState<any>([]);
 
     const getUniqueSizes = () => {
         if (!product?.variants) return [];
@@ -131,6 +154,7 @@ const ProductDetail = () => {
     useEffect(() => {
         if (slug) {
             getProductDetail();
+            getAllCommentsOfProduct();
         }
     }, [slug]);
 
@@ -217,7 +241,7 @@ const ProductDetail = () => {
                     <div className="variant-selection mb-3">
                         <span className="d-block mb-2">Kích thước:</span>
                         <div className="size-options d-flex gap-2 flex-wrap">
-                            {getUniqueSizes().map((size) => (
+                            {getUniqueSizes().map((size: any) => (
                                 <button
                                     key={size.id}
                                     className={`btn btn-outline-dark rounded-pill px-4 py-2 ${
@@ -235,7 +259,7 @@ const ProductDetail = () => {
                     <div className="variant-selection mb-3">
                         <span className="d-block mb-2">Màu sắc:</span>
                         <div className="color-options d-flex gap-2 flex-wrap">
-                            {getUniqueColors().map((color) => (
+                            {getUniqueColors().map((color: any) => (
                                 <button
                                     key={color.id}
                                     className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${
@@ -332,7 +356,7 @@ const ProductDetail = () => {
                 <div className="comment mt-5">
                     <h5>Đánh giá sản phẩm</h5>
 
-                    <form onSubmit={handleSubmit} className="mt-3">
+                    <form onSubmit={handleSubmitComment} className="mt-3 col-11">
                         <div className="form-group mb-3">
                             <div className="star-rating">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -373,30 +397,33 @@ const ProductDetail = () => {
                         <div className="form-group mb-3">
                             <label>Tải lên ảnh (tối đa 5 ảnh)</label>
                             <div className="d-flex flex-wrap gap-2 mb-2">
-                                {imagePreviews.map((preview: any, index: any) => (
-                                    <div
-                                        key={index}
-                                        className="position-relative"
-                                        style={{
-                                            width: "120px",
-                                            height: "120px",
-                                        }}
-                                    >
-                                        <img
-                                            src={preview}
-                                            alt={`Preview ${index}`}
-                                            className="img-thumbnail h-100 w-100 object-fit-cover"
-                                        />
-                                        <button
-                                            type="button"
-                                            className="btn btn-sm btn-secondary position-absolute top-0 end-0"
-                                
-                                            onClick={() => removeImage(index)}
+                                {imagePreviews.map(
+                                    (preview: any, index: any) => (
+                                        <div
+                                            key={index}
+                                            className="position-relative"
+                                            style={{
+                                                width: "120px",
+                                                height: "120px",
+                                            }}
                                         >
-                                            <i className="fa-solid fa-xmark"  ></i>
-                                        </button>
-                                    </div>
-                                ))}
+                                            <img
+                                                src={preview}
+                                                alt={`Preview ${index}`}
+                                                className="img-thumbnail h-100 w-100 object-fit-cover"
+                                            />
+                                            <button
+                                                type="button"
+                                                className="btn btn-sm btn-secondary position-absolute top-0 end-0"
+                                                onClick={() =>
+                                                    removeImage(index)
+                                                }
+                                            >
+                                                <i className="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    )
+                                )}
                             </div>
 
                             <label className="btn btn-outline-secondary">
@@ -425,50 +452,109 @@ const ProductDetail = () => {
                         </button>
                     </form>
                 </div>
-                <h3 className="text-center my-3">Danh sách Bình luận</h3>
-                <div className="d-flex flex-column gap-3">
-                    <div className="d-flex flex-column p-3 bg-light border-bottom pb-3">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h5 className="fw-bold mb-1">Nguyễn Văn A</h5>
-                            <small className="text-muted">
-                                2025-03-13 10:00
-                            </small>
-                        </div>
-                        <div className="text-muted mb-2">
-                            nguyen.a@example.com
-                        </div>
-                        <p className="mb-0">
-                            Đây là một bình luận mẫu để hiển thị nội dung bình
-                            luận của người dùng.
-                        </p>
-                    </div>
+                <div className="container mt-4">
+                    <h3 className="text-center mb-4">Danh sách Bình luận</h3>
+                    <div className="row justify-content-start">
+                        <div className="col-lg-11">
+                            {commentList.map((comment: any, index: any) => (
+                                <div
+                                    key={index}
+                                    className="card mb-3 shadow-sm"
+                                >
+                                    <div className="card-body">
+                                        <div className="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h5 className="card-title mb-1">
+                                                    {comment.userName}
+                                                </h5>
+                                                <small className="text-muted">
+                                                    {comment.userEmail}
+                                                </small>
+                                            </div>
 
-                    <div className="d-flex flex-column p-3 bg-light border-bottom pb-3">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h5 className="fw-bold mb-1">Trần Thị B</h5>
-                            <small className="text-muted">
-                                2025-03-13 11:30
-                            </small>
-                        </div>
-                        <div className="text-muted mb-2">
-                            tran.b@example.com
-                        </div>
-                        <p className="mb-0">
-                            Đây là một bình luận khác để minh họa cách hiển thị.
-                        </p>
-                    </div>
+                                            <div className="d-flex align-items-center">
+                                                <small className="text-muted me-2">
+                                                    {FormatDate(comment.updated_at)}
+                                                </small>
+                                                <div className="dropdown">
+                                                    <button
+                                                        className="btn btn-link text-dark p-0"
+                                                        type="button"
+                                                        data-bs-toggle="dropdown"
+                                                        aria-expanded="false"
+                                                    >
+                                                        <i className="bi bi-three-dots-vertical"></i>
+                                                    </button>
+                                                    <ul className="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <button className="dropdown-item">
+                                                                Sửa
+                                                            </button>
+                                                        </li>
+                                                        <li>
+                                                            <button className="dropdown-item text-danger">
+                                                                Xóa
+                                                            </button>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                    <div className="d-flex flex-column p-3 bg-light">
-                        <div className="d-flex justify-content-between align-items-start mb-2">
-                            <h5 className="fw-bold mb-1">Lê Văn C</h5>
-                            <small className="text-muted">
-                                2025-03-13 12:45
-                            </small>
+                             
+                                        {comment.rating && (
+                                            <div className="mb-2">
+                                                {[...Array(5)].map((_, i) => (
+                                                    <span
+                                                        key={i}
+                                                        className={
+                                                            i < comment.rating
+                                                                ? "text-warning"
+                                                                : "text-secondary"
+                                                        }
+                                                    >
+                                                        ★
+                                                    </span>
+                                                ))}
+                                                <span className="ms-2 small text-muted">
+                                                    ({comment.rating}/5)
+                                                </span>
+                                            </div>
+                                        )}
+
+                                 
+                                        <p className="card-text mb-3">
+                                            {comment.content}
+                                        </p>
+
+                                  
+                                        {comment.images &&
+                                            comment.images.length > 0 && (
+                                                <div className="d-flex flex-wrap gap-2">
+                                                    {comment.images.map(
+                                                        (img: any, imgIndex: any) => (
+                                                            <img
+                                                                key={imgIndex}
+                                                                src={img}
+                                                                alt={`Ảnh ${
+                                                                    imgIndex + 1
+                                                                }`}
+                                                                className="img-thumbnail"
+                                                                style={{
+                                                                    width: "80px",
+                                                                    height: "80px",
+                                                                    objectFit:
+                                                                        "cover",
+                                                                }}
+                                                            />
+                                                        )
+                                                    )}
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                        <div className="text-muted mb-2">le.c@example.com</div>
-                        <p className="mb-0">
-                            Nội dung bình luận thứ ba của người dùng.
-                        </p>
                     </div>
                 </div>
             </div>

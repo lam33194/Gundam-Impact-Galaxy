@@ -1,6 +1,6 @@
 import { FormatCurrency } from "../utils/FormatCurrency";
 import "./Products.scss";
-const Product = ({p}) => {
+const Product = (p?: any) => {
   return (
     <div className="product d-flex flex-column gap-2">
       <div className="product-image">
