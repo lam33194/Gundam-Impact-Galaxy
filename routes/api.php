@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\VoucherController;
+use App\Http\Controllers\UserAddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -83,6 +84,21 @@ Route::prefix('v1')->group(function () {
         Route::get('users/{id}', 'show');
         // Cập nhật thông tin user
         Route::put('users',      'update')->middleware('auth:sanctum');
+    });
+
+    Route::controller(UserAddressController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
+            // List địa chỉ
+            Route::get('addresses', 'index');
+            // Get địa chỉ
+            Route::get('addresses/{id}', 'show');
+            // Thêm địa chỉ
+            Route::post('addresses', 'store');
+            // Sửa địa chỉ
+            Route::put('addresses/{id}', 'update');
+            // Xóa địa chỉ
+            Route::delete('addresses/{id}', 'destroy');
+        });
     });
 
     Route::controller(VoucherController::class)->group(function () {
