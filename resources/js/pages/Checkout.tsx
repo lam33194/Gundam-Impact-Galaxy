@@ -146,7 +146,9 @@ const Checkout = () => {
                 if (!authUser?.id) return;
 
                 setIsLoading(true);
-                const response = await getUserById(authUser.id);
+                const response = await getUserById(authUser.id, {
+                    include: 'addresses'
+                });
                 const userData = response.data.data;
                 const userAddress = userData.addresses?.[0];
 
@@ -233,6 +235,7 @@ const Checkout = () => {
                     <div className="col-md-6">
                         <h5>Thông tin nhận hàng</h5>
                         <div className="mb-3">
+                            {/* Personal info fields */}
                             <div className="form-floating mb-3">
                                 <input
                                     type="text"
@@ -242,9 +245,7 @@ const Checkout = () => {
                                     value={formData.user_name}
                                     onChange={handleChange}
                                 />
-                                <label htmlFor="floatingFullName">
-                                    Họ và tên
-                                </label>
+                                <label htmlFor="floatingFullName">Họ và tên</label>
                             </div>
 
                             <div className="form-floating mb-3">
@@ -268,10 +269,10 @@ const Checkout = () => {
                                     value={formData.user_phone}
                                     onChange={handleChange}
                                 />
-                                <label htmlFor="floatingPhone">
-                                    Số điện thoại
-                                </label>
+                                <label htmlFor="floatingPhone">Số điện thoại</label>
                             </div>
+
+                            <h6 className="mt-4 mb-3">Địa chỉ nhận hàng</h6>
 
                             <div className="form-floating mb-3">
                                 <input
@@ -285,6 +286,7 @@ const Checkout = () => {
                                 <label htmlFor="floatingAddress">Địa chỉ</label>
                             </div>
 
+                            {/* Location selects */}
                             <div className="form-floating mb-3">
                                 <select
                                     className="form-select"
@@ -339,20 +341,6 @@ const Checkout = () => {
                                     ))}
                                 </select>
                                 <label>Xã/Phường</label>
-                            </div>
-
-                            <div className="form-floating mb-3">
-                                <textarea
-                                    className="form-control"
-                                    name="user_note"
-                                    placeholder="Ghi chú (tùy chọn)"
-                                    style={{ height: "100px" }}
-                                    value={formData.user_note}
-                                    onChange={handleChange}
-                                ></textarea>
-                                <label htmlFor="floatingNote">
-                                    Ghi chú (tùy chọn)
-                                </label>
                             </div>
                         </div>
                     </div>
@@ -416,6 +404,21 @@ const Checkout = () => {
                                 className="form-check-label d-flex align-items-center ms-2"
                             >
                                 Vnpay
+                            </label>
+                        </div>
+
+                        <h5 className="mt-4">Ghi chú</h5>
+                        <div className="form-floating mb-3">
+                            <textarea
+                                className="form-control"
+                                name="user_note"
+                                placeholder="Ghi chú (tùy chọn)"
+                                style={{ height: "100px" }}
+                                value={formData.user_note}
+                                onChange={handleChange}
+                            ></textarea>
+                            <label htmlFor="floatingNote">
+                                Ghi chú (tùy chọn)
                             </label>
                         </div>
                     </div>

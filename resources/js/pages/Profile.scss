@@ -132,4 +132,79 @@
     height: 100%;
     display: flex;
     flex-direction: column;
+
+    .addresses-list {
+        max-height: 320px;
+        overflow-y: auto;
+
+        .address-item {
+            background: #fff;
+            height: 60px;
+            transition: all 0.2s ease;
+            position: relative;
+
+            &:hover {
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            &.border-primary {
+                border-width: 1.5px !important;
+            }
+
+            .address-content {
+                height: 100%;
+                padding-right: 120px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+
+                .address-text {
+                    font-size: 0.9rem;
+                    line-height: 1.4;
+                    color: #333;
+                    margin-bottom: 0.25rem;
+                }
+
+                .badge {
+                    font-size: 0.75rem;
+                    font-weight: 500;
+                }
+            }
+
+            .action-buttons {
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                display: flex;
+                gap: 4px;
+                margin: 0; // Reset margin
+
+                .btn-link {
+                    width: 28px;
+                    height: 28px;
+                    padding: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 4px;
+                    transition: all 0.2s;
+
+                    &:hover:not(:disabled) {
+                        background-color: rgba(0, 0, 0, 0.05);
+                    }
+
+                    &:disabled {
+                        opacity: 0.5;
+                        cursor: not-allowed;
+                    }
+
+                    i {
+                        font-size: 0.85rem;
+                    }
+                }
+            }
+        }
+    }
 }
