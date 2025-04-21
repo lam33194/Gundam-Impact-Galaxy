@@ -79,6 +79,65 @@
                     background-color: #1da1f2;
                 }
             }
+
+            .voucher-section {
+                position: relative;
+                padding: 0 40px;
+
+                .scroll-button {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 32px;
+                    height: 32px;
+                    border-radius: 50%;
+                    background: rgba(0, 0, 0, 0.3);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    transition: background-color 0.3s ease;
+                    z-index: 2;
+
+                    &:hover {
+                        background: rgba(0, 0, 0, 0.5);
+                    }
+
+                    &.scroll-left {
+                        left: 0;
+                    }
+
+                    &.scroll-right {
+                        right: 0;
+                    }
+
+                    i {
+                        font-size: 14px;
+                    }
+                }
+
+                .coupon-list {
+                    display: flex;
+                    gap: 1rem;
+                    overflow-x: auto;
+                    scroll-behavior: smooth;
+                    scrollbar-width: none;
+                    -ms-overflow-style: none;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                    &:hover {
+                        cursor: grab;
+                    }
+
+                    >* {
+                        flex: 0 0 auto;
+                    }
+                }
+            }
         }
     }
 
@@ -109,6 +168,19 @@
     outline: none;
     border: none;
     cursor: pointer;
+    height: 120px;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
 }
 
 .variant-selection {
@@ -138,5 +210,20 @@
                 min-width: 16px;
             }
         }
+    }
+}
+
+.slick-track {
+    display: flex !important;
+    align-items: center;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.slick-slide {
+    height: auto;
+
+    >div {
+        height: 100%;
     }
 }
