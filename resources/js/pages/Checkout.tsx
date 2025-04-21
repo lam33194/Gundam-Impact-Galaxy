@@ -140,8 +140,8 @@ const Checkout = () => {
                 if (!authUser?.id) return;
 
                 setIsLoading(true);
-                const response = await getUserById(authUser.id, { include: 'addresses' });
-                const userData = response.data.data[0];
+                const response = await getUserById(authUser.id);
+                const userData = response.data.data;
                 const userAddress = userData.addresses?.[0];
 
                 setFormData({
