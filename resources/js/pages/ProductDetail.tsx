@@ -105,11 +105,6 @@ const ProductDetail = () => {
         setImagePreviews(newPreviews);
     };
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        console.log({ content, rating, images });
-    };
-
     const handleSubmitComment = async (e: any) => {
         e.preventDefault();
         try {
@@ -245,10 +240,9 @@ const ProductDetail = () => {
                                     <img
                                         src={variant.image || "default-image-url"}
                                         alt={`Variant ${variant.id}`}
-                                        className="w-100 h-100 object-fit-cover" // Thêm class
+                                        className="w-100 h-100 object-fit-cover"
                                         onClick={() => setProductVariant(variant)}
                                     />
-
                                 </div>
                             ))}
                         </Slider>
