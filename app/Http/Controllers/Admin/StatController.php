@@ -91,6 +91,15 @@ class StatController extends Controller
         $weeklyRevenue = array_sum(array_values($weeklyData));
         $monthlyRevenue = array_sum(array_values($monthlyData));
 
+        // dd(
+        //     $dailyData,      // [01/01 => n, 02/01 => ..., 07/01 => n]    doanh thu mỗi ngày
+        //     $weeklyData,     // [4 tuần trước => n, 3 ..., tuần này => n] doanh thu mỗi tuần
+        //     $monthlyData,    // [01/2025 => n, 02/202x ..., 12/202x => n] doanh thu mỗi năm
+        //     $dailyRevenue,   // Tổng doanh thu 7 ngày trở lại
+        //     $weeklyRevenue,  // Tổng doanh thu 4 tuần trở lại
+        //     $monthlyRevenue, // Tổng doanh thu 1 năm trở lại
+        // );
+
         return view('admin.stats.revenue', compact(
             'dailyData',
             'weeklyData',
@@ -101,7 +110,11 @@ class StatController extends Controller
         ));
     }
 
-
+    // // Một số thông tin thống kê khác 
+    // // Tổng số đơn hàng
+    // $totalOrders = DB::table('orders')->count();
+    // // Tổng số sản phẩm (product)
+    // $totalProducts = DB::table('products')->count();
 
     public function user()
     {
@@ -182,12 +195,3 @@ $data = $customerCounts->pluck('count');
   
 
 }
-// // Một số thông tin thống kê khác 
-// // Tổng số đơn hàng
-// $totalOrders = DB::table('orders')->count();
-// // Đơn hàng đang chờ xác nhận
-// $pendingOrders = DB::table('orders')
-//     ->where('status_order', 'pending')
-//     ->count();
-// // Tổng số sản phẩm (product)
-// $totalProducts = DB::table('products')->count();

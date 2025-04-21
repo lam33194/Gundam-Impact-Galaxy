@@ -82,7 +82,10 @@ class DashboardController extends Controller
                 $periodEnd->endOfDay()
             ])->count();
             
-            $data[] = $count;
+            $data[] = [
+                'date' => $periodStart->format('d/m'),
+                'count' => $count,
+            ];
         }
 
         return $data;
