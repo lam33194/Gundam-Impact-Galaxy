@@ -105,6 +105,11 @@ const ProductDetail = () => {
         setImagePreviews(newPreviews);
     };
 
+    const handleSubmit = (e: any) => {
+        e.preventDefault();
+        console.log({ content, rating, images });
+    };
+
     const handleSubmitComment = async (e: any) => {
         e.preventDefault();
         try {
@@ -243,6 +248,7 @@ const ProductDetail = () => {
                                         className="w-100 h-100 object-fit-cover"
                                         onClick={() => setProductVariant(variant)}
                                     />
+
                                 </div>
                             ))}
                         </Slider>
