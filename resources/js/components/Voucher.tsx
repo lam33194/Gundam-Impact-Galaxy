@@ -2,21 +2,7 @@ import { useState, useEffect } from 'react';
 import "./Voucher.scss";
 import { toast } from "react-toastify";
 import { Modal } from 'bootstrap';
-
-interface VoucherProps {
-  voucher: {
-    id: number;
-    code: string;
-    title: string;
-    description: string | null;
-    start_date_time: string;
-    end_date_time: string;
-    discount: string;
-    min_order_amount: string | null;
-    max_usage: number;
-    used_count: number;
-  }
-}
+import { VoucherProps } from '../interfaces/VoucherProps';
 
 const Voucher = ({ voucher }: VoucherProps) => {
   const [modal, setModal] = useState<Modal | null>(null);
@@ -45,6 +31,37 @@ const Voucher = ({ voucher }: VoucherProps) => {
     return parseInt(price).toLocaleString('vi-VN');
   };
 
+  const isExpired = () => {
+    const endDate = new Date(voucher.end_date_time);
+    return endDate < new Date();
+  };
+
+  const isFullyUsed = () => {
+    return voucher.used_count >= voucher.max_usage;
+  };
+
+  const getButtonContent = () => {
+    if (isExpired()) {
+      return {
+        text: "Đã hết hạn",
+        disabled: true,
+        className: "btn-secondary"
+      };
+    }
+    if (isFullyUsed()) {
+      return {
+        text: "Đã hết lượt",
+        disabled: true,
+        className: "btn-secondary"
+      };
+    }
+    return {
+      text: "Sao chép mã",
+      disabled: false,
+      className: "btn-dark"
+    };
+  };
+
   return (
     <>
       <div className="coupon d-flex gap-3 align-items-center">
@@ -69,10 +86,11 @@ const Voucher = ({ voucher }: VoucherProps) => {
           </div>
           <div className="content-bottom d-flex align-items-center justify-content-between">
             <div
-              className="coupon-code btn-dark btn btn-sm"
-              onClick={handleCopyCode}
+              className={`coupon-code btn ${getButtonContent().className} btn-sm`}
+              onClick={getButtonContent().disabled ? undefined : handleCopyCode}
+              style={{ cursor: getButtonContent().disabled ? 'not-allowed' : 'pointer' }}
             >
-              Sao chép mã
+              {getButtonContent().text}
             </div>
             <a
               href="#"
@@ -101,11 +119,12 @@ const Voucher = ({ voucher }: VoucherProps) => {
                 <div className="d-flex align-items-center justify-content-between mb-3">
                   <p className="mb-0"><strong>Mã giảm giá:</strong> {voucher.code}</p>
                   <button
-                    className="btn btn-dark btn-sm"
-                    onClick={handleCopyCode}
+                    className={`btn ${getButtonContent().className} btn-sm`}
+                    onClick={getButtonContent().disabled ? undefined : handleCopyCode}
+                    disabled={getButtonContent().disabled}
                   >
-                    <i className="fas fa-copy me-1"></i>
-                    Sao chép mã
+                    {!getButtonContent().disabled && <i className="fas fa-copy me-1"></i>}
+                    {getButtonContent().text}
                   </button>
                 </div>
                 <p><strong>Giảm giá:</strong> {formatPrice(voucher.discount)}đ</p>
