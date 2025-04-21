@@ -37,12 +37,18 @@ const Checkout = () => {
         type_payment: "",
     });
 
+    const [voucherCode, setVoucherCode] = useState("");
+
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
+    };
+
+    const handleVoucherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setVoucherCode(e.target.value);
     };
 
     const createOrder = async () => {
@@ -58,17 +64,17 @@ const Checkout = () => {
             user_address: fullAddress,
             user_note: formData.user_note || "",
             type_payment: formData.type_payment,
+            voucher_code: voucherCode || null
         };
         try {
             const res = await addOrder(data);
             if (res && res.data) {
-                console.log('Đặt hàng thành công:', res.data);
                 toast.success("Đặt hàng thành công!");
                 setTimeout(() => {
                     window.location.href = "/order-history";
                 }, 1000);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Lỗi xảy ra:', error);
             if (error.response && error.response.data && error.response.data.message) {
                 console.log('Thông báo lỗi:', error.response.data.message);
@@ -481,6 +487,8 @@ const Checkout = () => {
                             className="form-control"
                             id="floatingNote"
                             placeholder="Nhập mã giảm giá"
+                            value={voucherCode}
+                            onChange={handleVoucherChange}
                         ></input>
                         <label htmlFor="floatingNote">Nhập mã giảm giá</label>
                     </div>
