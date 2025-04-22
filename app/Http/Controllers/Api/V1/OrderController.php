@@ -21,8 +21,6 @@ class OrderController extends Controller
         'orderItems',
         'orderItems.variant',
         'orderItems.variant.product',
-        'orderItems.variant.size',
-        'orderItems.variant.color',
     ];
 
     public function index(Request $request)
@@ -36,7 +34,9 @@ class OrderController extends Controller
 
         $this->applyFilters($orders, $request->query());
 
-        return response()->json($orders->paginate(10));
+        $perPage = request()->query('per_page', 10);
+
+        return response()->json($orders->paginate($perPage));
     }
 
     public function show(Request $request, string $id)
