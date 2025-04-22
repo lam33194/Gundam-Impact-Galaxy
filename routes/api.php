@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -82,6 +83,13 @@ Route::prefix('v1')->group(function () {
         // Tạo đường dẫn thanh toán online
         Route::get('orders/{id}/payment', 'createPayment')->middleware('auth:sanctum');
         Route::get('vnpay/return', 'vnpayReturn');
+    });
+
+    Route::controller(PostController::class)->group(function () {
+        // Lấy tất cả post
+        Route::get('posts', 'index');
+        // Chi tiết post
+        Route::get('posts/{id}', 'show');
     });
 
     Route::prefix('auth')->group(function () {

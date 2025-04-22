@@ -16,4 +16,9 @@ class Post extends Model
         'thumbnail',
         'user_id'
     ];
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }
