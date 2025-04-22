@@ -22,6 +22,8 @@ class User extends Authenticatable
         false => 'No Active'
     ];
 
+    // protected $appends = ['total_price'];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -68,23 +70,26 @@ class User extends Authenticatable
     }
 
     // Accessor để lấy tổng tiền giỏ hàng
-    public function getTotalPriceAttribute()
-    {
-        // Eager load
-        if (!$this->relationLoaded('cartItems')) {
-            $this->load('cartItems.variant.product');
-        }
+    // public function getTotalPriceAttribute()
+    // {
+    //     // Eager load
+    //     if (!$this->relationLoaded('cartItems')) {
+    //         $this->load('cartItems.variant.product');
+    //     }
 
-        return $this->cartItems->sum(function ($cartItem) {
-            $variant = $cartItem->variant;
-            $product = $variant->product;
+    //     $total = $this->cartItems->sum(function ($cartItem) {
+    //         $variant = $cartItem->variant;
+    //         $product = $variant->product;
 
-            // if price_sale else price_regular
-            $price = $product->price_sale > 0 ? $product->price_sale : $product->price_regular;
+    //         // if price_sale else price_regular
+    //         $price = $product->price_sale > 0 ? $product->price_sale : $product->price_regular;
 
-            return $price * $cartItem->quantity;
-        });
-    }
+    //         return $price * $cartItem->quantity;
+    //     });
+
+    //     $this->unsetRelation('cartItems');
+    //     return $total;
+    // }
 
     public function cartItems()
     {

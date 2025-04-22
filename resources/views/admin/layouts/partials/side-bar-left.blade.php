@@ -3,17 +3,17 @@
     <div id="sidebar-menu">
         <!-- Left Menu Start -->
         <ul class="metismenu list-unstyled" id="side-menu">
-            <li class="menu-title" key="t-menu">Trang chủ</li>
 
+            <li class="menu-title" key="t-menu">Trang chủ</li>
 
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="waves-effect">
                     <i class="bx bx-home-circle"></i>
-                    <span key="t-chat">Trang chủ</span>
+                    <span key="t-chat">Tổng quan</span>
                 </a>
             </li>
 
-            <li class="menu-title" key="t-administration">Admin</li>
+            <li class="menu-title" key="t-administration">Quản lý</li>
 
             <li>
                 <a href="{{ route('admin.categories.index') }}" class="waves-effect">
@@ -114,7 +114,14 @@
                     <span key="t-multi-level">Thống kê sản phẩm</span>
                 </a>
             </li>
-            
+
+            <li>
+                <a href="{{ route('admin.stats.user') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Thống kê người dùng</span>
+                </a>
+            </li>
+           
         </ul>
     </div>
     <!-- Sidebar -->

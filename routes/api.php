@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\VoucherController;
+use App\Http\Controllers\UserAddressController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -39,8 +41,14 @@ Route::prefix('v1')->group(function () {
         Route::get('products/{slug}/comments', 'index');
 
         Route::middleware(['auth:sanctum'])->group(function() {
+            // Danh sách comment của user
+            Route::get('getUserComments', 'getUserComments');
             // Thêm bình luận
             Route::post('products/{slug}/comments', 'store');
+            // Sửa bình luận
+            Route::put('products/{slug}/comments/{id}', 'update');
+            // Xóa bình luận
+            Route::delete('comments/{id}', 'destroy');
         });
     });
 
@@ -77,6 +85,26 @@ Route::prefix('v1')->group(function () {
         Route::get('users/{id}', 'show');
         // Cập nhật thông tin user
         Route::put('users',      'update')->middleware('auth:sanctum');
+    });
+
+    Route::controller(UserAddressController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
+            // List địa chỉ
+            Route::get('addresses', 'index');
+            // Get địa chỉ
+            Route::get('addresses/{id}', 'show');
+            // Thêm địa chỉ
+            Route::post('addresses', 'store');
+            // Sửa địa chỉ
+            Route::put('addresses/{id}', 'update');
+            // Xóa địa chỉ
+            Route::delete('addresses/{id}', 'destroy');
+        });
+    });
+
+    Route::controller(VoucherController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('vouchers', 'index');
     });
 
     Route::controller(PaymentController::class)->group(function(){

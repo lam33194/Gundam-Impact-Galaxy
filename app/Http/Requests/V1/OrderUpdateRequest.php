@@ -36,7 +36,7 @@ class OrderUpdateRequest extends FormRequest
             'ship_user_note'    => 'nullable|string|max:255',
 
             'status_order'      => 'required|in:'.Order::STATUS_ORDER_CANCELED.','.Order::STATUS_ORDER_PENDING,
-            'type_payment'      => 'required|in:cod,momo,vnpay',
+            'type_payment'      => 'required|in:cod,vnpay',
         ];
     }
 

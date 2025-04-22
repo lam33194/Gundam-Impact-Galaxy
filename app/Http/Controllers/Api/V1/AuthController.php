@@ -48,7 +48,9 @@ class AuthController extends Controller
 
     public function logout()
     {
-        request()->user()->currentAccessToken()->delete();
+        auth('sanctum')->user()->currentAccessToken()->delete();
+
+        // auth('sanctum')->user()->tokens()->delete();
 
         return $this->ok('Đăng xuất thành công');
     }
