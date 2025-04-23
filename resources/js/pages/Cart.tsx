@@ -156,7 +156,7 @@ const Cart = () => {
                                                     }
                                                     style={{
                                                         backgroundImage: p.variant.image == null 
-                                                        ? `url(${"https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350"})`
+                                                        ? `url(${STORAGE_URL + p.variant.product?.thumb_image})`
                                                         : `url(${STORAGE_URL + p.variant?.image})`,
                                                         cursor: 'pointer',
                                                     }}

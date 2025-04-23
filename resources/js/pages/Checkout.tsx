@@ -447,7 +447,10 @@ const Checkout = () => {
                                 <div
                                     className="cart-product-item-image"
                                     style={{
-                                        backgroundImage: `url(${STORAGE_URL + item.variant.image || "https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243"})`,
+                                        // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
+                                        backgroundImage: item.variant.image == null 
+                                        ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
+                                        : `url(${STORAGE_URL + item.variant?.image})`,
                                         height: "60px",
                                         width: "60px",
                                         backgroundSize: "cover",
