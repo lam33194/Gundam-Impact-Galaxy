@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -20,6 +22,12 @@ class DashboardController extends Controller
         // Tổng đơn hàng bị hủy
         $totalOrderCanceled = Order::statusOrderFilter(Order::STATUS_ORDER_CANCELED)->count();
 
+        // Top user
+        $userChartData = $this->getTopUsers();
+
+        // Top product
+        $productChartData = $this->getTopProducts(request());
+
         return view('admin.dashboard', compact(
             'newOrderThisMonth',
             'percentageChange',
@@ -27,6 +35,9 @@ class DashboardController extends Controller
             'newOrderLastMonth',
             'totalOrderDelivered',
             'totalOrderCanceled',
+            // Thống kê user
+            'userChartData',
+            'productChartData',
         ));
     }
 
@@ -71,7 +82,10 @@ class DashboardController extends Controller
                 $periodEnd->endOfDay()
             ])->count();
             
-            $data[] = $count;
+            $data[] = [
+                'date' => $periodStart->format('d/m'),
+                'count' => $count,
+            ];
         }
 
         return $data;
@@ -98,5 +112,71 @@ class DashboardController extends Controller
         //     $data[$period]++;
         // }
         // return $data;
+    }
+
+    // Thống kế user ==============================================================================
+
+    // public function getTopUsers()
+    // {
+    //     $topUsers = User::select('users.id', 'users.name', 'users.email')
+    //         ->selectRaw('SUM(orders.total_price) as total_spent')
+    //         ->join('orders', 'users.id', '=', 'orders.user_id')
+    //         ->groupBy('users.id', 'users.name', 'users.email')
+    //         ->orderByDesc('total_spent')
+    //         ->take(5)
+    //         ->get();
+
+    //     return $topUsers;
+    // }
+
+    public function getTopUsers()
+    {
+        $topUsers = User::select(
+            'users.id',
+            'users.name',
+            DB::raw('SUM(orders.total_price) as total_spent'),
+            DB::raw('COUNT(DISTINCT orders.id) as total_orders'),
+            DB::raw('COALESCE(SUM(order_items.quantity), 0) as total_quantity')
+        )
+            ->join('orders', 'users.id', '=', 'orders.user_id')
+            ->leftJoin('order_items', 'orders.id', '=', 'order_items.order_id')
+            ->where('orders.status_order', Order::STATUS_ORDER_DELIVERED)
+            ->groupBy('users.id', 'users.name')
+            ->orderByDesc('total_spent')
+            ->take(5)
+            ->get();
+
+        return [
+            'users' => $topUsers->pluck('name')->toArray(),
+            'total_spent' => $topUsers->pluck('total_spent')->toArray(),
+            'total_quantity' => $topUsers->pluck('total_quantity')->toArray(),
+            'total_orders' => $topUsers->pluck('total_orders')->toArray(),
+        ];
+    }
+
+    // Thống kê product ==============================================================================
+
+    public function getTopProducts(Request $request)
+    {
+        // Lấy thời gian và số lượng sản phẩm muốn xem
+        $start = $request->start ?? now()->subMonth()->startOfMonth()->toDateString();
+        $end = $request->end ?? now()->endOfMonth()->toDateString();
+        $limit = $request->limit ?? 10;
+
+        $products = DB::table('order_items')
+            ->select('product_name', DB::raw('SUM(quantity) as total_sold'))
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('product_name')
+            ->orderByDesc('total_sold')
+            ->limit($limit)
+            ->get();
+
+        return [
+            'product_name' => $products->pluck('product_name')->toArray(),
+            'total_sold' => $products->pluck('total_sold')->toArray(),
+            'start' => $start,
+            'end' => $end,
+            'limit' => $limit,
+        ];
     }
 }

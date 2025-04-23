@@ -62,7 +62,7 @@
 
                                     @foreach (\App\Models\Order::STATUS_ORDER_DETAILS as $key => $value)
                                         <option value="{{$key}}" {{ request('status_order') == $key ? 'selected' : '' }}>
-                                            {{$value->title}}
+                                            {{$value['title']}}
                                         </option>
                                     @endforeach
                                 </select>

@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0 font-size-18">Đơn hàng: {{ $order->order_sku }}</h4>
+                <h4 class="mb-sm-0 font-size-18">Đơn hàng {{ "#$order->id $order->order_sku" }}</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
@@ -45,12 +45,25 @@
                                         @endforeach
                                     </select>
                                 </div>
-
                             </div>
+
                             <div class="col-sm-1">
                                 <div class="search-box me-2 mb-2 d-inline-block">
                                     <div class="text-sm-end">
                                         <button class="btn btn-primary">Lưu</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-8">
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <div class="me-4">
+                                        <h5 class="mb-0">Tổng tiền: <span class="text-primary">{{ number_format($order->total_price, 0, ',', '.') }} đ</span></h5>
+                                    </div>
+                                    <div>
+                                        <span class="badge {{ $order->isPaid() ? 'bg-success' : 'bg-danger' }} font-size-12 p-2">
+                                            {{ $order->isPaid() ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +104,7 @@
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Avatar</th> 
+                                    <th>Avatar</th>
                                     <th>Tên</th>
                                     <th>Email</th>
                                     <th>Số điện thoại</th>
@@ -135,7 +148,7 @@
                                 @foreach ($order->orderItems as $orderItem)
                                     <tr>
                                         <td>
-                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_img_thumbnail) }}" width="70" alt="variant_image">        
+                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_thumbnail) }}" width="70" alt="variant_image">        
                                         </td>
 
                                         <td>

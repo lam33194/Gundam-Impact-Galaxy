@@ -113,9 +113,9 @@ class CartItemController extends Controller
        
         if (array_key_exists('variant', $cartItem->$getMethod())) {
             $cartItem->$loadMethod([
-                'variant.product',
-                'variant.size',
-                'variant.color',
+                'variant.product:id,name,slug,sku,thumb_image,price_regular,price_sale',
+                'variant.size:id,name',
+                'variant.color:id,name,code',
             ]);
         }
     }

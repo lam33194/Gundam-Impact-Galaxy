@@ -3,8 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class UpdateSubCategoryRequest extends FormRequest
+class UpdatePostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +23,14 @@ class UpdateSubCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'slug' => 'max:190'
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('posts', 'title')->ignore($this->route('post')->id),
+            ],
+            'content' => 'required|string',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
 }

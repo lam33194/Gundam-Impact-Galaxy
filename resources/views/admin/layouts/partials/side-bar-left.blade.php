@@ -3,7 +3,8 @@
     <div id="sidebar-menu">
         <!-- Left Menu Start -->
         <ul class="metismenu list-unstyled" id="side-menu">
-            <!-- <li class="menu-title" key="t-menu">Dashboards</li> -->
+
+            <li class="menu-title" key="t-menu">Trang chủ</li>
 
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="waves-effect">
@@ -31,22 +32,27 @@
             <li>
                 <a href="javascript: void(0);" class="has-arrow waves-effect">
                     <i class="bx bx-share-alt"></i>
-                    <span key="t-multi-level">Quản lý sản phẩm</span>
+                    <span key="t-multi-level">Quản lý biến thể</span>
                 </a>
                 <ul class="sub-menu" aria-expanded="true">
                     <li>
-                        <a href="{{ route('admin.products.index') }}" key="t-level-1-1">
-                            Danh sách
+                        <a href="{{ route('admin.product-colors.index') }}" key="t-level-1-1">
+                            Màu
                         </a>
                     </li>
                     <li>
-                        <a href="javascript: void(0);" class="has-arrow" key="t-level-1-2">Biến thể</a>
-                        <ul class="sub-menu" aria-expanded="true">
-                            <li><a href="{{ route('admin.product-colors.index') }}" key="t-level-2-1">Màu</a></li>
-                            <li><a href="{{ route('admin.product-sizes.index') }}" key="t-level-2-2">Kích thước</a></li>
-                        </ul>
+                        <a href="{{ route('admin.product-sizes.index') }}" key="t-level-1-1">
+                            Tỉ lệ
+                        </a>
                     </li>
                 </ul>
+            </li>
+
+            <li class="{{ activeMenuLi('admin/products') }}">
+                <a href="{{ route('admin.products.index') }}" class="waves-effect {{ activeMenu('admin/products') }}">
+                    <i class='bx bx-cube-alt'></i>
+                    <span key="t-users">Quản lý sản phẩm</span>
+                </a>
             </li>
 
             <li>
@@ -78,15 +84,22 @@
 
             <li class="{{ activeMenuLi('admin/comments') }}">
                 <a href="{{ route('admin.comments.index') }}" class="waves-effect">
-                    <i class="bx bx-receipt"></i>
+                    <i class='bx bx-chat'></i>
                     <span key="t-comments">Quản lý bình luận</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('admin.posts.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Quản lý bài viết</span>
                 </a>
             </li>
 
             <li>
                 <a href="{{ route('admin.orders.index') }}" class="waves-effect">
                     <span class="badge rounded-pill bg-danger float-end fs-6" key="t-hot">{{ \App\Models\Order::pending()->count() }}</span>
-                    <i class="bx bx-receipt"></i>
+                    <i class='bx bx-cart-alt {{ !\App\Models\Order::pending()->exists() ?: 'bx-tada' }}' ></i>
                     <span key="t-orders">Đơn hàng</span>
                 </a>
             </li>

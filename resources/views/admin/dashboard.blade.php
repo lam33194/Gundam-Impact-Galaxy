@@ -1,7 +1,40 @@
 @extends('admin.layouts.master')
 @section('title', 'GunDam DashBoard')
+@section('style')
+    <style>
+        .rank-1 {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .rank-2 {
+            color: #c0c0c0;
+            font-weight: bold;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+            font-weight: bold;
+        }
+
+        .row-rank-1 {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1)) !important;
+            border-left: 4px solid #ffd700;
+        }
+
+        .row-rank-2 {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1)) !important;
+            border-left: 4px solid #c0c0c0;
+        }
+
+        .row-rank-3 {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1)) !important;
+            border-left: 4px solid #cd7f32;
+        }
+    </style>
+@endsection
 @section('content')
-    {{-- <div class="row mb-4">
+    <div class="row mb-4">
         <div class="col-lg-12">
             <div class="d-flex align-items-center">
                 <img src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}" alt="" class="avatar-sm rounded">
@@ -19,7 +52,7 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
     <div class="row">
         <div class="col-lg-3">
@@ -120,7 +153,7 @@
                             <p class="text-muted fw-medium">Tổng đơn hàng bị hủy</p>
                             <h4 class="mb-0">{{ $totalOrderCanceled }}</h4>
                         </div>
-                        
+
                         <i class="fa-solid fa-ban fs-2 text-danger"></i>
 
                         <div class="flex-shrink-0 align-self-center">
@@ -138,7 +171,7 @@
         </div>
     </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-8">
             <div class="card">
                 <div class="card-body">
@@ -366,9 +399,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
@@ -494,9 +527,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -825,14 +858,118 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê user</h4>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Top 5 Khách Hàng</h4>
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody>
+                            @foreach ($userChartData['users'] as $i => $username)
+                            <tr>
+                                <td class="text-center">{{$i+1}}</td>
+                                <td>{{$username}}</td>
+                            </tr>
+                            @endforeach
+
+                            {{-- <tr class="row-rank-1">
+                                <td class="text-center">
+                                    <div class="rank-1"><i class="fas fa-trophy me-2"></i>1</div>
+                                </td>
+                                <td>DragonSlayer99</td>
+                            </tr> --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div id="topUserChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê sản phẩm</h4>
+        </div>
+
+        <div class="col-lg-12">
+            <form method="GET" action="" class="mb-4">
+                <div style="margin-bottom: 10px;">
+                    <label>Từ ngày:
+                        <input type="date" name="start" value="{{ $productChartData['start'] }}">
+                    </label>
+                    <label>Đến ngày:
+                        <input type="date" name="end" value="{{ $productChartData['end'] }}">
+                    </label>
+                    <label>Số sản phẩm:
+                        <select name="limit">
+                            <option value="5" {{ $productChartData['limit'] == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ $productChartData['limit'] == 10 ? 'selected' : '' }}>10</option>
+                        </select>
+                    </label>
+                    <button type="submit">Xem thống kê</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                        <thead>
+                            <tr style="background: #f0f0f0;">
+                                <th>#</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng đã bán</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($productChartData['product_name'] as $index => $name)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $name }}</td>
+                                    <td>{{ $productChartData['total_sold'][$index] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3">Không có sản phẩm nào được bán trong khoảng thời gian này.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div id="topProductChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
     <script>
         // Pass PHP data to JavaScript
         var orderChartData = @json($orderChartData);
+        var userChartData = @json($userChartData);
+        var productChartData = @json($productChartData);
     </script>
 
     <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
