@@ -86,22 +86,85 @@ class StatController extends Controller
 
         $monthlyData = collect($monthlyData)->toArray();
 
+        // Dữ liệu theo năm (4 năm gần nhất)
+        $yearlyData = [];
+        $startYear = Carbon::now()->subYears(3);
+        for ($i = 0; $i < 4; $i++) {
+            $year = $startYear->copy()->addYears($i);
+            $yearlyData[$year->format('Y')] = 0;
+        }
+
+        $yearlyRecords = Order::paid()
+            ->selectRaw('YEAR(created_at) as year, SUM(total_price) as revenue')
+            ->where('created_at', '>=', $startYear)
+            ->groupBy('year')
+            ->orderBy('year')
+            ->get();
+
+        foreach ($yearlyRecords as $record) {
+            $yearlyData[$record->year] = $record->revenue;
+        }
+
+        $yearlyData = collect($yearlyData)->toArray();
+
+        // Dữ liệu theo quý (4 quý gần nhất)
+        // $quarterlyData = [];
+        // $startQuarter = Carbon::now()->subQuarters(3);
+        // for ($i = 0; $i < 4; $i++) {
+        //     $quarter = $startQuarter->copy()->addQuarters($i);
+        //     $quarterKey = "Q{$quarter->quarter}/{$quarter->year}";
+        //     $quarterlyData[$quarterKey] = 0;
+        // }
+
+        // $quarterlyRecords = Order::paid()
+        //     ->selectRaw('QUARTER(created_at) as quarter, YEAR(created_at) as year, SUM(total_price) as revenue')
+        //     ->where('created_at', '>=', $startQuarter)
+        //     ->groupBy('quarter', 'year')
+        //     ->orderBy('year')
+        //     ->orderBy('quarter')
+        //     ->get();
+
+        // foreach ($quarterlyRecords as $record) {
+        //     $quarterKey = "Q{$record->quarter}/{$record->year}";
+        //     $quarterlyData[$quarterKey] = $record->revenue;
+        // }
+
+        // $quarterlyData = collect($quarterlyData)->toArray();
+
         // Doanh thu tổng
         $dailyRevenue = array_sum(array_values($dailyData));
         $weeklyRevenue = array_sum(array_values($weeklyData));
         $monthlyRevenue = array_sum(array_values($monthlyData));
+        $yearlyRevenue = array_sum(array_values($yearlyData));
+
+        // dd(
+        //     $dailyData,      // [01/01 => n, 02/01 => ..., 07/01 => n]    doanh thu mỗi ngày
+        //     $weeklyData,     // [4 tuần trước => n, 3 ..., tuần này => n] doanh thu mỗi tuần
+        //     $monthlyData,    // [01/2025 => n, 02/202x ..., 12/202x => n] doanh thu mỗi năm
+        //     $yearlyData,
+        //     $dailyRevenue,   // Tổng doanh thu 7 ngày trở lại
+        //     $weeklyRevenue,  // Tổng doanh thu 4 tuần trở lại
+        //     $monthlyRevenue, // Tổng doanh thu 1 năm trở lại
+        //     $yearlyRevenue,
+        // );
 
         return view('admin.stats.revenue', compact(
             'dailyData',
             'weeklyData',
             'monthlyData',
+            'yearlyData',
             'dailyRevenue',
             'weeklyRevenue',
             'monthlyRevenue',
+            'yearlyRevenue',
         ));
     }
 
-
+    // // Một số thông tin thống kê khác 
+    // // Tổng số đơn hàng
+    // $totalOrders = DB::table('orders')->count();
+    // // Tổng số sản phẩm (product)
+    // $totalProducts = DB::table('products')->count();
 
     public function user()
     {
@@ -182,12 +245,3 @@ $data = $customerCounts->pluck('count');
   
 
 }
-// // Một số thông tin thống kê khác 
-// // Tổng số đơn hàng
-// $totalOrders = DB::table('orders')->count();
-// // Đơn hàng đang chờ xác nhận
-// $pendingOrders = DB::table('orders')
-//     ->where('status_order', 'pending')
-//     ->count();
-// // Tổng số sản phẩm (product)
-// $totalProducts = DB::table('products')->count();

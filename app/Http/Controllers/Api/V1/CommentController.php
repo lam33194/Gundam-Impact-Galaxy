@@ -27,7 +27,10 @@ class CommentController extends Controller
 
         if (!$products) return $this->not_found('Sản phẩm không tồn tại');
 
-        $comments = $products->comments()->with(['user', 'commentImages'])->getQuery();
+        $comments = $products->comments()->with([
+            'user:id,name,email,avatar',
+            'commentImages:id,comment_id,image',
+        ])->getQuery();
 
         $perPage = $request->query('per_page', 10);
 
@@ -38,7 +41,10 @@ class CommentController extends Controller
     {
         $user = auth('sanctum')->user();
 
-        $comments = $user->comments()->with(['product', 'commentImages'])->getQuery();
+        $comments = $user->comments()->with([
+            'product:id,name,slug,sku,thumb_image,price_regular,price_sale',
+            'commentImages:id,comment_id,image'
+        ])->getQuery();
 
         $perPage = $request->query('per_page', 10);
 
@@ -67,7 +73,10 @@ class CommentController extends Controller
             }
         }
 
-        $comment->load(['user', 'commentImages']);
+        $comment->load([
+            'user:id,name,email,avatar', 
+            'commentImages:id,comment_id,image',
+        ]);
 
         return $this->created('Đánh giá sản phẩm thành công', $comment);
     }

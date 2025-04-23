@@ -153,7 +153,7 @@
                             <p class="text-muted fw-medium">Tổng đơn hàng bị hủy</p>
                             <h4 class="mb-0">{{ $totalOrderCanceled }}</h4>
                         </div>
-                        
+
                         <i class="fa-solid fa-ban fs-2 text-danger"></i>
 
                         <div class="flex-shrink-0 align-self-center">

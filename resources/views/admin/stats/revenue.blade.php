@@ -48,6 +48,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" data-time="month" onclick="updateChart('month')">Tháng</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-time="year" onclick="updateChart('year')">Năm</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -65,16 +68,24 @@
         const data = {
             day: {
                 labels: @json(array_keys($dailyData)),
-                revenue: @json(array_values($dailyData))
+                revenue: @json(array_values($dailyData)),
+                total: {{$dailyRevenue}},
             },
             week: {
                 labels: @json(array_keys($weeklyData)),
-                revenue: @json(array_values($weeklyData))
+                revenue: @json(array_values($weeklyData)),
+                total: {{$weeklyRevenue}},
             },
             month: {
                 labels: @json(array_keys($monthlyData)),
-                revenue: @json(array_values($monthlyData))
-            }
+                revenue: @json(array_values($monthlyData)),
+                total: {{$monthlyRevenue}},
+            },
+            year: {
+                labels: @json(array_keys($yearlyData)),
+                revenue: @json(array_values($yearlyData)),
+                total: {{$yearlyRevenue}},
+            },
         };
 
         // Hàm lấy màu từ data-colors
@@ -126,7 +137,10 @@
                 title: { text: 'Thời gian (Ngày)' }
             },
             yaxis: {
-                title: { text: 'Doanh thu (VNĐ)' }
+                title: { 
+                    text: 'Doanh thu (VNĐ)',
+                    offsetX: 5,
+                }
             },
             fill: { opacity: 1 },
             tooltip: {
@@ -136,7 +150,10 @@
                     }
                 }
             },
-            colors: statisticsApplicationColors
+            colors: statisticsApplicationColors,
+            title: {
+                text: data.day.total + ' VNĐ'
+            }
         };
 
         // Khởi tạo biểu đồ
@@ -148,9 +165,29 @@
             const newData = data[timeUnit];
             let timeTitle;
             switch (timeUnit) {
-                case 'day': timeTitle = 'Thời gian (Ngày)'; break;
-                case 'week': timeTitle = 'Thời gian (Tuần)'; break;
-                case 'month': timeTitle = 'Thời gian (Tháng)'; break;
+                case 'day': {
+                    timeTitle = 'Thời gian (Ngày)'; 
+                    newTextTitle = 'Tuần vừa qua ';
+                    break;
+                }
+
+                case 'week': {
+                    timeTitle = 'Thời gian (Tuần)';
+                    newTextTitle = '5 tuần vừa qua ';
+                    break;
+                }
+
+                case 'month': {
+                    timeTitle = 'Thời gian (Tháng)';
+                    newTextTitle = '1 năm qua ';
+                    break;
+                }
+
+                case 'year': {
+                    timeTitle = 'Thời gian (Năm)';
+                    newTextTitle = '4 năm vừa qua ';
+                    break;
+                }
             }
 
             chart.updateOptions({
@@ -158,7 +195,10 @@
                     categories: newData.labels,
                     title: { text: timeTitle }
                 },
-                series: [{ data: newData.revenue }]
+                series: [{ data: newData.revenue }],
+                title: {
+                    text: newTextTitle + newData.total + ' VNĐ',
+                }
             });
 
             // Cập nhật active class
