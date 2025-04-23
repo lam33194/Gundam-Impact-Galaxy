@@ -111,4 +111,16 @@ class Product extends Model
         }
         return $query;
     }
+
+    // Mutator đặt is_good_deal và is_hot_deal
+    // public function setPriceSaleAttribute($value)
+    // {
+    //     $this->attributes['price_sale'] = $value;
+
+    //     if ($this->price_regular > 0 && $value > 0) {
+    //         $discount = (($this->price_regular - $value) / $this->price_regular) * 100;
+    //         $this->attributes['is_hot_deal'] = $discount >= 30;
+    //         $this->attributes['is_good_deal'] = $discount >= 10 && $discount < 30;
+    //     }
+    // }
 }
