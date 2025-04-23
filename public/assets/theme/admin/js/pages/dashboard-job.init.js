@@ -208,4 +208,36 @@ document.addEventListener("DOMContentLoaded", () => {
     var topUserChart = new ApexCharts(document.querySelector("#topUserChart"), userOptions);
     topUserChart.render();
 
+    // Thống kê product ===================================================
+
+    const productOptions = {
+        chart: {
+            type: 'bar',
+            height: 350
+        },
+        series: [{
+            name: 'Số lượng bán',
+            data: productChartData['total_sold']
+        }],
+        xaxis: {
+            categories: productChartData['product_name'],
+            labels: {
+                style: {
+                    fontSize: '14px'
+                }
+            }
+        },
+        title: {
+            text: 'Biểu đồ sản phẩm bán chạy',
+            align: 'center',
+            style: {
+                fontFamily: 'Roboto, sans-serif',
+            }
+        },
+        // colors: chartColors,
+        colors: ['#00BFFF']
+    };
+
+    const topProductChart = new ApexCharts(document.querySelector("#topProductChart"), productOptions);
+    topProductChart.render();
 })
