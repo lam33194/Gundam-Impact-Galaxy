@@ -3,7 +3,8 @@
     <div id="sidebar-menu">
         <!-- Left Menu Start -->
         <ul class="metismenu list-unstyled" id="side-menu">
-            <!-- <li class="menu-title" key="t-menu">Dashboards</li> -->
+
+            <li class="menu-title" key="t-menu">Trang chủ</li>
 
             <li>
                 <a href="{{ route('admin.dashboard') }}" class="waves-effect">
@@ -80,6 +81,13 @@
                 <a href="{{ route('admin.comments.index') }}" class="waves-effect">
                     <i class="bx bx-receipt"></i>
                     <span key="t-comments">Quản lý bình luận</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('admin.posts.index') }}" class="waves-effect">
+                    <i class="bx bx-share-alt"></i>
+                    <span key="t-multi-level">Quản lý bài viết</span>
                 </a>
             </li>
 
