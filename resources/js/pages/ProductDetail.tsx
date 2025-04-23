@@ -18,6 +18,7 @@ import { useScrollable } from "../hooks/useScrollable";
 import Voucher from "../components/Voucher";
 import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
+import { STORAGE_URL } from "../utils/constants";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -120,7 +121,10 @@ const ProductDetail = () => {
             if (res && res.data) {
                 toast.success("Thêm comment thành công!");
             }
-        } catch (error) { }
+        } catch (error : any) {
+            toast.error(error.response.data.message);
+            // console.log(error.response);
+        }
         console.log({ content, rating, images });
     };
 
@@ -231,7 +235,8 @@ const ProductDetail = () => {
                     <div
                         className="img"
                         style={{
-                            backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"})`,
+                            // backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"})`,
+                            backgroundImage: `url(${STORAGE_URL + product?.thumb_image})`,
                         }}
                     ></div>
 
@@ -243,12 +248,34 @@ const ProductDetail = () => {
                                     className="product-variant"
                                 >
                                     <img
-                                        src={variant.image || "default-image-url"}
+                                        src={
+                                            variant.image == null  
+                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                            : STORAGE_URL + variant.image
+                                        }
                                         alt={`Variant ${variant.id}`}
                                         className="w-100 h-100 object-fit-cover"
                                         onClick={() => setProductVariant(variant)}
                                     />
 
+                                </div>
+                            ))}
+
+                            {product?.galleries.map((gallery: any) => (
+                                <div
+                                    key={gallery.id}
+                                    className="product-variant"
+                                >
+                                    <img
+                                        src={
+                                            gallery.image == null  
+                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                            : STORAGE_URL + gallery.image
+                                        }
+                                        alt={`Product gallery ${gallery.id}`}
+                                        className="w-100 h-100 object-fit-cover"
+                                        // onClick={() => setProductVariant(variant)}
+                                    />
                                 </div>
                             ))}
                         </Slider>
@@ -272,11 +299,13 @@ const ProductDetail = () => {
                         </span>
                     </div>
                     <span className="price">
-                        {product !== null
-                            ? FormatCurrency(product.price_sale)
+                        {product !== null 
+                            ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular) 
                             : ""}
                         đ
                     </span>
+                    {/* (Đánh giá: {product?.average_rating}) */}
+                    {/* (Lượt đánh giá {product?.total_ratings}) */}
                     <div className="line mb-2 mt-1"></div>
                     <span>{vouchers.length} Mã Giảm Giá</span>
                     <div className="voucher-section position-relative">
@@ -352,7 +381,10 @@ const ProductDetail = () => {
                             ))}
                         </div>
                     </div>
-
+                    {/* Hiển thị tồn kho ? */}
+                    {/* {product?.variants.forEach(element => {
+                        console.log(element.quantity);
+                    })} */}
                     <span>Số lượng:</span>
                     <div
                         className="input-group input-group-sm quantity-selector"
@@ -521,7 +553,7 @@ const ProductDetail = () => {
                     </form>
                 </div>
                 <div className="container mt-4">
-                    <h3 className="text-center mb-4">Danh sách Bình luận</h3>
+                    <h3 className="text-center mb-4">Danh sách Bình luận ({product?.total_comments})</h3>
                     <div className="row justify-content-start">
                         <div className="col-lg-11">
                             {commentList.map((comment: any, index: any) => (

@@ -1,4 +1,5 @@
 import { FormatCurrency } from "../utils/FormatCurrency";
+import { STORAGE_URL } from "../utils/constants";
 import "./Products.scss";
 
 interface ProductProps {
@@ -17,7 +18,9 @@ const Product = ({ p }: ProductProps) => {
         <div
           className="image"
           style={{
-            backgroundImage: `url(${p.thumb_image})`,
+            backgroundImage: `url(${p.thumb_image != null 
+              ? STORAGE_URL+p.thumb_image 
+              : 'https://bizweb.dktcdn.net/thumb/large/100/456/060/products/adee7807-6673-4ecc-a99a-4f111563836f-1706888678630.jpg?v=1732090977817'})`,
           }}
         ></div>
       </div>

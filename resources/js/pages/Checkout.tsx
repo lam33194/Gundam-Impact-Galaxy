@@ -94,9 +94,14 @@ const Checkout = () => {
                 setCart(res.data.data);
                 let t = 0;
                 res.data.data.forEach((element: any) => {
-                    t +=
-                        Number(element.variant.product.price_sale) *
-                        Number(element.quantity);
+                    let tempPrice = element.variant.product.price_sale != 0 
+                        ? element.variant.product.price_sale 
+                        : element.variant.product.price_regular;
+
+                    t += Number(tempPrice) * Number(element.quantity);
+                    // t +=
+                        // Number(element.variant.product.price_sale) *
+                        // Number(element.quantity);
                 });
                 console.log(t);
                 setTotal(t);
@@ -429,7 +434,11 @@ const Checkout = () => {
                 <h4 className="title">Đơn hàng ({cart.length} sản phẩm)</h4>
                 <div className="line"></div>
                 <div className="cart-product d-flex flex-column gap-4 my-3">
-                    {cart.map((item: any, index) => (
+                    {cart.map((item: any, index) => {
+                        const product_price = item.variant.product.price_sale != 0 
+                        ? item.variant.product.price_sale 
+                        : item.variant.product.price_regular;
+                        return (
                         <div
                             key={index}
                             className="cart-product-item d-flex align-items-start justify-content-between"
@@ -478,10 +487,11 @@ const Checkout = () => {
                                 </div>
                             </div>
                             <span className="item-price text-danger fw-bold">
-                                {FormatCurrency(item.variant.product.price_sale * item.quantity)}đ
+                                {/* {FormatCurrency(product_price * item.quantity)}đ */}
+                                {FormatCurrency(product_price)}đ
                             </span>
                         </div>
-                    ))}
+                    )})}
                 </div>
 
                 <div className="enter-coupon d-flex gap-1">
