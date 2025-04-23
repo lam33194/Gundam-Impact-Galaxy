@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Signup.scss";
 import { signup } from "../services/AuthService";
+import { toast } from "react-toastify";
 
 function Signup() {
 
@@ -28,15 +29,18 @@ function Signup() {
       const response = await signup(formData);
       console.log("Đăng ký thành công:", response.data);
       alert("Đăng ký thành công!");
+      // login
+      // const from = location.state?.from?.pathname || '/';
+      // navigate(from);
       navigate('/login', {
         state: {
           email: formData.email,
           password: formData.password
         }
       });
-    } catch (error) {
-      console.error("Đăng ký thất bại:", error);
-      alert("Đăng ký thất bại. Vui lòng thử lại.");
+    } catch (error : any) {
+      // console.error("Đăng ký thất bại:", error);
+      toast.error(error.response.data.message);
     }
   };
 
