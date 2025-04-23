@@ -898,6 +898,70 @@
             </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê sản phẩm</h4>
+        </div>
+
+        <div class="col-lg-12">
+            <form method="GET" action="" class="mb-4">
+                <div style="margin-bottom: 10px;">
+                    <label>Từ ngày:
+                        <input type="date" name="start" value="{{ $productChartData['start'] }}">
+                    </label>
+                    <label>Đến ngày:
+                        <input type="date" name="end" value="{{ $productChartData['end'] }}">
+                    </label>
+                    <label>Số sản phẩm:
+                        <select name="limit">
+                            <option value="5" {{ $productChartData['limit'] == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ $productChartData['limit'] == 10 ? 'selected' : '' }}>10</option>
+                        </select>
+                    </label>
+                    <button type="submit">Xem thống kê</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                        <thead>
+                            <tr style="background: #f0f0f0;">
+                                <th>#</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng đã bán</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($productChartData['product_name'] as $index => $name)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $name }}</td>
+                                    <td>{{ $productChartData['total_sold'][$index] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3">Không có sản phẩm nào được bán trong khoảng thời gian này.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div id="topProductChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
@@ -905,6 +969,7 @@
         // Pass PHP data to JavaScript
         var orderChartData = @json($orderChartData);
         var userChartData = @json($userChartData);
+        var productChartData = @json($productChartData);
     </script>
 
     <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>

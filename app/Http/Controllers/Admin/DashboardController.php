@@ -25,6 +25,9 @@ class DashboardController extends Controller
         // Top user
         $userChartData = $this->getTopUsers();
 
+        // Top product
+        $productChartData = $this->getTopProducts(request());
+
         return view('admin.dashboard', compact(
             'newOrderThisMonth',
             'percentageChange',
@@ -34,6 +37,7 @@ class DashboardController extends Controller
             'totalOrderCanceled',
             // Thống kê user
             'userChartData',
+            'productChartData',
         ));
     }
 
@@ -144,6 +148,32 @@ class DashboardController extends Controller
             'total_spent' => $topUsers->pluck('total_spent')->toArray(),
             'total_quantity' => $topUsers->pluck('total_quantity')->toArray(),
             'total_orders' => $topUsers->pluck('total_orders')->toArray(),
+        ];
+    }
+
+    // Thống kê product ==============================================================================
+
+    public function getTopProducts(Request $request)
+    {
+        // Lấy thời gian và số lượng sản phẩm muốn xem
+        $start = $request->start ?? now()->subMonth()->startOfMonth()->toDateString();
+        $end = $request->end ?? now()->endOfMonth()->toDateString();
+        $limit = $request->limit ?? 10;
+
+        $products = DB::table('order_items')
+            ->select('product_name', DB::raw('SUM(quantity) as total_sold'))
+            ->whereBetween('created_at', [$start, $end])
+            ->groupBy('product_name')
+            ->orderByDesc('total_sold')
+            ->limit($limit)
+            ->get();
+
+        return [
+            'product_name' => $products->pluck('product_name')->toArray(),
+            'total_sold' => $products->pluck('total_sold')->toArray(),
+            'start' => $start,
+            'end' => $end,
+            'limit' => $limit,
         ];
     }
 }
