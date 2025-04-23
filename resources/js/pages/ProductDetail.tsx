@@ -18,6 +18,7 @@ import { useScrollable } from "../hooks/useScrollable";
 import Voucher from "../components/Voucher";
 import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
+import { STORAGE_URL } from "../utils/constants";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -119,6 +120,10 @@ const ProductDetail = () => {
             );
             if (res && res.data) {
                 toast.success("Thêm comment thành công!");
+                setCommentList([
+                    ...commentList,
+                   res.data.data
+                ])
             }
         } catch (error) { }
         console.log({ content, rating, images });
@@ -129,6 +134,7 @@ const ProductDetail = () => {
             const res = await getCommentForProduct(slug);
             if (res && res.data) {
                 setCommentList(res.data.data);
+                console.log(res.data.data);
             }
         } catch (error) { }
     };
@@ -209,6 +215,7 @@ const ProductDetail = () => {
         if (slug) {
             getProductDetail();
             getAllCommentsOfProduct();
+            console.log(commentList);
         }
     }, [slug]);
 
@@ -220,9 +227,10 @@ const ProductDetail = () => {
         }
     }, [product]);
 
-    useEffect(() => {
-        getAllVouchers();
-    }, []);
+    // useEffect(() => {
+    //     getAllVouchers();
+    // }, []);
+
 
     return (
         <div className="product-detail container d-flex">
@@ -533,10 +541,10 @@ const ProductDetail = () => {
                                         <div className="d-flex justify-content-between align-items-start mb-2">
                                             <div>
                                                 <h5 className="card-title mb-1">
-                                                    {comment.userName}
+                                                    {comment.user.name}
                                                 </h5>
                                                 <small className="text-muted">
-                                                    {comment.userEmail}
+                                                    {comment.user.email}
                                                 </small>
                                             </div>
 
@@ -596,14 +604,14 @@ const ProductDetail = () => {
                                         </p>
 
 
-                                        {comment.images &&
-                                            comment.images.length > 0 && (
+                                        {comment.comment_images &&
+                                            comment.comment_images.length > 0 && (
                                                 <div className="d-flex flex-wrap gap-2">
-                                                    {comment.images.map(
+                                                    {comment.comment_images.map(
                                                         (img: any, imgIndex: any) => (
                                                             <img
                                                                 key={imgIndex}
-                                                                src={img}
+                                                                src={STORAGE_URL + "/" + img.image}
                                                                 alt={`Ảnh ${imgIndex + 1
                                                                     }`}
                                                                 className="img-thumbnail"
