@@ -46,9 +46,21 @@ class ProductController extends Controller
             }
         }
 
-        $products = $query->latest()->paginate(10);
+        $validSortColumns = ['price_regular', 'price_sale', 'quantity'];
 
-        return view('admin.products.index', compact('products'));
+        // Apply sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        if (in_array($sortBy, $validSortColumns)) {
+            $query->orderBy($sortBy, $sortDirection);
+        } else {
+            $query->latest();
+        }
+
+        $products = $query->paginate(10)->appends($request->query());
+
+        return view('admin.products.index', compact('products', 'sortBy', 'sortDirection'));
     }
 
     public function create()
@@ -189,12 +201,43 @@ class ProductController extends Controller
             // Update product
             $product->update($dataProduct);
 
-            // Only update variants if new data is provided
+            // Handle product variants: Update existing, create new, delete removed
             if (!empty($dataProductVariants)) {
-                $product->variants()->delete();
+                // Prepare keys of new variants for comparison
+                $newVariantKeys = collect($dataProductVariants)->map(function ($variant) {
+                    return [
+                        'product_size_id' => $variant['product_size_id'],
+                        'product_color_id' => $variant['product_color_id'],
+                    ];
+                })->toArray();
+
+                // Delete variants that are no longer in the new data
+                $product->variants()
+                    ->whereNotIn('id', $product->variants()
+                        ->whereIn('product_size_id', array_column($newVariantKeys, 'product_size_id'))
+                        ->whereIn('product_color_id', array_column($newVariantKeys, 'product_color_id'))
+                        ->pluck('id'))
+                    ->delete();
+
+                // Update or create variants
                 foreach ($dataProductVariants as $item) {
-                    $item += ['product_id' => $product->id];
-                    ProductVariant::query()->create($item);
+                    $variant = ProductVariant::where([
+                        'product_id' => $product->id,
+                        'product_size_id' => $item['product_size_id'],
+                        'product_color_id' => $item['product_color_id'],
+                    ])->first();
+
+                    if ($variant) {
+                        // Update existing variant
+                        $variant->update([
+                            'quantity' => $item['quantity'],
+                            'image' => $item['image'],
+                        ]);
+                    } else {
+                        // Create new variant
+                        $item['product_id'] = $product->id;
+                        ProductVariant::create($item);
+                    }
                 }
             }
 
@@ -205,7 +248,7 @@ class ProductController extends Controller
             if (!empty($dataProductGalleries)) {
                 $product->galleries()->delete();
                 foreach ($dataProductGalleries as $item) {
-                    $item += ['product_id' => $product->id];
+                    $item['product_id'] = $product->id;
                     ProductGallery::create($item);
                 }
             }
@@ -267,13 +310,18 @@ class ProductController extends Controller
 
         foreach ($dataProductVariantsTmp as $key => $item) {
             $tmp = explode('-', $key);
+            $existingVariant = $product->variants
+                ->where('product_color_id', $tmp[0])
+                ->where('product_size_id', $tmp[1])
+                ->first();
+
             $dataProductVariants[] = [
                 'product_color_id' => $tmp[0],
                 'product_size_id' => $tmp[1],
                 'quantity' => $item['quantity'],
                 'image' => !empty($item['image']) && $request->hasFile("product_variants.{$key}.image")
                     ? Storage::put('product_variants', $item['image'])
-                    : ($product->variants->where('product_color_id', $tmp[0])->where('product_size_id', $tmp[1])->first()?->image ?? null)
+                    : ($existingVariant?->image ?? null)
             ];
         }
 
@@ -296,11 +344,10 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        $product->load('galleries');
+        $product->load('galleries:image');
 
         foreach ($product->galleries as $gallery) {
             $this->delete_storage_file($gallery, 'image');
-            $gallery->delete();
         }
 
         $product->delete();

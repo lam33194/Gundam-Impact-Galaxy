@@ -18,6 +18,10 @@ class UserAddress extends Model
         'is_primary',
     ];
 
+    protected $attributes = [
+        'is_primary' => false,
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

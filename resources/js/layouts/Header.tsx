@@ -1,12 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Header.scss';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const handleSearch = () => {
     if (!searchKeyword.trim()) {
@@ -27,6 +28,17 @@ function Header() {
       handleSearch();
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isDropdownOpen && !(event.target as HTMLElement).closest('.dropdown')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isDropdownOpen]);
 
   return (
     <header className="py-3">
@@ -68,14 +80,13 @@ function Header() {
               {isAuthenticated ? (
                 <div className="dropdown me-4">
                   <button
-                    className="btn dropdown-toggle d-flex align-items-center"
+                    className={`btn dropdown-toggle d-flex align-items-center ${isDropdownOpen ? 'show' : ''}`}
                     type="button"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                   >
                     <span className="me-2">Xin chào, {user?.name}</span>
                   </button>
-                  <ul className="dropdown-menu dropdown-menu-end">
+                  <ul className={`dropdown-menu dropdown-menu-end ${isDropdownOpen ? 'show' : ''}`}>
                     <li>
                       <Link className="dropdown-item" to="/profile">
                         <i className="fas fa-user me-2"></i>

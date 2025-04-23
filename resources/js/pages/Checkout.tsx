@@ -37,12 +37,18 @@ const Checkout = () => {
         type_payment: "",
     });
 
+    const [voucherCode, setVoucherCode] = useState("");
+
     const handleChange = (e: any) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value,
         });
+    };
+
+    const handleVoucherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setVoucherCode(e.target.value);
     };
 
     const createOrder = async () => {
@@ -58,17 +64,17 @@ const Checkout = () => {
             user_address: fullAddress,
             user_note: formData.user_note || "",
             type_payment: formData.type_payment,
+            voucher_code: voucherCode || null
         };
         try {
             const res = await addOrder(data);
             if (res && res.data) {
-                console.log('Đặt hàng thành công:', res.data);
                 toast.success("Đặt hàng thành công!");
                 setTimeout(() => {
                     window.location.href = "/order-history";
                 }, 1000);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Lỗi xảy ra:', error);
             if (error.response && error.response.data && error.response.data.message) {
                 console.log('Thông báo lỗi:', error.response.data.message);
@@ -82,15 +88,20 @@ const Checkout = () => {
 
     const getCartDetail = async () => {
         try {
-            const res = await getCart();
+            const res = await getCart({ include: 'variant' });
             if (res && res.data) {
                 console.log("iudie", res.data.data);
                 setCart(res.data.data);
                 let t = 0;
                 res.data.data.forEach((element: any) => {
-                    t +=
-                        Number(element.variant.product.price_sale) *
-                        Number(element.quantity);
+                    let tempPrice = element.variant.product.price_sale != 0 
+                        ? element.variant.product.price_sale 
+                        : element.variant.product.price_regular;
+
+                    t += Number(tempPrice) * Number(element.quantity);
+                    // t +=
+                        // Number(element.variant.product.price_sale) *
+                        // Number(element.quantity);
                 });
                 console.log(t);
                 setTotal(t);
@@ -140,8 +151,10 @@ const Checkout = () => {
                 if (!authUser?.id) return;
 
                 setIsLoading(true);
-                const response = await getUserById(authUser.id, { include: 'addresses' });
-                const userData = response.data.data[0];
+                const response = await getUserById(authUser.id, {
+                    include: 'addresses'
+                });
+                const userData = response.data.data;
                 const userAddress = userData.addresses?.[0];
 
                 setFormData({
@@ -227,6 +240,7 @@ const Checkout = () => {
                     <div className="col-md-6">
                         <h5>Thông tin nhận hàng</h5>
                         <div className="mb-3">
+                            {/* Personal info fields */}
                             <div className="form-floating mb-3">
                                 <input
                                     type="text"
@@ -236,9 +250,7 @@ const Checkout = () => {
                                     value={formData.user_name}
                                     onChange={handleChange}
                                 />
-                                <label htmlFor="floatingFullName">
-                                    Họ và tên
-                                </label>
+                                <label htmlFor="floatingFullName">Họ và tên</label>
                             </div>
 
                             <div className="form-floating mb-3">
@@ -262,10 +274,10 @@ const Checkout = () => {
                                     value={formData.user_phone}
                                     onChange={handleChange}
                                 />
-                                <label htmlFor="floatingPhone">
-                                    Số điện thoại
-                                </label>
+                                <label htmlFor="floatingPhone">Số điện thoại</label>
                             </div>
+
+                            <h6 className="mt-4 mb-3">Địa chỉ nhận hàng</h6>
 
                             <div className="form-floating mb-3">
                                 <input
@@ -279,6 +291,7 @@ const Checkout = () => {
                                 <label htmlFor="floatingAddress">Địa chỉ</label>
                             </div>
 
+                            {/* Location selects */}
                             <div className="form-floating mb-3">
                                 <select
                                     className="form-select"
@@ -334,20 +347,6 @@ const Checkout = () => {
                                 </select>
                                 <label>Xã/Phường</label>
                             </div>
-
-                            <div className="form-floating mb-3">
-                                <textarea
-                                    className="form-control"
-                                    name="user_note"
-                                    placeholder="Ghi chú (tùy chọn)"
-                                    style={{ height: "100px" }}
-                                    value={formData.user_note}
-                                    onChange={handleChange}
-                                ></textarea>
-                                <label htmlFor="floatingNote">
-                                    Ghi chú (tùy chọn)
-                                </label>
-                            </div>
                         </div>
                     </div>
 
@@ -383,7 +382,8 @@ const Checkout = () => {
                                 name="type_payment"
                                 id="momoPaymentMethod"
                                 className="form-check-input"
-                                value={formData.type_payment}
+                                checked={formData.type_payment === "momo"}
+                                value="momo"
                                 onChange={handleChange}
                             />
                             <label
@@ -400,7 +400,8 @@ const Checkout = () => {
                                 name="type_payment"
                                 id="vnpayPaymentMethod"
                                 className="form-check-input"
-                                value={formData.type_payment}
+                                checked={formData.type_payment === "vnpay"}
+                                value="vnpay"
                                 onChange={handleChange}
                             />
                             <label
@@ -408,6 +409,21 @@ const Checkout = () => {
                                 className="form-check-label d-flex align-items-center ms-2"
                             >
                                 Vnpay
+                            </label>
+                        </div>
+
+                        <h5 className="mt-4">Ghi chú</h5>
+                        <div className="form-floating mb-3">
+                            <textarea
+                                className="form-control"
+                                name="user_note"
+                                placeholder="Ghi chú (tùy chọn)"
+                                style={{ height: "100px" }}
+                                value={formData.user_note}
+                                onChange={handleChange}
+                            ></textarea>
+                            <label htmlFor="floatingNote">
+                                Ghi chú (tùy chọn)
                             </label>
                         </div>
                     </div>
@@ -418,7 +434,11 @@ const Checkout = () => {
                 <h4 className="title">Đơn hàng ({cart.length} sản phẩm)</h4>
                 <div className="line"></div>
                 <div className="cart-product d-flex flex-column gap-4 my-3">
-                    {cart.map((item: any, index) => (
+                    {cart.map((item: any, index) => {
+                        const product_price = item.variant.product.price_sale != 0 
+                        ? item.variant.product.price_sale 
+                        : item.variant.product.price_regular;
+                        return (
                         <div
                             key={index}
                             className="cart-product-item d-flex align-items-start justify-content-between"
@@ -427,7 +447,10 @@ const Checkout = () => {
                                 <div
                                     className="cart-product-item-image"
                                     style={{
-                                        backgroundImage: `url(${STORAGE_URL + item.variant.image || "https://bizweb.dktcdn.net/thumb/medium/100/456/060/products/f84eb124-0644-448c-8e8c-30776876301d-1735131922675.jpg?v=1735134125243"})`,
+                                        // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
+                                        backgroundImage: item.variant.image == null 
+                                        ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
+                                        : `url(${STORAGE_URL + item.variant?.image})`,
                                         height: "60px",
                                         width: "60px",
                                         backgroundSize: "cover",
@@ -467,10 +490,11 @@ const Checkout = () => {
                                 </div>
                             </div>
                             <span className="item-price text-danger fw-bold">
-                                {FormatCurrency(item.variant.product.price_sale * item.quantity)}đ
+                                {/* {FormatCurrency(product_price * item.quantity)}đ */}
+                                {FormatCurrency(product_price)}đ
                             </span>
                         </div>
-                    ))}
+                    )})}
                 </div>
 
                 <div className="enter-coupon d-flex gap-1">
@@ -479,6 +503,8 @@ const Checkout = () => {
                             className="form-control"
                             id="floatingNote"
                             placeholder="Nhập mã giảm giá"
+                            value={voucherCode}
+                            onChange={handleVoucherChange}
                         ></input>
                         <label htmlFor="floatingNote">Nhập mã giảm giá</label>
                     </div>

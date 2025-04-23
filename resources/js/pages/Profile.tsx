@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserById, updateUser } from '../services/UserService';
-import { getProvinces, getDistricts, getWards } from '../services/LocationService';
-import { Province, District, Ward } from '../interfaces/Location';
 import './Profile.scss';
 import { UserData } from '../interfaces/UserData';
 import InfoField from '../components/InfoField';
 import { STORAGE_URL } from '../utils/constants';
 import { toast } from 'react-toastify';
+import { getAddresses, deleteAddress, setPrimaryAddress } from '../services/AddressService';
+import type { Address } from '../services/AddressService';
+import AddressModal from '../components/AddressModal';
+import ConfirmModal from '../components/ConfirmModal';
 
 function Profile() {
     const { user: authUser } = useAuth();
@@ -17,86 +19,31 @@ function Profile() {
         name: '',
         email: '',
         phone: '',
-        address: '',
-        ward: '',
-        district: '',
-        city: '',
         avatar: '',
         created_at: '',
         updated_at: ''
     });
 
-    const [provinces, setProvinces] = useState<Province[]>([]);
-    const [districts, setDistricts] = useState<District[]>([]);
-    const [wards, setWards] = useState<Ward[]>([]);
-
-    const [selectedProvince, setSelectedProvince] = useState<string>('');
-    const [selectedDistrict, setSelectedDistrict] = useState<string>('');
-    const [selectedWard, setSelectedWard] = useState<string>('');
-
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [activeTab, setActiveTab] = useState('personal');
+    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [showAddressModal, setShowAddressModal] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState<Address | undefined>(undefined);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [selectedDeleteId, setSelectedDeleteId] = useState<number | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const DateDisplay: React.FC<{ label: string; icon: string; date: string }> = ({ label, icon, date }) => (
-        <div className="mb-2">
-            <i className={`fas ${icon} me-2`}></i>
-            {label}: {new Date(date).toLocaleDateString('vi-VN', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })}
-        </div>
-    );
-
-    const setUserFormData = (userData: UserData, userAddress: any) => {
+    const setUserFormData = (userData: UserData) => {
         return {
             name: userData.name || '',
             email: userData.email || '',
             phone: userData.phone || '',
-            address: userAddress?.address || '',
             avatar: userData.avatar || '',
             created_at: userData.created_at || '',
-            updated_at: userData.updated_at || '',
-            ward: userAddress?.ward || '',
-            district: userAddress?.district || '',
-            city: userAddress?.city || ''
+            updated_at: userData.updated_at || ''
         };
-    };
-
-    const loadLocationData = async (city: string, district: string, ward: string) => {
-        const provincesResponse = await getProvinces();
-        setProvinces(provincesResponse.data);
-
-        if (city) {
-            const matchingProvince = provincesResponse.data.find(p => p.name === city);
-            if (matchingProvince) {
-                setSelectedProvince(matchingProvince.id);
-
-                const districtsResponse = await getDistricts(matchingProvince.id);
-                setDistricts(districtsResponse.data);
-
-                if (district) {
-                    const matchingDistrict = districtsResponse.data.find(d => d.name === district);
-                    if (matchingDistrict) {
-                        setSelectedDistrict(matchingDistrict.id);
-
-                        const wardsResponse = await getWards(matchingDistrict.id);
-                        setWards(wardsResponse.data);
-
-                        if (ward) {
-                            const matchingWard = wardsResponse.data.find(w => w.name === ward);
-                            if (matchingWard) {
-                                setSelectedWard(matchingWard.id);
-                            }
-                        }
-                    }
-                }
-            }
-        }
     };
 
     useEffect(() => {
@@ -105,17 +52,9 @@ function Profile() {
                 if (!authUser?.id) return;
 
                 setIsLoading(true);
-                const response = await getUserById(authUser.id, { include: 'addresses' });
-                const userData = response.data.data[0] as UserData;
-                const userAddress = userData.addresses?.[0];
-
-                setFormData(setUserFormData(userData, userAddress));
-
-                await loadLocationData(
-                    userAddress?.city || '',
-                    userAddress?.district || '',
-                    userAddress?.ward || ''
-                );
+                const response = await getUserById(authUser.id);
+                const userData = response.data.data as UserData;
+                setFormData(setUserFormData(userData));
             } catch (error) {
                 console.error('Failed to fetch user data:', error);
             } finally {
@@ -127,67 +66,28 @@ function Profile() {
     }, [authUser?.id]);
 
     useEffect(() => {
-        if (selectedProvince) {
-            const fetchDistricts = async () => {
+        if (activeTab === 'address') {
+            const fetchAddresses = async () => {
                 try {
-                    setSelectedWard('');
-                    setWards([]);
-
-                    setSelectedDistrict('');
-                    setDistricts([]);
-
-                    setFormData(prev => ({
-                        ...prev,
-                        ward: '',
-                        district: '',
-                        city: provinces.find(p => p.id === selectedProvince)?.name || ''
-                    }));
-
-                    const response = await getDistricts(selectedProvince);
-                    setDistricts(response.data);
-
-                } catch (error) {
-                    console.error('Failed to fetch districts:', error);
-                }
-            };
-            fetchDistricts();
-        } else {
-            setSelectedDistrict('');
-            setDistricts([]);
-            setSelectedWard('');
-            setWards([]);
-
-            setFormData(prev => ({
-                ...prev,
-                ward: '',
-                district: '',
-                city: ''
-            }));
-        }
-    }, [selectedProvince]);
-
-    useEffect(() => {
-        if (selectedDistrict) {
-            const fetchWards = async () => {
-                try {
-                    const response = await getWards(selectedDistrict);
-                    setWards(response.data);
-
-                    if (formData.ward) {
-                        const matchingWard = response.data.find(
-                            w => w.name === formData.ward
-                        );
-                        if (matchingWard) {
-                            setSelectedWard(matchingWard.id);
-                        }
+                    const response = await getAddresses();
+                    if (response.data?.data) {
+                        setAddresses(response.data.data);
                     }
                 } catch (error) {
-                    console.error('Failed to fetch wards:', error);
+                    console.error('Failed to fetch addresses:', error);
+                    toast.error('Không thể tải danh sách địa chỉ');
                 }
             };
-            fetchWards();
+            fetchAddresses();
         }
-    }, [selectedDistrict, formData.ward]);
+    }, [activeTab]);
+
+    const handleTabChange = (tab: string) => {
+        if (isEditing) {
+            handleCancel();
+        }
+        setActiveTab(tab);
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -233,25 +133,18 @@ function Profile() {
             const formDataToSend = new FormData();
             formDataToSend.append('name', formData.name);
             formDataToSend.append('phone', formData.phone);
-            formDataToSend.append('address', formData.address);
-            formDataToSend.append('ward', wards.find(w => w.id === selectedWard)?.name || '');
-            formDataToSend.append('district', districts.find(d => d.id === selectedDistrict)?.name || '');
-            formDataToSend.append('city', provinces.find(p => p.id === selectedProvince)?.name || '');
 
             if (avatarFile) {
                 formDataToSend.append('avatar', avatarFile);
             }
 
             await updateUser(formDataToSend);
-
             setAvatarFile(null);
             setAvatarPreview(null);
 
-            const response = await getUserById(authUser.id, { include: 'addresses' });
-            const userData = response.data.data[0] as UserData;
-            const userAddress = userData.addresses?.[0];
-
-            setFormData(setUserFormData(userData, userAddress));
+            const response = await getUserById(authUser.id);
+            const userData = response.data.data as UserData;
+            setFormData(setUserFormData(userData));
             setIsEditing(false);
             toast.success('Cập nhật thông tin thành công!');
         } catch (error: any) {
@@ -271,29 +164,65 @@ function Profile() {
                 fileInputRef.current.value = '';
             }
 
-            setSelectedProvince('');
-            setSelectedDistrict('');
-            setSelectedWard('');
-            setDistricts([]);
-            setWards([]);
-
-            const response = await getUserById(authUser.id, { include: 'addresses' });
-            const userData = response.data.data[0] as UserData;
-            const userAddress = userData.addresses?.[0];
-
-            setFormData(setUserFormData(userData, userAddress));
-
-            if (userAddress) {
-                await loadLocationData(
-                    userAddress.city || '',
-                    userAddress.district || '',
-                    userAddress.ward || ''
-                );
-            }
+            const response = await getUserById(authUser.id);
+            const userData = response.data.data as UserData;
+            setFormData(setUserFormData(userData));
         } catch (error) {
             console.error('Failed to reset user data:', error);
         }
         setIsEditing(false);
+    };
+
+    const handleEditAddress = (address: Address) => {
+        setSelectedAddress(address);
+        setShowAddressModal(true);
+    };
+
+    const handleAddNewAddress = () => {
+        setSelectedAddress(undefined);
+        setShowAddressModal(true);
+    };
+
+    const handleAddressModalSuccess = () => {
+        const fetchAddresses = async () => {
+            try {
+                const response = await getAddresses();
+                if (response.data?.data) {
+                    setAddresses(response.data.data);
+                }
+            } catch (error) {
+                console.error('Failed to fetch addresses:', error);
+                toast.error('Không thể tải danh sách địa chỉ');
+            }
+        };
+        fetchAddresses();
+    };
+
+    const handleDeleteClick = (id: number) => {
+        setSelectedDeleteId(id);
+        setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!selectedDeleteId) return;
+
+        setIsDeleting(true);
+        try {
+            await deleteAddress(selectedDeleteId);
+            toast.success('Xoá địa chỉ thành công');
+            const response = await getAddresses();
+            if (response.data?.data) {
+                setAddresses(response.data.data);
+            }
+        } catch (error: any) {
+            console.error('Failed to delete address:', error);
+            const errorMessage = error.response?.data?.message || 'Không thể xoá địa chỉ. Vui lòng thử lại.';
+            toast.error(errorMessage);
+        } finally {
+            setIsDeleting(false);
+            setShowDeleteConfirm(false);
+            setSelectedDeleteId(null);
+        }
     };
 
     const getAvatarUrl = (avatarPath: string | null) => {
@@ -302,68 +231,75 @@ function Profile() {
     };
 
     const renderAddressSection = () => (
-        <div className="address-section mb-4">
-            <label className="form-label">Thông tin địa chỉ</label>
-            <div className="row g-3 mb-3">
-                <div className="col-md-4">
-                    <select
-                        className="form-select"
-                        value={selectedProvince}
-                        onChange={(e) => setSelectedProvince(e.target.value)}
-                        disabled={!isEditing}
-                    >
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                        {provinces.map(province => (
-                            <option key={province.id} value={province.id}>
-                                {province.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="col-md-4">
-                    <select
-                        className="form-select"
-                        value={selectedDistrict}
-                        onChange={(e) => setSelectedDistrict(e.target.value)}
-                        disabled={!isEditing || !selectedProvince}
-                    >
-                        <option value="">Chọn Quận/Huyện</option>
-                        {districts.map(district => (
-                            <option key={district.id} value={district.id}>
-                                {district.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                <div className="col-md-4">
-                    <select
-                        className="form-select"
-                        value={selectedWard}
-                        onChange={(e) => setSelectedWard(e.target.value)}
-                        disabled={!isEditing || !selectedDistrict}
-                    >
-                        <option value="">Chọn Xã/Phường</option>
-                        {wards.map(ward => (
-                            <option key={ward.id} value={ward.id}>
-                                {ward.name}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+        <div className="address-section">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+                <h5 className="mb-0">Địa chỉ của tôi</h5>
+                <button
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={handleAddNewAddress}
+                >
+                    <i className="fas fa-plus me-2"></i>
+                    Thêm địa chỉ mới
+                </button>
             </div>
-            <div className="mb-3">
-                <input
-                    type="text"
-                    className="form-control rounded-3"
-                    id="address"
-                    placeholder="Nhập địa chỉ đầy đủ"
-                    value={formData.address}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    autoComplete="off"
-                    key="address"
-                />
+
+            <div className="addresses-list d-flex flex-column gap-2">
+                {addresses.map((address) => (
+                    <div
+                        key={address.id}
+                        className={`address-item py-2 px-3 rounded-3 border position-relative ${address.is_primary ? 'border-primary' : ''
+                            }`}
+                    >
+                        <div className="address-content d-flex flex-column justify-content-center">
+                            <p className="address-text mb-1">
+                                <span className="text-muted me-1 fw-bold">Địa chỉ:</span>
+                                {address.address}, {address.ward}, {address.district}, {address.city}
+                            </p>
+                            {address.is_primary === 1 && (
+                                <span className="badge bg-primary rounded-pill">
+                                    Mặc định
+                                </span>
+                            )}
+                        </div>
+                        <div className="action-buttons position-absolute top-50 end-0 translate-middle-y me-3 d-flex gap-2">
+                            <button
+                                className="btn btn-link text-primary p-1"
+                                disabled={address.is_primary === 1}
+                                title="Đặt làm địa chỉ mặc định"
+                            >
+                                <i className="fas fa-star"></i>
+                            </button>
+                            <button
+                                className="btn btn-link text-danger p-1"
+                                onClick={() => handleDeleteClick(address.id)}
+                                disabled={address.is_primary === 1}
+                                title="Xoá địa chỉ"
+                            >
+                                <i className="fas fa-trash-alt"></i>
+                            </button>
+                            <button
+                                className="btn btn-link text-dark p-1"
+                                onClick={() => handleEditAddress(address)}
+                                title="Chỉnh sửa địa chỉ"
+                            >
+                                <i className="fas fa-edit"></i>
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
+
+            <ConfirmModal
+                show={showDeleteConfirm}
+                onHide={() => setShowDeleteConfirm(false)}
+                onConfirm={handleDeleteConfirm}
+                title="Xác nhận xoá"
+                message="Bạn có chắc chắn muốn xoá địa chỉ này?"
+                isLoading={isDeleting}
+                confirmText="Xoá"
+                loadingText="Đang xoá..."
+                confirmVariant="danger"
+            />
         </div>
     );
 
@@ -378,125 +314,163 @@ function Profile() {
     }
 
     return (
-        <div className="container py-5">
-            <div className="row g-4">
-                <div className="col-md-4">
-                    <div className="card shadow-sm h-100 profile-card">
-                        <div className="card-body">
-                            <h5 className="card-title mb-4">Ảnh đại diện</h5>
-                            <div className="text-center">
-                                <div className="avatar-container">
-                                    <div className="avatar-wrapper">
-                                        <label htmlFor="avatar-input" style={{ cursor: isEditing ? 'pointer' : 'default' }}>
-                                            <img
-                                                src={avatarPreview || getAvatarUrl(formData.avatar)}
-                                                alt="User Avatar"
-                                                className="profile-avatar"
+        <>
+            <div className="container pt-5">
+                <div className="row g-4">
+                    <div className="col-md-4">
+                        <div className="card shadow-sm h-100 profile-card">
+                            <div className="card-body">
+                                <h5 className="card-title mb-4">Ảnh đại diện</h5>
+                                <div className="text-center">
+                                    <div className="avatar-container">
+                                        <div className="avatar-wrapper">
+                                            <label htmlFor="avatar-input" style={{ cursor: isEditing ? 'pointer' : 'default' }}>
+                                                <img
+                                                    src={avatarPreview || getAvatarUrl(formData.avatar)}
+                                                    alt="User Avatar"
+                                                    className="profile-avatar"
+                                                />
+                                            </label>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                id="avatar-input"
+                                                className="d-none"
+                                                accept="image/png,image/jpeg,image/jpg"
+                                                onChange={handleAvatarChange}
+                                                disabled={!isEditing}
                                             />
-                                        </label>
-                                        <input
-                                            ref={fileInputRef}
-                                            type="file"
-                                            id="avatar-input"
-                                            className="d-none"
-                                            accept="image/png,image/jpeg,image/jpg"
-                                            onChange={handleAvatarChange}
+                                        </div>
+                                        {isEditing && (
+                                            <label
+                                                htmlFor="avatar-input"
+                                                className="btn btn-light btn-sm position-absolute avatar-upload-btn shadow-sm"
+                                                style={{ cursor: 'pointer' }}
+                                            >
+                                                <i className="fas fa-camera"></i>
+                                            </label>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="mt-4 pt-3 border-top">
+                                    <div className="text-muted small">
+                                        <div className="mb-2">
+                                            <i className="fas fa-clock me-2"></i>
+                                            Ngày tạo: {new Date(formData.created_at).toLocaleDateString('vi-VN', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </div>
+                                        <div className="mb-2">
+                                            <i className="fas fa-edit me-2"></i>
+                                            Cập nhật lần cuối: {new Date(formData.updated_at).toLocaleDateString('vi-VN', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-md-8">
+                        <div className="card shadow-sm profile-card">
+                            <div className="card-body p-4">
+                                <ul className="nav nav-tabs mb-4">
+                                    <li className="nav-item">
+                                        <button
+                                            className={`nav-link ${activeTab === 'personal' ? 'active' : ''}`}
+                                            onClick={() => handleTabChange('personal')}
+                                        >
+                                            Thông tin cá nhân
+                                        </button>
+                                    </li>
+                                    <li className="nav-item">
+                                        <button
+                                            className={`nav-link ${activeTab === 'address' ? 'active' : ''}`}
+                                            onClick={() => handleTabChange('address')}
+                                        >
+                                            Thông tin địa chỉ
+                                        </button>
+                                    </li>
+                                </ul>
+
+                                {activeTab === 'personal' ? (
+                                    <form>
+                                        <InfoField
+                                            label="Email"
+                                            id="email"
+                                            type="email"
+                                            value={formData.email}
+                                            onChange={handleChange}
+                                            disabled
+                                        />
+                                        <InfoField
+                                            label="Họ tên"
+                                            id="name"
+                                            value={formData.name}
+                                            onChange={handleChange}
                                             disabled={!isEditing}
                                         />
-                                    </div>
-                                    {isEditing && (
-                                        <label
-                                            htmlFor="avatar-input"
-                                            className="btn btn-light btn-sm position-absolute avatar-upload-btn shadow-sm"
-                                            style={{ cursor: 'pointer' }}
-                                        >
-                                            <i className="fas fa-camera"></i>
-                                        </label>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="mt-4 pt-3 border-top">
-                                <div className="text-muted small">
-                                    <DateDisplay
-                                        label="Ngày tạo"
-                                        icon="fa-clock"
-                                        date={formData.created_at}
-                                    />
-                                    <DateDisplay
-                                        label="Cập nhật lần cuối"
-                                        icon="fa-edit"
-                                        date={formData.updated_at}
-                                    />
-                                </div>
+                                        <InfoField
+                                            label="Số điện thoại"
+                                            id="phone"
+                                            type="tel"
+                                            value={formData.phone}
+                                            onChange={handleChange}
+                                            disabled={!isEditing}
+                                        />
+                                        <div className="mt-4">
+                                            {!isEditing ? (
+                                                <button
+                                                    type="button"
+                                                    className="btn btn-primary px-4"
+                                                    onClick={handleUpdate}
+                                                >
+                                                    Cập nhật thông tin
+                                                </button>
+                                            ) : (
+                                                <div className="d-flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-success px-4"
+                                                        onClick={handleSave}
+                                                    >
+                                                        Lưu cập nhật
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-secondary px-4"
+                                                        onClick={handleCancel}
+                                                    >
+                                                        Huỷ bỏ
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </form>
+                                ) : (
+                                    renderAddressSection()
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div className="col-md-8">
-                    <div className="card shadow-sm profile-card">
-                        <div className="card-body p-4">
-                            <h5 className="card-title mb-4">Thông tin cá nhân</h5>
-                            <form>
-                                <InfoField
-                                    label="Email"
-                                    id="email"
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    disabled
-                                />
-                                <InfoField
-                                    label="Họ tên"
-                                    id="name"
-                                    value={formData.name}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                                <InfoField
-                                    label="Số điện thoại"
-                                    id="phone"
-                                    type="tel"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                    disabled={!isEditing}
-                                />
-                                {renderAddressSection()}
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
-
-            <div className="action-buttons">
-                {!isEditing ? (
-                    <button
-                        type="button"
-                        className="btn btn-primary btn-lg rounded-3 px-4"
-                        onClick={handleUpdate}
-                    >
-                        Cập nhật thông tin
-                    </button>
-                ) : (
-                    <div className="d-flex gap-2 justify-content-end">
-                        <button
-                            type="button"
-                            className="btn btn-success btn-lg rounded-3 px-4"
-                            onClick={handleSave}
-                        >
-                            Lưu cập nhật
-                        </button>
-                        <button
-                            type="button"
-                            className="btn btn-secondary btn-lg rounded-3 px-4"
-                            onClick={handleCancel}
-                        >
-                            Huỷ bỏ
-                        </button>
-                    </div>
-                )}
-            </div>
-        </div>
+            <AddressModal
+                show={showAddressModal}
+                onHide={() => setShowAddressModal(false)}
+                address={selectedAddress}
+                onSuccess={handleAddressModalSuccess}
+            />
+        </>
     );
 }
 

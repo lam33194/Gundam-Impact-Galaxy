@@ -23,8 +23,14 @@ class CommentStoreRequest extends FormRequest
             );
         }
 
+        if ($product->comments()->where('user_id', auth('sanctum')->id())->exists()) {
+            throw new HttpResponseException(
+                $this->forbidden('Bạn đã bình luận sản phẩm này')
+            );
+        }
+
         // Kiểm tra xem người dùng có đơn hàng đã giao chứa sản phẩm này không
-        return Order::where('user_id', $this->user()->id)
+        return Order::where('user_id', auth('sanctum')->id())
             ->where('status_order', Order::STATUS_ORDER_DELIVERED)
             ->whereHas('orderItems', function ($query) use ($product) {
                 // Kiểm tra qua ProductVariant liên kết với Product
@@ -41,6 +47,8 @@ class CommentStoreRequest extends FormRequest
             'content' => 'nullable|string|max:255',
             'rating' => 'nullable|integer|min:1|max:5',
             'content_or_rating' => 'required_without_all:content,rating',
+            'images' => 'nullable|array|max:5',
+            'images.*' => 'image|max:4096',
         ];
     }
 
@@ -53,6 +61,8 @@ class CommentStoreRequest extends FormRequest
 
     protected function failedAuthorization()
     {
-        throw new \Illuminate\Auth\Access\AuthorizationException('Bạn chỉ có thể bình luận sau khi nhận hàng');
+        throw new HttpResponseException(
+            $this->forbidden('Bạn chỉ có thể bình luận sau khi nhận hàng')
+        );
     }
 }

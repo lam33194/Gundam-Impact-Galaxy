@@ -17,25 +17,17 @@ class CartItemController extends Controller
     protected $validRelations = [
         'user',
         'variant',
-        'variant.product',
-        'variant.size',
-        'variant.color',
     ];
 
     public function index(Request $request)
     {
-        $carts = $request->user()->cartItems;
+        $carts = $request->user()->cartItems()->getQuery();
 
-        // Tính tổng tiền
-        // $total = $carts->sum(function ($cartItem) {
-            // $product = $cartItem->productVariant->product;
-            // $price = $product->price_sale > 0 ? $product->price_sale : $product->price_regular;
-            // return $price * $cartItem->quantity;
-        // });
+        $this->loadRelations($carts, $request);
 
-        $this->loadRelations($carts, $request, true);
+        $this->loadSubRelations($carts);
 
-        return $this->ok('Lấy dữ liệu giỏ hàng thành công', $carts);
+        return $this->ok('Lấy dữ liệu giỏ hàng thành công', $carts->get());
     }
 
     public function store(CartStoreRequest $request)
@@ -49,29 +41,29 @@ class CartItemController extends Controller
         // Nếu sản phẩm đã tồn tại, tăng quantity sp đó trong giỏ hàng
         if ($cartItem) {
             if ($cartItem->quantity + $data['quantity'] > $cartItem->variant->quantity)
-                return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+                return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
             $cartItem->increment('quantity', $data['quantity']);
 
-            $cartItem->unsetRelation('variant');
+            // $cartItem->unsetRelation('variant');
 
-            $this->loadRelations($cartItem, $request, true);
-
-            return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
+            // $this->loadRelations($cartItem, $request, true);
+            
+            return $this->created('Thêm vào giỏ hàng thành công');
         }
 
         $variant = ProductVariant::find($data['product_variant_id']);
 
         if ($data['quantity'] > $variant->quantity)
-            return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+            return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
 
         $cartItem = $request->user()->cartItems()->create($data);
 
-        $cartItem->unsetRelation('variant');
+        // $cartItem->unsetRelation('variant');
 
-        $this->loadRelations($cartItem, $request, true);
+        // $this->loadRelations($cartItem, $request, true);
 
-        return $this->ok('Thêm vào giỏ hàng thành công', $cartItem);
+        return $this->created('Thêm vào giỏ hàng thành công');
     }
 
     public function update(Request $request, string $id)
@@ -90,7 +82,7 @@ class CartItemController extends Controller
         }
 
         if ($data['quantity'] > $cartItem->variant->quantity) {
-            return $this->failedValidation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
+            return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
         };
 
         $cartItem->update([
@@ -101,13 +93,30 @@ class CartItemController extends Controller
 
         $this->loadRelations($cartItem, $request, true);
 
+        $this->loadSubRelations($cartItem, true);
+
         return $this->ok('Cập nhật số lượng sản phẩm thành cônng', $cartItem);
     }
 
     public function destroy()
     {
-        request()->user()->cartItems()->delete();
+        auth('sanctum')->user()->cartItems()->delete();
 
-        return response()->json(['message' => 'Xóa giỏ hàng thành công']);
+        return $this->no_content();
+    }
+
+    private function loadSubRelations($cartItem, bool $isInstance = false)
+    {
+        $getMethod = $isInstance ? 'getRelations' : 'getEagerLoads';
+
+        $loadMethod = $isInstance ? 'loadMissing' : 'with';
+       
+        if (array_key_exists('variant', $cartItem->$getMethod())) {
+            $cartItem->$loadMethod([
+                'variant.product:id,name,slug,sku,thumb_image,price_regular,price_sale',
+                'variant.size:id,name',
+                'variant.color:id,name,code',
+            ]);
+        }
     }
 }

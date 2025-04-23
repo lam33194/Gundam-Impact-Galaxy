@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->nullable()->nullOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
             $table->string('content', 255)->nullable();
             $table->unsignedTinyInteger('rating')->nullable()->between(1, 5);
