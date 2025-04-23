@@ -1,5 +1,38 @@
 @extends('admin.layouts.master')
 @section('title', 'GunDam DashBoard')
+@section('style')
+    <style>
+        .rank-1 {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .rank-2 {
+            color: #c0c0c0;
+            font-weight: bold;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+            font-weight: bold;
+        }
+
+        .row-rank-1 {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1)) !important;
+            border-left: 4px solid #ffd700;
+        }
+
+        .row-rank-2 {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1)) !important;
+            border-left: 4px solid #c0c0c0;
+        }
+
+        .row-rank-3 {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1)) !important;
+            border-left: 4px solid #cd7f32;
+        }
+    </style>
+@endsection
 @section('content')
     <div class="row mb-4">
         <div class="col-lg-12">
@@ -827,12 +860,51 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê user</h4>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Top 5 Khách Hàng</h4>
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody>
+                            @foreach ($userChartData['users'] as $i => $username)
+                            <tr>
+                                <td class="text-center">{{$i+1}}</td>
+                                <td>{{$username}}</td>
+                            </tr>
+                            @endforeach
+
+                            {{-- <tr class="row-rank-1">
+                                <td class="text-center">
+                                    <div class="rank-1"><i class="fas fa-trophy me-2"></i>1</div>
+                                </td>
+                                <td>DragonSlayer99</td>
+                            </tr> --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div id="topUserChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
     <script>
         // Pass PHP data to JavaScript
         var orderChartData = @json($orderChartData);
+        var userChartData = @json($userChartData);
     </script>
 
     <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
