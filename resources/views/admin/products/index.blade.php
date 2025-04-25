@@ -67,6 +67,11 @@
                                                             id="is_show_home" value="1" {{ request('is_show_home') ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="is_show_home">Hiển thị trang chủ</label>
                                                     </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="is_sale"
+                                                            id="is_sale" value="1" {{ request('is_sale') ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="is_sale">Đang giảm giá</label>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -178,20 +183,18 @@
                                                 </td> --}}
                                                 <td>
                                                     <div class="dropdown">
-                                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown"
+                                                        {{-- <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown"
                                                             aria-expanded="false">
                                                             <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                                        </a>
-                                                        <ul class="dropdown-menu dropdown-menu-end">
-                                                            <li>
+                                                        </a> --}}
+                                                        {{-- <ul class="dropdown-menu dropdown-menu-end"> --}}
                                                                 <a href="{{ route('admin.products.edit', $product->id) }}"
                                                                     class="dropdown-item edit-list">
                                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                                     </i>
                                                                     Sửa
                                                                 </a>
-                                                            </li>
-                                                            <li>
+                                                            {{-- <li>
                                                                 <form method="POST"
                                                                     action="{{ route('admin.products.destroy', $product->id) }}"
                                                                     class="d-inline-block">
@@ -203,8 +206,8 @@
                                                                         Xóa
                                                                     </button>
                                                                 </form>
-                                                            </li>
-                                                        </ul>
+                                                            </li> --}}
+                                                        {{-- </ul> --}}
                                                     </div>
                                                 </td>
                                             </tr>

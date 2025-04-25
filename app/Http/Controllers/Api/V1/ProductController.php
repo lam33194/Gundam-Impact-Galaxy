@@ -25,7 +25,22 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::query()->latest();
+        $products = Product::query()->select(
+            'id',
+            'category_id',
+            'name',
+            'slug',
+            'sku',
+            'thumb_image',
+            'price_regular',
+            'price_sale',
+            'description',
+            'is_active',
+            'is_hot_deal',
+            'is_good_deal',
+            'is_new',
+            'is_show_home',
+        )->latest();
 
         $this->loadRelations($products, $request);
 

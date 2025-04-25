@@ -114,7 +114,13 @@
 
                             <tbody>
                                 <tr>
-                                    <td><img src="{{ Storage::url($order->user->avatar) }}" alt="user_avatar"></td>
+                                    <td>
+                                        @if($order->user->avatar && Storage::exists($order->user->avatar))
+                                        <img src="{{ Storage::url($order->user->avatar) }}" width="70" alt="user_avatar">        
+                                        @else
+                                        <span>defaul user avatar</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $order->user_name }}</td>
                                     <td>{{ $order->user_email }}</td>
                                     <td>{{ $order->user_phone }}</td>
@@ -148,7 +154,11 @@
                                 @foreach ($order->orderItems as $orderItem)
                                     <tr>
                                         <td>
+                                            @if($orderItem->variant->image ?? $orderItem->product_thumbnail && Storage::exists($orderItem->variant->image ?? $orderItem->product_thumbnail))
                                             <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_thumbnail) }}" width="70" alt="variant_image">        
+                                            @else
+                                            <span>defaul variant image</span>
+                                            @endif
                                         </td>
 
                                         <td>
