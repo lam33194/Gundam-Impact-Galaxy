@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\VoucherController;
 use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\Api\V1\SocialAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -131,6 +132,10 @@ Route::prefix('v1')->group(function () {
             // Đổi mật khẩu
             Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Đăng nhập bên thứ 3
+        Route::get('google-login',    [SocialAuthController::class, 'googleLogin']);
+        Route::get('google-callback', [SocialAuthController::class, 'googleCallback']);
 
         // Quên mật khẩu
         Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
