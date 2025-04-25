@@ -46,9 +46,25 @@ class ProductController extends Controller
             }
         }
 
-        $products = $query->latest()->paginate(10);
+        if ($request->filled('is_sale')) {
+            $query->where('price_sale', '!=', 0);
+        }
 
-        return view('admin.products.index', compact('products'));
+        $validSortColumns = ['price_regular', 'price_sale', 'quantity'];
+
+        // Apply sorting
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        if (in_array($sortBy, $validSortColumns)) {
+            $query->orderBy($sortBy, $sortDirection);
+        } else {
+            $query->latest();
+        }
+
+        $products = $query->paginate(10)->appends($request->query());
+
+        return view('admin.products.index', compact('products', 'sortBy', 'sortDirection'));
     }
 
     public function create()

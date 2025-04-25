@@ -347,6 +347,8 @@ const ProductDetail = () => {
                             : ""}
                         đ
                     </span>
+                    {/* (Đánh giá: {product?.average_rating}) */}
+                    {/* (Lượt đánh giá {product?.total_ratings}) */}
                     <div className="line mb-2 mt-1"></div>
                     <span>{vouchers.length} Mã Giảm Giá</span>
                     <div className="voucher-section position-relative">
@@ -432,7 +434,10 @@ const ProductDetail = () => {
                             ))}
                         </div>
                     </div>
-
+                    {/* Hiển thị tồn kho ? */}
+                    {/* {product?.variants.forEach(element => {
+                        console.log(element.quantity);
+                    })} */}
                     <span>Số lượng:</span>
                     <div
                         className="input-group input-group-sm quantity-selector"

@@ -23,8 +23,8 @@ return new class extends Migration
             $table->string('user_note', 255)->nullable();
 
             $table->boolean('same_as_buyer')->default(true);
-            $table->string('order_sku');
-            $table->string('type_payment')->default(Order::TYPE_PAYMENT_COD);
+            $table->string('order_sku')->unique();
+            $table->string('type_payment', 50)->default(Order::TYPE_PAYMENT_COD);
 
             $table->string('ship_user_name', 255)->nullable();
             $table->string('ship_user_email', 255)->nullable();
@@ -32,8 +32,8 @@ return new class extends Migration
             $table->string('ship_user_address', 255)->nullable();
             $table->string('ship_user_note', 255)->nullable();
 
-            $table->string('status_order')->default(Order::STATUS_ORDER_PENDING);
-            $table->string('status_payment')->default(Order::STATUS_PAYMENT_UNPAID);
+            $table->string('status_order', 50)->default(Order::STATUS_ORDER_PENDING);
+            $table->string('status_payment', 50)->default(Order::STATUS_PAYMENT_UNPAID);
 
             $table->unsignedBigInteger('total_price')->default(0);
 

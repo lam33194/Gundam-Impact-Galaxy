@@ -9,7 +9,7 @@
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.products.index') }}">Danh sách</a>
+                            <a href="{{ route('admin.products.index') }}">Chi tiết sản phẩm</a>
                         </li>
                         <li class="breadcrumb-item active">{{ $product->sku }}</li>
                     </ol>
@@ -263,6 +263,7 @@
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Kích thước</th>
                                     <th>Màu</th>
                                     <th>Số lượng</th>
@@ -273,6 +274,10 @@
                             <tbody>
                                 @foreach ($product->variants as $variant)
                                     <tr>
+                                        <td>
+                                            {{ $variant->id }}
+                                        </td>
+
                                         <td>
                                             {{ $variant->size->name }}
                                         </td>

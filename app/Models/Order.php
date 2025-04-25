@@ -98,6 +98,11 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function isPaid()
+    {
+        return $this->status_payment == self::STATUS_PAYMENT_PAID;
+    }
+
     // Scope
     public function scopeStatusOrderFilter($query, $status)
     {

@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\ProductColor;
-use App\Models\ProductSize;
-// use App\Models\ProductVariant;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
 use Illuminate\Http\Request;
@@ -28,9 +25,26 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::query()->latest();
+        $products = Product::query()->select(
+            'id',
+            'category_id',
+            'name',
+            'slug',
+            'sku',
+            'thumb_image',
+            'price_regular',
+            'price_sale',
+            'description',
+            'is_active',
+            'is_hot_deal',
+            'is_good_deal',
+            'is_new',
+            'is_show_home',
+        )->latest();
 
         $this->loadRelations($products, $request);
+
+        // $this->loadSubRelations($products);
 
         $this->applyFilters($products, $request->query());
 
@@ -47,6 +61,8 @@ class ProductController extends Controller
 
         $this->loadRelations($product, request(), true);
 
+        // $this->loadSubRelations($product, true);
+
         return response()->json($product);
     }
 
@@ -60,7 +76,9 @@ class ProductController extends Controller
         $products = $category->products()->getQuery();
 
         $this->loadRelations($products, $request);
-        
+
+        // $this->loadSubRelations($products);
+
         $this->applyFilters($products, $request->query());
 
         $perPage = request()->query('per_page', 10);
@@ -116,7 +134,7 @@ class ProductController extends Controller
         if (!empty($queryParams['name'])) {
             $product->nameFilter($queryParams['name']);
         }
-        
+
         // Tìm kiếm theo slug
         if (!empty($queryParams['slug'])) {
             $product->slugFilter($queryParams['slug']);
@@ -126,7 +144,7 @@ class ProductController extends Controller
         if (!empty($queryParams['sku'])) {
             $product->skuFilter($queryParams['sku']);
         }
-        
+
         // Lọc theo giá
         if (isset($queryParams['min_price']) || isset($queryParams['max_price'])) {
             $product->priceRangeFilter($queryParams['min_price'] ?? null, $queryParams['max_price'] ?? null);
@@ -140,4 +158,18 @@ class ProductController extends Controller
             }
         }
     }
+
+    // private function loadSubRelations($user, bool $isInstance = false)
+    // {
+    //     $getMethod = $isInstance ? 'getRelations' : 'getEagerLoads';
+
+    //     $loadMethod = $isInstance ? 'loadMissing' : 'with';
+
+    //     if (array_key_exists('variants', $user->$getMethod())) {
+    //         $user->$loadMethod([
+    //             'variants.color:id,name,code',
+    //             'variants.size:id,name',
+    //         ]);
+    //     }
+    // }
 }

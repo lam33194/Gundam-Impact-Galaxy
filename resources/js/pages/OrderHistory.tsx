@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getOrders } from "../services/OrderService";
+import { STORAGE_URL } from "../utils/constants";
 
 const OrderHistory = () => {
     const [orders, setOrders] = useState([]);
@@ -79,16 +80,21 @@ const OrderHistory = () => {
                                                 <th>Ảnh</th>
                                                 <th>Tên sản phẩm</th>
                                                 <th>Số lượng</th>
+                                                <th>Màu</th>
+                                                <th>Kích thước</th>
                                                 <th>Giá</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {order.order_items.map((item) => (
+                                            {order.order_items.map((item) => {                                                
+                                                const item_price = item.product_price_sale != 0 ? item.product_price_sale : item.product_price_regular;
+                                                return (
                                                 <tr key={item.id}>
                                                     <td>
                                                         <img
                                                             src={
-                                                                item.product_img_thumbnail? image : ''
+                                                                // item.product_img_thumbnail? image : ''
+                                                                STORAGE_URL + item.product_img_thumbnail
                                                             }
                                                             alt={
                                                                 item.product_name
@@ -103,15 +109,17 @@ const OrderHistory = () => {
                                                     </td>
                                                     <td>{item.product_name}</td>
                                                     <td>{item.quantity}</td>
+                                                    <td>{item.variant_color_name}</td>
+                                                    <td>{item.variant_size_name}</td>
                                                     <td>
                                                         {(
-                                                            item.product_price_sale *
+                                                            item_price *
                                                             item.quantity
                                                         ).toLocaleString()}{" "}
                                                         đ
                                                     </td>
                                                 </tr>
-                                            ))}
+                                            )})}
                                         </tbody>
                                     </table>
 

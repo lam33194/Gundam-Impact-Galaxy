@@ -10,6 +10,7 @@ class CategoryService
     public function all($prePage = 10)
     {
         return Category::query()
+            ->withCount('products')
             ->latest('id')
             ->where('is_active', true)
             ->paginate($prePage);

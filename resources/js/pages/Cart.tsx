@@ -4,6 +4,7 @@ import { getCart, updateCart } from "../services/CartService";
 import { FormatCurrency } from "../utils/FormatCurrency";
 import { toast } from "react-toastify";
 import useDebounce from "../hooks/useDebounce";
+import { STORAGE_URL } from "../utils/constants";
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
@@ -22,7 +23,11 @@ const Cart = () => {
                 let t = 0;
                 const originalQtys: Record<number, number> = {};
                 res.data.data.forEach((element: any) => {
-                    t += Number(element.variant.product.price_sale) * Number(element.quantity);
+                    let tempPrice = element.variant.product.price_sale != 0 
+                        ? element.variant.product.price_sale 
+                        : element.variant.product.price_regular;
+
+                    t += Number(tempPrice) * Number(element.quantity);
                     originalQtys[element.id] = element.quantity;
                 });
                 setOriginalQuantities(originalQtys);
@@ -48,22 +53,22 @@ const Cart = () => {
         }));
         setIsUpdating(true);
 
-        const updatedCart = cart.map((item: any) => {
-            if (item.id === itemId) {
-                return {
-                    ...item,
-                    quantity: updatedQuantity
-                };
-            }
-            return item;
-        });
+        // const updatedCart = cart.map((item: any) => {
+        //     if (item.id === itemId) {
+        //         return {
+        //             ...item,
+        //             quantity: updatedQuantity
+        //         };
+        //     }
+        //     return item;
+        // });
 
-        let newTotal = 0;
-        updatedCart.forEach((element: any) => {
-            newTotal += Number(element.variant.product.price_sale) *
-                (element.id === itemId ? updatedQuantity : element.quantity);
-        });
-        setTotal(newTotal);
+        // let newTotal = 0;
+        // updatedCart.forEach((element: any) => {
+        //     newTotal += Number(element.variant.product.price_sale) *
+        //         (element.id === itemId ? updatedQuantity : element.quantity);
+        // });
+        // setTotal(newTotal);
     };
 
     useEffect(() => {
@@ -138,7 +143,8 @@ const Cart = () => {
                                 </td>
                             </tr>
                         ) : (
-                            cart.map((p, index) => {
+                            cart.map((p : any, index) => {
+                                const product_price = p.variant.product.price_sale != 0 ? p.variant.product.price_sale : p.variant.product.price_regular;
                                 return (
                                     <tr key={index}>
                                         <td className="w-40">
@@ -146,16 +152,19 @@ const Cart = () => {
                                                 <div
                                                     className="img-product"
                                                     onClick={() =>
-                                                        redirectToDetail(p.slug)
+                                                        redirectToDetail(p.variant.product.slug)
                                                     }
                                                     style={{
-                                                        backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/compact/100/456/060/products/888bf7e8-1bc4-4fba-90fa-4afa82b6d6dc-1741974435553.jpg?v=1741974439350"})`,
+                                                        backgroundImage: p.variant.image == null 
+                                                        ? `url(${STORAGE_URL + p.variant.product?.thumb_image})`
+                                                        : `url(${STORAGE_URL + p.variant?.image})`,
+                                                        cursor: 'pointer',
                                                     }}
                                                 ></div>
 
                                                 <div className="info d-flex flex-column justify-content-center align-items-start">
                                                     <span className="product-name mb-1">
-                                                        {p?.variant?.product?.name}
+                                                        {p.variant.product.name}
                                                     </span>
                                                     <div className="product-variants d-flex gap-2 mb-2">
                                                         <span className="variant-info">
@@ -195,9 +204,7 @@ const Cart = () => {
                                         </td>
                                         <td className="align-middle w-20">
                                             <strong className="price">
-                                                {FormatCurrency(
-                                                    p.variant.product.price_sale
-                                                ) || "200,000"}
+                                                {FormatCurrency(product_price)}
                                                 đ
                                             </strong>
                                         </td>
@@ -245,10 +252,7 @@ const Cart = () => {
                                         </td>
                                         <td className="align-middle w-20">
                                             <strong className="price">
-                                                {FormatCurrency(
-                                                    p.variant.product
-                                                        .price_sale * p.quantity
-                                                ) || "400,000"}
+                                                {FormatCurrency(product_price * p.quantity)}
                                                 đ
                                             </strong>{" "}
                                         </td>

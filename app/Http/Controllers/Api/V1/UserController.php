@@ -18,12 +18,8 @@ class UserController extends Controller
         'orders',
         'orders.orderItems',
         'orders.orderItems.variant.product',
-        'orders.orderItems.variant.size',
-        'orders.orderItems.variant.color',
         'addresses',
         'comments',
-        'comments.product',
-        'comments.commentImages',
     ];
 
     public function index(Request $request)
@@ -44,6 +40,8 @@ class UserController extends Controller
         if (!$user) return $this->not_found("Người dùng không tồn tại");
 
         $this->loadRelations($user, request(), true);
+
+        $this->loadSubRelations($user, true);
 
         return $this->ok("Lấy thông tin người dùng thành công", $user);
     }
@@ -67,5 +65,27 @@ class UserController extends Controller
         $this->loadRelations($user, $request, true);
 
         return $this->ok('Cập nhật thông tin thành công', $user);
+    }
+
+    private function loadSubRelations($user, bool $isInstance = false)
+    {
+        $getMethod = $isInstance ? 'getRelations' : 'getEagerLoads';
+
+        $loadMethod = $isInstance ? 'loadMissing' : 'with';
+       
+        if (array_key_exists('comments', $user->$getMethod())) {
+            $user->$loadMethod([
+                'comments.product:id,name,slug,sku,thumb_image,price_regular,price_sale',
+                'comments.commentImages:id,comment_id,image',
+            ]);
+        }
+
+        // if (array_key_exists('orders.orderItems.variant', $user->$getMethod())) {
+        //     $user->$loadMethod([
+        //         'orders.orderItems.variant.product:id,name',
+        //         'orders.orderItems.variant.size:id,name',
+        //         'orders.orderItems.variant.color:id,name,code',
+        //     ]);
+        // }
     }
 }

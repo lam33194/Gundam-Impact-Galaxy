@@ -48,8 +48,8 @@
                                 <tr>
                                     <th>#</th>
                                     <th>Name</th>
-                                    <th>Status</th>
                                     <th>Is_active</th>
+                                    <th>Product_counts</th>
                                     <th>Created_at</th>
                                     <th>Updated_at</th>
                                     <th>Action</th>
@@ -74,14 +74,12 @@
 
                                         <td>
                                             <span class="badge bg-success font-size-12 p-2">
-                                                {{ $category->status ? 'public' : 'pending' }}
+                                                {{ $category->is_active ? 'Is Active' : 'No Active' }}
                                             </span>
                                         </td>
 
                                         <td>
-                                            <span class="badge bg-success font-size-12 p-2">
-                                                {{ $category->is_active ? 'Is Active' : 'No Active' }}
-                                            </span>
+                                            {{ $category->products_count }}
                                         </td>
 
                                         <td>

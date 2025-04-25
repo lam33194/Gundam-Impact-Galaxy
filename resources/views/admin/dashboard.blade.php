@@ -1,5 +1,38 @@
 @extends('admin.layouts.master')
 @section('title', 'GunDam DashBoard')
+@section('style')
+    <style>
+        .rank-1 {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .rank-2 {
+            color: #c0c0c0;
+            font-weight: bold;
+        }
+
+        .rank-3 {
+            color: #cd7f32;
+            font-weight: bold;
+        }
+
+        .row-rank-1 {
+            background: linear-gradient(to right, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1)) !important;
+            border-left: 4px solid #ffd700;
+        }
+
+        .row-rank-2 {
+            background: linear-gradient(to right, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1)) !important;
+            border-left: 4px solid #c0c0c0;
+        }
+
+        .row-rank-3 {
+            background: linear-gradient(to right, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1)) !important;
+            border-left: 4px solid #cd7f32;
+        }
+    </style>
+@endsection
 @section('content')
     {{-- <div class="row mb-4">
         <div class="col-lg-12">
@@ -22,6 +55,10 @@
     </div> --}}
 
     <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê đơn hàng</h4>
+        </div>
+
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
@@ -57,7 +94,8 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="newOrdersChart">
+                            <div {{ $percentageChange >= 0 ? 'data-colors=["--bs-success"]' : 'data-colors=["--bs-danger"]' }}
+                            dir="ltr" id="newOrdersChart">
                             </div>
                         </div>
                     </div>
@@ -120,7 +158,7 @@
                             <p class="text-muted fw-medium">Tổng đơn hàng bị hủy</p>
                             <h4 class="mb-0">{{ $totalOrderCanceled }}</h4>
                         </div>
-                        
+
                         <i class="fa-solid fa-ban fs-2 text-danger"></i>
 
                         <div class="flex-shrink-0 align-self-center">
@@ -134,6 +172,48 @@
                                 class="bx bx-trending-up align-bottom me-1"></i> 8.41%</span> Increase
                         last month</p>
                 </div> -->
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê doanh thu</h4>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    Bộ lọc từ ngày đến ngày...
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-sm-flex flex-wrap">
+                        <h4 class="card-title mb-4">Tổng doanh thu </h4>
+                        <div class="ms-auto">
+                            <ul class="nav nav-pills">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-time="day" onclick="updateChart('day')">Ngày</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-time="week" onclick="updateChart('week')">Tuần</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-time="month" onclick="updateChart('month')">Tháng</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-time="year" onclick="updateChart('year')">Năm</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div data-colors='["--bs-primary", "--bs-success", "--bs-warning", "--bs-info"]' dir="ltr" id="chart">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -366,9 +446,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
@@ -494,9 +574,9 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 
-    {{-- <div class="row">
+    <div class="row">
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -827,12 +907,265 @@
         </div>
     </div> --}}
 
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê user</h4>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Top 5 Khách Hàng</h4>
+                    <table class="table table-hover align-middle mb-0">
+                        <tbody>
+                            @foreach ($userChartData['users'] as $i => $username)
+                            <tr>
+                                <td class="text-center">{{$i+1}}</td>
+                                <td>{{$username}}</td>
+                            </tr>
+                            @endforeach
+
+                            {{-- <tr class="row-rank-1">
+                                <td class="text-center">
+                                    <div class="rank-1"><i class="fas fa-trophy me-2"></i>1</div>
+                                </td>
+                                <td>DragonSlayer99</td>
+                            </tr> --}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-body pb-0">
+                    <div id="topUserChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <h4 class="card-title mb-4 flex-grow-1">Thống kê sản phẩm</h4>
+        </div>
+
+        <div class="col-lg-12">
+            <form method="GET" action="" class="mb-4">
+                <div style="margin-bottom: 10px;">
+                    <label>Từ ngày:
+                        <input type="date" name="start" value="{{ $productChartData['start'] }}">
+                    </label>
+                    <label>Đến ngày:
+                        <input type="date" name="end" value="{{ $productChartData['end'] }}">
+                    </label>
+                    <label>Số sản phẩm:
+                        <select name="limit">
+                            <option value="5" {{ $productChartData['limit'] == 5 ? 'selected' : '' }}>5</option>
+                            <option value="10" {{ $productChartData['limit'] == 10 ? 'selected' : '' }}>10</option>
+                        </select>
+                    </label>
+                    <button type="submit">Xem thống kê</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <table border="1" cellpadding="8" cellspacing="0" width="100%">
+                        <thead>
+                            <tr style="background: #f0f0f0;">
+                                <th>#</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Số lượng đã bán</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @forelse($productChartData['product_name'] as $index => $name)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $name }}</td>
+                                    <td>{{ $productChartData['total_sold'][$index] }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="3">Không có sản phẩm nào được bán trong khoảng thời gian này.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <div id="topProductChart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('script')
     <script>
+        // Dữ liệu từ PHP
+        const data = {
+            day: {
+                labels: @json(array_keys($revenueChartData['dailyData'])),
+                revenue: @json(array_values($revenueChartData['dailyData'])),
+                total: {{$revenueChartData['dailyRevenue']}},
+            },
+            week: {
+                labels: @json(array_keys($revenueChartData['weeklyData'])),
+                revenue: @json(array_values($revenueChartData['weeklyData'])),
+                total: {{$revenueChartData['weeklyRevenue']}},
+            },
+            month: {
+                labels: @json(array_keys($revenueChartData['monthlyData'])),
+                revenue: @json(array_values($revenueChartData['monthlyData'])),
+                total: {{$revenueChartData['monthlyRevenue']}},
+            },
+            year: {
+                labels: @json(array_keys($revenueChartData['yearlyData'])),
+                revenue: @json(array_values($revenueChartData['yearlyData'])),
+                total: {{$revenueChartData['yearlyRevenue']}},
+            },
+        };
+
+        // Hàm lấy màu từ data-colors
+        function getChartColorsArray(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return null;
+
+            const colors = JSON.parse(element.getAttribute("data-colors"));
+            return colors.map(color => {
+                color = color.replace(" ", "");
+                if (color.indexOf(",") === -1) {
+                    return getComputedStyle(document.documentElement).getPropertyValue(color) || color;
+                }
+                const [baseColor, opacity] = color.split(",");
+                return `rgba(${getComputedStyle(document.documentElement).getPropertyValue(baseColor)},${opacity})`;
+            });
+        }
+
+        // Cấu hình ban đầu
+        const statisticsApplicationColors = getChartColorsArray("chart");
+        let options = {
+            series: [{
+                name: "Doanh thu",
+                type: "column",
+                data: data.day.revenue
+            }],
+            chart: {
+                height: 350,
+                type: "bar",
+                toolbar: { show: true }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '50%',
+                    endingShape: 'rounded'
+                }
+            },
+            dataLabels: {
+                enabled: false,
+                style: {
+                    colors: ['#000000'],
+                },
+            },
+            // border
+            stroke: { show: true, width: 2, colors: ['transparent'] },
+            xaxis: {
+                categories: data.day.labels,
+                title: { text: 'Thời gian (Ngày)' }
+            },
+            yaxis: {
+                title: { 
+                    text: 'Doanh thu (VNĐ)',
+                    offsetX: 5,
+                }
+            },
+            fill: { opacity: 1 },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val.toLocaleString() + " VNĐ";
+                    }
+                }
+            },
+            colors: statisticsApplicationColors,
+            title: {
+                text: data.day.total + ' VNĐ'
+            }
+        };
+
+        // Khởi tạo biểu đồ
+        let chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+        // Hàm cập nhật biểu đồ
+        function updateChart(timeUnit) {
+            const newData = data[timeUnit];
+            let timeTitle;
+            switch (timeUnit) {
+                case 'day': {
+                    timeTitle = 'Thời gian (Ngày)'; 
+                    newTextTitle = 'Tuần vừa qua ';
+                    break;
+                }
+
+                case 'week': {
+                    timeTitle = 'Thời gian (Tuần)';
+                    newTextTitle = '5 tuần vừa qua ';
+                    break;
+                }
+
+                case 'month': {
+                    timeTitle = 'Thời gian (Tháng)';
+                    newTextTitle = '1 năm qua ';
+                    break;
+                }
+
+                case 'year': {
+                    timeTitle = 'Thời gian (Năm)';
+                    newTextTitle = '4 năm vừa qua ';
+                    break;
+                }
+            }
+
+            chart.updateOptions({
+                xaxis: {
+                    categories: newData.labels,
+                    title: { text: timeTitle }
+                },
+                series: [{ data: newData.revenue }],
+                title: {
+                    text: newTextTitle + newData.total + ' VNĐ',
+                }
+            });
+
+            // Cập nhật active class
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                // if (link.textContent.toLowerCase() === timeUnit) {
+                if (link.getAttribute('data-time') === timeUnit) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    </script>
+
+    <script>
         // Pass PHP data to JavaScript
         var orderChartData = @json($orderChartData);
+        var userChartData = @json($userChartData);
+        var productChartData = @json($productChartData);
     </script>
 
     <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
