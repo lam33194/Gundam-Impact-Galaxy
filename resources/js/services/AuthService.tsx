@@ -38,3 +38,13 @@ export const changePassword = (data: any): Promise<any> => {
     });
 };
 
+export const forgotPassword = (email: string): Promise<any> => {
+    const formData = new FormData();
+    formData.append('email', email);
+    return customizeAxios.post('/api/v1/auth/forgot-password', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+
