@@ -33,3 +33,7 @@ export const getCommentForProduct = (productSlug: any): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${productSlug}/comments`);
 }
 
+export const deleteCommentOfProduct = (commentId: any): Promise<any> => {
+    return customizeAxios.delete(`/api/v1/comments/${commentId}`);
+}
+
