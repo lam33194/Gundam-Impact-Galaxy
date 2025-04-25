@@ -48,3 +48,17 @@ export const forgotPassword = (email: string): Promise<any> => {
     });
 };
 
+export const resetPassword = (data: any): Promise<any> => {
+    const formData = new FormData();
+    formData.append('token', data.token);
+    formData.append('email', data.email);
+    formData.append('password', data.password);
+    formData.append('password_confirmation', data.password_confirmation);
+
+    return customizeAxios.post('/api/v1/auth/reset-password', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+
