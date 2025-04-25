@@ -106,7 +106,7 @@
 
             <!-- <li class="menu-title" key="t-administration">Thống kê</li> -->
 
-            <li>
+            <!-- <li>
                 <a href="{{ route('admin.stats.revenue') }}" class="waves-effect">
                     <i class="bx bx-share-alt"></i>
                     <span key="t-multi-level">Thống kê doanh thu</span>
@@ -125,7 +125,7 @@
                     <i class="bx bx-share-alt"></i>
                     <span key="t-multi-level">Thống kê người dùng</span>
                 </a>
-            </li>
+            </li> -->
            
         </ul>
     </div>

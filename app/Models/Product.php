@@ -45,22 +45,42 @@ class Product extends Model
         'is_show_home' => 0,
     ];
 
+    protected function loadCommentStats()
+    {
+        if (!isset($this->commentStats)) {
+            $this->commentStats = $this->comments()
+                ->selectRaw('
+                    ROUND(AVG(CASE WHEN rating IS NOT NULL THEN rating END), 2) as average_rating,
+                    COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as total_ratings,
+                    COUNT(CASE WHEN content IS NOT NULL OR EXISTS (
+                        SELECT 1 FROM comment_images WHERE comment_images.comment_id = comments.id
+                    ) THEN 1 END) as total_comments
+                ')
+                ->first([
+                    'average_rating',
+                    'total_ratings',
+                    'total_comments'
+                ]);
+        }
+        return $this->commentStats;
+    }
+
     // Accessor cho trung bình rating
     public function getAverageRatingAttribute(): float
     {
-        return round($this->comments()->whereNotNull('rating')->avg('rating'), 2) ?? 0;
+        return $this->loadCommentStats()->average_rating ?? 0;
     }
 
     // Accessor cho tổng lượt đánh giá
     public function getTotalRatingsAttribute(): int
     {
-        return $this->comments()->whereNotNull('rating')->count();
+        return $this->loadCommentStats()->total_ratings ?? 0;
     }
 
     // Accessor cho tổng số bình luận
     public function getTotalCommentsAttribute(): int
     {
-        return $this->comments()->whereNotNull('content')->count();
+        return $this->loadCommentStats()->total_comments ?? 0;
     }
 
     public function variants()
