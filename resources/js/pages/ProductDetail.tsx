@@ -23,6 +23,8 @@ import { STORAGE_URL } from "../utils/constants";
 const ProductDetail = () => {
     const nav = useNavigate();
 
+    const [showDropdown, setShowDropdown] = useState(false);
+
     const settings = {
         dots: true,
         infinite: true,
@@ -236,7 +238,7 @@ const ProductDetail = () => {
 
 
     return (
-        <div className="product-detail container d-flex">
+        <div className="product-detail container d-flex gap-5">
             <div className="detail row col-9 gap-4">
                 <div className="image col-lg-5">
                     <div
@@ -463,7 +465,7 @@ const ProductDetail = () => {
                 <div className="comment mt-5">
                     <h5>Đánh giá sản phẩm</h5>
 
-                    <form onSubmit={handleSubmitComment} className="mt-3 col-11">
+                    <form onSubmit={handleSubmitComment} className="mt-3 col-12">
                         <div className="form-group mb-3">
                             <div className="star-rating">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -562,7 +564,7 @@ const ProductDetail = () => {
                 <div className="container mt-4">
                     <h3 className="text-center mb-4">Danh sách Bình luận ({product?.total_comments})</h3>
                     <div className="row justify-content-start">
-                        <div className="col-lg-11">
+                        <div className="col-lg-12">
                             {commentList.map((comment: any, index: any) => (
                                 <div
                                     key={index}
@@ -583,16 +585,18 @@ const ProductDetail = () => {
                                                 <small className="text-muted me-2">
                                                     {FormatDate(comment.updated_at)}
                                                 </small>
-                                                <div className="dropdown">
+                                                <div className="dropdowne">
                                                     <button
                                                         className="btn btn-link text-dark p-0"
                                                         type="button"
-                                                        data-bs-toggle="dropdown"
+                                                        data-bs-toggle="dropdowne"
                                                         aria-expanded="false"
+                                                         onMouseEnter={() => setShowDropdown(true)}
+                                                        onMouseLeave={() => setShowDropdown(false)}
                                                     >
                                                         <i className="bi bi-three-dots-vertical"></i>
                                                     </button>
-                                                    <ul className="dropdown-menu dropdown-menu-end">
+                                                    <ul className="dropdown-menu dropdown-menu-end dropdowne" onMouseLeave={() => setShowDropdown(false)} onMouseEnter={() => setShowDropdown(true)} style={{display: showDropdown ? 'block' : 'none'}}>
                                                         <li>
                                                             <button className="dropdown-item">
                                                                 Sửa
