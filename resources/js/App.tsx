@@ -17,6 +17,7 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, AuthRoute } from './components/ProtectedRoute';
 import OrderHistory from './pages/OrderHistory';
 import ChangePassword from './pages/ChangePassword';
+import ForgetPassword from './pages/ForgetPassword';
 
 function App() {
     return (
@@ -63,6 +64,11 @@ function App() {
                                 <ProtectedRoute>
                                     <ChangePassword />
                                 </ProtectedRoute>
+                            } />
+                            <Route path='/forget-password' element={
+                                <AuthRoute>
+                                    <ForgetPassword />
+                                </AuthRoute>
                             } />
                         </Route>
                     </Routes>
