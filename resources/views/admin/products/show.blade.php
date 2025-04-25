@@ -9,7 +9,7 @@
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.products.index') }}">Danh sách</a>
+                            <a href="{{ route('admin.products.index') }}">Chi tiết sản phẩm</a>
                         </li>
                         <li class="breadcrumb-item active">{{ $product->sku }}</li>
                     </ol>

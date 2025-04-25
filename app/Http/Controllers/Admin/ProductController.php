@@ -46,6 +46,10 @@ class ProductController extends Controller
             }
         }
 
+        if ($request->filled('is_sale')) {
+            $query->where('price_sale', '!=', 0);
+        }
+
         $validSortColumns = ['price_regular', 'price_sale', 'quantity'];
 
         // Apply sorting
