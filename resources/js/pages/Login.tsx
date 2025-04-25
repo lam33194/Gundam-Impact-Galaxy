@@ -124,7 +124,7 @@ function Login() {
 
         </div>
         <h6 className="text-center">
-          Bạn quên mật khẩu nhấn <a href="">vào đây</a>
+          Bạn quên mật khẩu nhấn <a href="/forget-password">vào đây</a>
         </h6>
       </div>
 

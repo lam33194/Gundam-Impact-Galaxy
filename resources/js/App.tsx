@@ -17,6 +17,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, AuthRoute } from './components/ProtectedRoute';
 import OrderHistory from './pages/OrderHistory';
 import ChangePassword from './pages/ChangePassword';
+import ForgetPassword from './pages/ForgetPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
     return (
@@ -25,7 +27,6 @@ function App() {
             <BrowserRouter>
                 <AuthProvider>
                     <Routes>
-                        {/* Public routes */}
                         <Route path="/" element={<Layout />}>
                             <Route index element={<Home />} />
                             <Route path="/home" element={<Navigate to="/" replace />} />
@@ -64,10 +65,20 @@ function App() {
                                     <ChangePassword />
                                 </ProtectedRoute>
                             } />
+                            <Route path='/forget-password' element={
+                                <AuthRoute>
+                                    <ForgetPassword />
+                                </AuthRoute>
+                            } />
+                            <Route path='/reset-password' element={
+                                <AuthRoute>
+                                    <ResetPassword />
+                                </AuthRoute>
+                            } />
                         </Route>
                     </Routes>
                 </AuthProvider>
-            </BrowserRouter >
+            </BrowserRouter>
         </div>
     );
 }
