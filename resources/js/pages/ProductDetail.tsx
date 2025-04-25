@@ -4,6 +4,7 @@ import "./ProductDetail.scss";
 import { useEffect, useState, useCallback } from "react";
 import {
     addCommentForProduct,
+    deleteCommentOfProduct,
     getCommentForProduct,
     getDetail,
 } from "../services/ProductService";
@@ -19,6 +20,7 @@ import Voucher from "../components/Voucher";
 import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
 import { STORAGE_URL } from "../utils/constants";
+import ReactSwal from "../utils/Swal";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -37,16 +39,16 @@ const ProductDetail = () => {
                 settings: {
                     slidesToShow: 2,
                     slidesToScroll: 1,
-                }
+                },
             },
             {
                 breakpoint: 768,
                 settings: {
                     slidesToShow: 1,
-                    slidesToScroll: 1
-                }
-            }
-        ]
+                    slidesToScroll: 1,
+                },
+            },
+        ],
     };
 
     const [content, setContent] = useState("");
@@ -63,24 +65,28 @@ const ProductDetail = () => {
     const [selectedColor, setSelectedColor] = useState<number | null>(null);
     const [commentList, setCommentList] = useState<any>([]);
 
-    const voucherListId = 'productVoucherList';
+    const voucherListId = "productVoucherList";
     const canScrollVouchers = useScrollable(voucherListId, 4, vouchers);
     useHorizontalScroll(voucherListId, canScrollVouchers, 0.5);
 
-    const scrollVouchers = useCallback((direction: 'left' | 'right') => {
-        const container = document.getElementById(voucherListId);
-        if (!container) return;
+    const scrollVouchers = useCallback(
+        (direction: "left" | "right") => {
+            const container = document.getElementById(voucherListId);
+            if (!container) return;
 
-        const scrollAmount = 400;
-        const scrollPosition = direction === 'left'
-            ? container.scrollLeft - scrollAmount
-            : container.scrollLeft + scrollAmount;
+            const scrollAmount = 400;
+            const scrollPosition =
+                direction === "left"
+                    ? container.scrollLeft - scrollAmount
+                    : container.scrollLeft + scrollAmount;
 
-        container.scrollTo({
-            left: scrollPosition,
-            behavior: 'smooth'
-        });
-    }, [voucherListId]);
+            container.scrollTo({
+                left: scrollPosition,
+                behavior: "smooth",
+            });
+        },
+        [voucherListId]
+    );
 
     const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
@@ -117,17 +123,21 @@ const ProductDetail = () => {
         e.preventDefault();
         try {
             const res = await addCommentForProduct(
-                { "content": content, "rating": rating, "images[]": images },
+                { content: content, rating: rating, "images[]": images },
                 slug
             );
             if (res && res.data) {
-                toast.success("Thêm comment thành công!");
-                setCommentList([
-                    ...commentList,
-                   res.data.data
-                ])
+                toast.success("Thêm comment thành công!", {
+                    autoClose: 1000,      
+                    onClose: () => {
+                      window.location.reload();
+                    }
+                  });
             }
-        } catch (error) { }
+        } catch (error : any) {
+            toast.error(error.response.data.message);
+            // console.log(error.response);
+        }
         console.log({ content, rating, images });
     };
 
@@ -138,7 +148,32 @@ const ProductDetail = () => {
                 setCommentList(res.data.data);
                 console.log(res.data.data);
             }
-        } catch (error) { }
+        } catch (error) {}
+    };
+
+    const onDeleteComment = async (commentId: any) => {
+        try {
+            const result = await ReactSwal.fire({
+                title: "Xác nhận hành động",
+                text: "Bạn có chắc chắn muốn xóa comment?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Có",
+                cancelButtonText: "Không",
+            });
+
+            if (result.isConfirmed) {
+                const res = await deleteCommentOfProduct(commentId);
+                if (res && res.data) {
+                    setCommentList(commentList.filter((c: any) => c.id !== commentId))
+                    toast.success("Bạn đã xóa thành công comment!");
+                }
+            } else {
+                
+            }
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const getUniqueSizes = () => {
@@ -206,12 +241,13 @@ const ProductDetail = () => {
                 nav("/cart");
             }
         } catch (error: any) {
-            console.error('Lỗi xảy ra:', error);
-            const errorMessage = error.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại!";
+            console.error("Lỗi xảy ra:", error);
+            const errorMessage =
+                error.response?.data?.message ||
+                "Có lỗi xảy ra, vui lòng thử lại!";
             toast.error(errorMessage);
         }
     };
-
 
     useEffect(() => {
         if (slug) {
@@ -233,7 +269,6 @@ const ProductDetail = () => {
     //     getAllVouchers();
     // }, []);
 
-
     return (
         <div className="product-detail container d-flex gap-5">
             <div className="detail row col-9 gap-4">
@@ -241,7 +276,8 @@ const ProductDetail = () => {
                     <div
                         className="img"
                         style={{
-                            backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"})`,
+                            // backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"})`,
+                            backgroundImage: `url(${STORAGE_URL + product?.thumb_image})`,
                         }}
                     ></div>
 
@@ -253,12 +289,36 @@ const ProductDetail = () => {
                                     className="product-variant"
                                 >
                                     <img
-                                        src={variant.image || "default-image-url"}
+                                        src={
+                                            variant.image == null  
+                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                            : STORAGE_URL + variant.image
+                                        }
                                         alt={`Variant ${variant.id}`}
                                         className="w-100 h-100 object-fit-cover"
-                                        onClick={() => setProductVariant(variant)}
+                                        onClick={() =>
+                                            setProductVariant(variant)
+                                        }
                                     />
 
+                                </div>
+                            ))}
+
+                            {product?.galleries.map((gallery: any) => (
+                                <div
+                                    key={gallery.id}
+                                    className="product-variant"
+                                >
+                                    <img
+                                        src={
+                                            gallery.image == null  
+                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                            : STORAGE_URL + gallery.image
+                                        }
+                                        alt={`Product gallery ${gallery.id}`}
+                                        className="w-100 h-100 object-fit-cover"
+                                        // onClick={() => setProductVariant(variant)}
+                                    />
                                 </div>
                             ))}
                         </Slider>
@@ -282,8 +342,8 @@ const ProductDetail = () => {
                         </span>
                     </div>
                     <span className="price">
-                        {product !== null
-                            ? FormatCurrency(product.price_sale)
+                        {product !== null 
+                            ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular) 
                             : ""}
                         đ
                     </span>
@@ -291,7 +351,10 @@ const ProductDetail = () => {
                     <span>{vouchers.length} Mã Giảm Giá</span>
                     <div className="voucher-section position-relative">
                         {canScrollVouchers && (
-                            <div className="scroll-button scroll-left" onClick={() => scrollVouchers('left')}>
+                            <div
+                                className="scroll-button scroll-left"
+                                onClick={() => scrollVouchers("left")}
+                            >
                                 <i className="fas fa-chevron-left"></i>
                             </div>
                         )}
@@ -300,8 +363,10 @@ const ProductDetail = () => {
                             className="coupon-list gap-2"
                             id={voucherListId}
                             style={{
-                                overflowX: canScrollVouchers ? 'auto' : 'hidden',
-                                cursor: canScrollVouchers ? 'grab' : 'default'
+                                overflowX: canScrollVouchers
+                                    ? "auto"
+                                    : "hidden",
+                                cursor: canScrollVouchers ? "grab" : "default",
                             }}
                         >
                             {vouchers.map((voucher, index) => (
@@ -310,7 +375,10 @@ const ProductDetail = () => {
                         </div>
 
                         {canScrollVouchers && (
-                            <div className="scroll-button scroll-right" onClick={() => scrollVouchers('right')}>
+                            <div
+                                className="scroll-button scroll-right"
+                                onClick={() => scrollVouchers("right")}
+                            >
                                 <i className="fas fa-chevron-right"></i>
                             </div>
                         )}
@@ -324,8 +392,9 @@ const ProductDetail = () => {
                             {getUniqueSizes().map((size: any) => (
                                 <button
                                     key={size.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
-                                        }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${
+                                        selectedSize === size.id ? "active" : ""
+                                    }`}
                                     onClick={() => setSelectedSize(size.id)}
                                 >
                                     {size.name}
@@ -341,10 +410,11 @@ const ProductDetail = () => {
                             {getUniqueColors().map((color: any) => (
                                 <button
                                     key={color.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id
-                                        ? "active"
-                                        : ""
-                                        }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${
+                                        selectedColor === color.id
+                                            ? "active"
+                                            : ""
+                                    }`}
                                     onClick={() => setSelectedColor(color.id)}
                                 >
                                     <span
@@ -434,7 +504,10 @@ const ProductDetail = () => {
                 <div className="comment mt-5">
                     <h5>Đánh giá sản phẩm</h5>
 
-                    <form onSubmit={handleSubmitComment} className="mt-3 col-12">
+                    <form
+                        onSubmit={handleSubmitComment}
+                        className="mt-3 col-12"
+                    >
                         <div className="form-group mb-3">
                             <div className="star-rating">
                                 {[1, 2, 3, 4, 5].map((star) => (
@@ -453,7 +526,7 @@ const ProductDetail = () => {
                                             style={{
                                                 color:
                                                     star <=
-                                                        (hoverRating || rating)
+                                                    (hoverRating || rating)
                                                         ? "#ffc107"
                                                         : "#ddd",
                                             }}
@@ -531,7 +604,7 @@ const ProductDetail = () => {
                     </form>
                 </div>
                 <div className="container mt-4">
-                    <h3 className="text-center mb-4">Danh sách Bình luận</h3>
+                    <h3 className="text-center mb-4">Danh sách Bình luận ({product?.total_comments})</h3>
                     <div className="row justify-content-start">
                         <div className="col-lg-12">
                             {commentList.map((comment: any, index: any) => (
@@ -552,7 +625,9 @@ const ProductDetail = () => {
 
                                             <div className="d-flex align-items-center">
                                                 <small className="text-muted me-2">
-                                                    {FormatDate(comment.updated_at)}
+                                                    {FormatDate(
+                                                        comment.updated_at
+                                                    )}
                                                 </small>
                                                 <div className="dropdowne">
                                                     <button
@@ -560,19 +635,45 @@ const ProductDetail = () => {
                                                         type="button"
                                                         data-bs-toggle="dropdowne"
                                                         aria-expanded="false"
-                                                         onMouseEnter={() => setShowDropdown(true)}
-                                                        onMouseLeave={() => setShowDropdown(false)}
+                                                        onMouseEnter={() =>
+                                                            setShowDropdown(
+                                                                true
+                                                            )
+                                                        }
+                                                        onMouseLeave={() =>
+                                                            setShowDropdown(
+                                                                false
+                                                            )
+                                                        }
                                                     >
                                                         <i className="bi bi-three-dots-vertical"></i>
                                                     </button>
-                                                    <ul className="dropdown-menu dropdown-menu-end dropdowne" onMouseLeave={() => setShowDropdown(false)} onMouseEnter={() => setShowDropdown(true)} style={{display: showDropdown ? 'block' : 'none'}}>
+                                                    <ul
+                                                        className="dropdown-menu dropdown-menu-end dropdowne"
+                                                        onMouseLeave={() =>
+                                                            setShowDropdown(
+                                                                false
+                                                            )
+                                                        }
+                                                        onMouseEnter={() =>
+                                                            setShowDropdown(
+                                                                true
+                                                            )
+                                                        }
+                                                        style={{
+                                                            display:
+                                                                showDropdown
+                                                                    ? "block"
+                                                                    : "none",
+                                                        }}
+                                                    >
                                                         <li>
                                                             <button className="dropdown-item">
                                                                 Sửa
                                                             </button>
                                                         </li>
                                                         <li>
-                                                            <button className="dropdown-item text-danger">
+                                                            <button className="dropdown-item text-danger" onClick={() => onDeleteComment(comment.id)}>
                                                                 Xóa
                                                             </button>
                                                         </li>
@@ -580,7 +681,6 @@ const ProductDetail = () => {
                                                 </div>
                                             </div>
                                         </div>
-
 
                                         {comment.rating && (
                                             <div className="mb-2">
@@ -602,22 +702,29 @@ const ProductDetail = () => {
                                             </div>
                                         )}
 
-
                                         <p className="card-text mb-3">
                                             {comment.content}
                                         </p>
 
-
                                         {comment.comment_images &&
-                                            comment.comment_images.length > 0 && (
+                                            comment.comment_images.length >
+                                                0 && (
                                                 <div className="d-flex flex-wrap gap-2">
                                                     {comment.comment_images.map(
-                                                        (img: any, imgIndex: any) => (
+                                                        (
+                                                            img: any,
+                                                            imgIndex: any
+                                                        ) => (
                                                             <img
                                                                 key={imgIndex}
-                                                                src={STORAGE_URL + "/" + img.image}
-                                                                alt={`Ảnh ${imgIndex + 1
-                                                                    }`}
+                                                                src={
+                                                                    STORAGE_URL +
+                                                                    "/" +
+                                                                    img.image
+                                                                }
+                                                                alt={`Ảnh ${
+                                                                    imgIndex + 1
+                                                                }`}
                                                                 className="img-thumbnail"
                                                                 style={{
                                                                     width: "80px",
