@@ -17,7 +17,7 @@ class PaymentController extends Controller
 
         if (!$order) return $this->not_found('Đơn hàng không tồn tại');
         
-        if ($order->user->id != $request->user()->id) return $this->forbidden('Bạn không có quyền thực hiện chức năng này');
+        if ($order->user->id != auth('sanctum')->id()) return $this->forbidden('Bạn không có quyền thực hiện chức năng này');
 
         // Kiểm tra trạng thái thanh toán (nếu đã thanh toán thì không xử lý lại)
         if ($order->status_payment === Order::STATUS_PAYMENT_PAID) {
