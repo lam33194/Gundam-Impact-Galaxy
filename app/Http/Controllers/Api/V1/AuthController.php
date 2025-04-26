@@ -83,8 +83,8 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'email', 'exists:users'],
         ], [
-            'email.*'      => 'Email không hợp lệ',
             'email.exists' => 'Email không tồn tại',
+            'email.*'      => 'Email không hợp lệ',
         ]);
 
         $status = Password::sendResetLink(

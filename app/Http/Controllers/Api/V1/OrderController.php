@@ -142,6 +142,12 @@ class OrderController extends Controller
                 $cartItem->variant->decrement('quantity', $cartItem->quantity);
             }
 
+            // Nếu PTTT là vnpay, thêm đường dẫn thanh toán khi tạo đơn
+            if ($data['type_payment'] == Order::TYPE_PAYMENT_VNPAY) {
+                $payment_url = new PaymentController();
+                $order->payment_url = $payment_url->createPayment(request(), $order->id)->getData()->data;
+            };
+
             return $this->ok('Đơn hàng của bạn đã được tạo', $order);
         });
     }
