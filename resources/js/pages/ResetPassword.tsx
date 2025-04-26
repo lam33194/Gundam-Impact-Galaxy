@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { resetPassword } from "../services/AuthService";
+import "./ResetPassword.scss";
 
 function ResetPassword() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [formData, setFormData] = useState({
         email: '',
         token: '',
@@ -15,8 +17,8 @@ function ResetPassword() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
-        const token = document.querySelector('meta[name="reset-token"]')?.getAttribute('content');
-        const email = document.querySelector('meta[name="reset-email"]')?.getAttribute('content');
+        const token = searchParams.get('token');
+        const email = searchParams.get('email');
 
         if (!token || !email) {
             toast.error('Liên kết không hợp lệ hoặc đã hết hạn', {
@@ -31,7 +33,7 @@ function ResetPassword() {
             token,
             email
         }));
-    }, []);
+    }, [searchParams]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -80,7 +82,9 @@ function ResetPassword() {
                             Vui lòng nhập mật khẩu mới cho tài khoản của bạn
                         </p>
                         <div className="mb-4">
-                            <label className="form-label fw-bold">Email</label>
+                            <label htmlFor="email" className="form-label fw-bold">
+                                Email
+                            </label>
                             <input
                                 type="email"
                                 className="form-control form-control-lg"
@@ -96,6 +100,7 @@ function ResetPassword() {
                                 type="password"
                                 id="password"
                                 className={`form-control form-control-lg ${error ? 'is-invalid' : ''}`}
+                                placeholder="Nhập mật khẩu mới"
                                 value={formData.password}
                                 onChange={(e) => {
                                     setFormData(prev => ({
@@ -115,6 +120,7 @@ function ResetPassword() {
                                 type="password"
                                 id="password_confirmation"
                                 className={`form-control form-control-lg ${error ? 'is-invalid' : ''}`}
+                                placeholder="Xác nhận mật khẩu mới"
                                 value={formData.password_confirmation}
                                 onChange={(e) => {
                                     setFormData(prev => ({
@@ -134,6 +140,12 @@ function ResetPassword() {
                         >
                             {isSubmitting ? 'Đang xử lý...' : 'Đặt lại mật khẩu'}
                         </button>
+
+                        <div className="text-center mt-4">
+                            <p className="mb-0">
+                                Quay lại trang <a href="/login">đăng nhập</a>
+                            </p>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -153,7 +165,14 @@ function ResetPassword() {
                     <li>
                         <i className="fa-solid fa-fire me-2"></i>Chăm sóc khách hàng 1-1
                     </li>
+                    <li>
+                        <i className="fa-solid fa-fire me-2"></i>Chi tiết hơn về chương
+                        trình hội viên, bạn có thể <a href="">xem tại đây</a>
+                    </li>
                 </ul>
+                <button className="btn btn-lg col-7">
+                    <a href="/signup" style={{ color: '#fff' }}>Đăng ký</a>
+                </button>
             </div>
         </div>
     );

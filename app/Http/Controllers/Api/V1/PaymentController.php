@@ -26,7 +26,7 @@ class PaymentController extends Controller
 
         // Kiểm tra trạng thái đơn hàng (chỉ cho phép thanh toán khi đơn hàng ở trạng thái phù hợp)
         if (!in_array($order->status_order, [Order::STATUS_ORDER_PENDING, Order::STATUS_ORDER_CONFIRMED])) {
-            return $this->error('Đơn hàng này đã được xử lú');
+            return $this->error('Đơn hàng này đã được xử lý');
         }
 
         switch ($order->type_payment) {
@@ -36,10 +36,6 @@ class PaymentController extends Controller
                     'total'     => $order->total_price,
                 ]));
             return $this->ok('Tạo URL thanh toán VNPAY thành công', $paymentUrl);
-
-            case Order::TYPE_PAYMENT_MOMO:
-                // 
-            return;
 
             case Order::TYPE_PAYMENT_COD:
                 // Với COD, không cần URL thanh toán, có thể cập nhật trạng thái trực tiếp nếu cần
@@ -124,7 +120,8 @@ class PaymentController extends Controller
         if (!$order) return $this->not_found('Đơn hàng không tồn tại');
 
         // Kiểm tra trạng thái giao dịch từ VNPAY
-        $responseCode = $vnp_ReturnData['vnp_ResponseCode'];
+        $responseCode = $vnp_ReturnData['vnp_ResponseCode'] ?? null;
+
         if ($responseCode === '00') {
             // Thanh toán thành công
             $order->update([
@@ -134,7 +131,11 @@ class PaymentController extends Controller
 
             // return $this->ok('Thanh toán thành công!', $order);
             return redirect()->away(config('payment.frontend.payment_success_url') . '?' . $hashData);
-        } else {
+        }
+        // else if ($responseCode === null) {
+            // ...
+        // }
+        else {
             // Thanh toán thất bại
             $order->update([
                 'status_payment' => Order::STATUS_PAYMENT_UNPAID,
@@ -146,10 +147,5 @@ class PaymentController extends Controller
             // ]);
             return redirect()->away(config('payment.frontend.payment_failed_url') . '?' . $hashData);
         }
-    }
-
-    public function createMomoPaymentUrl(Request $request)
-    {
-        // 
     }
 }

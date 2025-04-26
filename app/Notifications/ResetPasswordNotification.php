@@ -22,10 +22,7 @@ class ResetPasswordNotification extends ResetPasswordNotificationBase
 
     public function toMail($notifiable)
     {
-        $resetUrl = url(route('password.reset', [
-            'token' => $this->token,
-            'email' => $notifiable->email
-        ], false));
+        $resetUrl = url(env('APP_URL') . '/reset-password?token=' . $this->token . '&email=' . urlencode($notifiable->email));
 
         return (new MailMessage)
             ->greeting('Xin chào!')

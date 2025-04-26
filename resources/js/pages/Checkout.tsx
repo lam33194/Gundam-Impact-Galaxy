@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { getUserById } from "../services/UserService";
 import { getProvinces, getDistricts, getWards } from "../services/LocationService";
 import { STORAGE_URL } from "../utils/constants";
+import { District, Province, Ward } from "../interfaces/Location";
 
 const Checkout = () => {
     const { user: authUser } = useAuth();
@@ -17,9 +18,9 @@ const Checkout = () => {
     const [total, setTotal] = useState(0);
 
     // Add location states
-    const [provinces, setProvinces] = useState([]);
-    const [districts, setDistricts] = useState([]);
-    const [wards, setWards] = useState([]);
+    const [provinces, setProvinces] = useState<Province[]>([]);
+    const [districts, setDistricts] = useState<District[]>([]);
+    const [wards, setWards] = useState<Ward[]>([]);
 
     const [selectedProvince, setSelectedProvince] = useState("");
     const [selectedDistrict, setSelectedDistrict] = useState("");
@@ -55,8 +56,6 @@ const Checkout = () => {
         const { user_address, province, district, ward } = formData;
         const fullAddress = `${user_address}, ${ward}, ${district}, ${province}`;
 
-        console.log("Địa chỉ đầy đủ:", fullAddress);
-        console.log(formData);
         const data = {
             user_name: formData.user_name,
             user_email: formData.user_email,
@@ -69,39 +68,41 @@ const Checkout = () => {
         try {
             const res = await addOrder(data);
             if (res && res.data) {
-                toast.success("Đặt hàng thành công!");
-                setTimeout(() => {
-                    window.location.href = "/order-history";
-                }, 1000);
+                if (formData.type_payment === 'vnpay' && res.data.data.payment_url) {
+                    // Redirect directly to VNPAY URL
+                    window.location.href = res.data.data.payment_url;
+                } else {
+                    toast.success("Đặt hàng thành công!");
+                    setTimeout(() => {
+                        window.location.href = "/order-history";
+                    }, 1000);
+                }
             }
         } catch (error: any) {
             console.error('Lỗi xảy ra:', error);
-            if (error.response && error.response.data && error.response.data.message) {
-                console.log('Thông báo lỗi:', error.response.data.message);
+            if (error.response?.data?.message) {
                 toast.error(error.response.data.message);
             } else {
                 toast.error("Có lỗi xảy ra, vui lòng thử lại!");
             }
         }
-
     };
 
     const getCartDetail = async () => {
         try {
             const res = await getCart({ include: 'variant' });
             if (res && res.data) {
-                console.log("iudie", res.data.data);
                 setCart(res.data.data);
                 let t = 0;
                 res.data.data.forEach((element: any) => {
-                    let tempPrice = element.variant.product.price_sale != 0 
-                        ? element.variant.product.price_sale 
+                    let tempPrice = element.variant.product.price_sale != 0
+                        ? element.variant.product.price_sale
                         : element.variant.product.price_regular;
 
                     t += Number(tempPrice) * Number(element.quantity);
                     // t +=
-                        // Number(element.variant.product.price_sale) *
-                        // Number(element.quantity);
+                    // Number(element.variant.product.price_sale) *
+                    // Number(element.quantity);
                 });
                 console.log(t);
                 setTotal(t);
@@ -435,66 +436,67 @@ const Checkout = () => {
                 <div className="line"></div>
                 <div className="cart-product d-flex flex-column gap-4 my-3">
                     {cart.map((item: any, index) => {
-                        const product_price = item.variant.product.price_sale != 0 
-                        ? item.variant.product.price_sale 
-                        : item.variant.product.price_regular;
+                        const product_price = item.variant.product.price_sale != 0
+                            ? item.variant.product.price_sale
+                            : item.variant.product.price_regular;
                         return (
-                        <div
-                            key={index}
-                            className="cart-product-item d-flex align-items-start justify-content-between"
-                        >
-                            <div className="d-flex gap-2">
-                                <div
-                                    className="cart-product-item-image"
-                                    style={{
-                                        // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
-                                        backgroundImage: item.variant.image == null 
-                                        ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
-                                        : `url(${STORAGE_URL + item.variant?.image})`,
-                                        height: "60px",
-                                        width: "60px",
-                                        backgroundSize: "cover",
-                                        backgroundPosition: "center",
-                                        flexShrink: 0
-                                    }}
-                                ></div>
-                                <div className="product-info d-flex flex-column">
-                                    <span className="item-name fw-bold">
-                                        {item.variant.product.name}
-                                    </span>
-                                    <div className="variant-info">
-                                        <small className="text-muted">
-                                            {item.variant.size.name} |
-                                            <span
-                                                className="color-dot"
-                                                style={{
-                                                    display: 'inline-block',
-                                                    width: '10px',
-                                                    height: '10px',
-                                                    borderRadius: '50%',
-                                                    backgroundColor: item.variant.color.code,
-                                                    border: '1px solid #dee2e6',
-                                                    marginLeft: '4px',
-                                                    marginRight: '4px',
-                                                    verticalAlign: 'middle'
-                                                }}
-                                            ></span>
-                                            {item.variant.color.name}
-                                        </small>
-                                    </div>
-                                    <div className="quantity-info">
-                                        <small className="text-muted">
-                                            Số lượng: {item.quantity}
-                                        </small>
+                            <div
+                                key={index}
+                                className="cart-product-item d-flex align-items-start justify-content-between"
+                            >
+                                <div className="d-flex gap-2">
+                                    <div
+                                        className="cart-product-item-image"
+                                        style={{
+                                            // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
+                                            backgroundImage: item.variant.image == null
+                                                ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
+                                                : `url(${STORAGE_URL + item.variant?.image})`,
+                                            height: "60px",
+                                            width: "60px",
+                                            backgroundSize: "cover",
+                                            backgroundPosition: "center",
+                                            flexShrink: 0
+                                        }}
+                                    ></div>
+                                    <div className="product-info d-flex flex-column">
+                                        <span className="item-name fw-bold">
+                                            {item.variant.product.name}
+                                        </span>
+                                        <div className="variant-info">
+                                            <small className="text-muted">
+                                                {item.variant.size.name} |
+                                                <span
+                                                    className="color-dot"
+                                                    style={{
+                                                        display: 'inline-block',
+                                                        width: '10px',
+                                                        height: '10px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: item.variant.color.code,
+                                                        border: '1px solid #dee2e6',
+                                                        marginLeft: '4px',
+                                                        marginRight: '4px',
+                                                        verticalAlign: 'middle'
+                                                    }}
+                                                ></span>
+                                                {item.variant.color.name}
+                                            </small>
+                                        </div>
+                                        <div className="quantity-info">
+                                            <small className="text-muted">
+                                                Số lượng: {item.quantity}
+                                            </small>
+                                        </div>
                                     </div>
                                 </div>
+                                <span className="item-price text-danger fw-bold">
+                                    {/* {FormatCurrency(product_price * item.quantity)}đ */}
+                                    {FormatCurrency(product_price)}đ
+                                </span>
                             </div>
-                            <span className="item-price text-danger fw-bold">
-                                {/* {FormatCurrency(product_price * item.quantity)}đ */}
-                                {FormatCurrency(product_price)}đ
-                            </span>
-                        </div>
-                    )})}
+                        )
+                    })}
                 </div>
 
                 <div className="enter-coupon d-flex gap-1">

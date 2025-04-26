@@ -226,7 +226,7 @@ function Profile() {
     };
 
     const getAvatarUrl = (avatarPath: string | null) => {
-        if (!avatarPath) return "../assets/default-avatar.png";
+        if (!avatarPath) return "/assets/default-avatar.png";
         return `${STORAGE_URL}/${avatarPath}`;
     };
 

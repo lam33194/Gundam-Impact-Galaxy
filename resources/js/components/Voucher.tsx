@@ -3,6 +3,7 @@ import "./Voucher.scss";
 import { toast } from "react-toastify";
 import { Modal } from 'bootstrap';
 import { VoucherProps } from '../interfaces/VoucherProps';
+import hotcouponImage from '../assets/hotcoupon.png';
 
 const Voucher = ({ voucher }: VoucherProps) => {
   const [modal, setModal] = useState<Modal | null>(null);
@@ -69,7 +70,7 @@ const Voucher = ({ voucher }: VoucherProps) => {
           <img
             width="70"
             height="70"
-            src="//bizweb.dktcdn.net/100/456/060/themes/962001/assets/hotcoupon.jpg?1740630578329"
+            src={hotcouponImage}
             alt={voucher.title}
           />
           <span>{voucher.title}</span>
