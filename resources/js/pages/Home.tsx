@@ -8,6 +8,10 @@ import { getAll, getTopRevenue, getTopSelling } from "../services/ProductService
 import { getVouchers } from "../services/VoucherService";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 import { useScrollable } from "../hooks/useScrollable";
+import ico_sv1 from '../assets/ico_sv1.png';
+import ico_sv2 from '../assets/ico_sv2.webp';
+import ico_sv3 from '../assets/ico_sv3.webp';
+import ico_sv4 from '../assets/ico_sv4.png';
 
 function Home() {
     const [products, setProducts] = useState([]);
@@ -192,7 +196,8 @@ function Home() {
                     <img
                         width={"50px"}
                         height={"50px"}
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv1.png?1740630578329"
+                        src={ico_sv1}
+                        alt="Service 1"
                     />
                     <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                 </div>
@@ -201,7 +206,8 @@ function Home() {
                     <img
                         width={"50px"}
                         height={"50px"}
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv2.png?1740630578329"
+                        src={ico_sv2}
+                        alt="Service 2"
                     />
                     <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                 </div>
@@ -210,7 +216,8 @@ function Home() {
                     <img
                         width={"50px"}
                         height={"50px"}
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv3.png?1740630578329"
+                        src={ico_sv3}
+                        alt="Service 3"
                     />
                     <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                 </div>
@@ -219,7 +226,8 @@ function Home() {
                     <img
                         width={"50px"}
                         height={"50px"}
-                        src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv4.png?1740630578329"
+                        src={ico_sv4}
+                        alt="Service 4"
                     />
                     <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                 </div>

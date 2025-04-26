@@ -21,6 +21,10 @@ import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
 import { STORAGE_URL } from "../utils/constants";
 import ReactSwal from "../utils/Swal";
+import ico_sv1 from '../assets/ico_sv1.png';
+import ico_sv2 from '../assets/ico_sv2.webp';
+import ico_sv3 from '../assets/ico_sv3.webp';
+import ico_sv4 from '../assets/ico_sv4.png';
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -128,13 +132,13 @@ const ProductDetail = () => {
             );
             if (res && res.data) {
                 toast.success("Thêm comment thành công!", {
-                    autoClose: 1000,      
+                    autoClose: 1000,
                     onClose: () => {
-                      window.location.reload();
+                        window.location.reload();
                     }
-                  });
+                });
             }
-        } catch (error : any) {
+        } catch (error: any) {
             toast.error(error.response.data.message);
             // console.log(error.response);
         }
@@ -148,7 +152,7 @@ const ProductDetail = () => {
                 setCommentList(res.data.data);
                 console.log(res.data.data);
             }
-        } catch (error) {}
+        } catch (error) { }
     };
 
     const onDeleteComment = async (commentId: any) => {
@@ -169,7 +173,7 @@ const ProductDetail = () => {
                     toast.success("Bạn đã xóa thành công comment!");
                 }
             } else {
-                
+
             }
         } catch (error) {
             console.log(error);
@@ -290,9 +294,9 @@ const ProductDetail = () => {
                                 >
                                     <img
                                         src={
-                                            variant.image == null  
-                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
-                                            : STORAGE_URL + variant.image
+                                            variant.image == null
+                                                ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                                : STORAGE_URL + variant.image
                                         }
                                         alt={`Variant ${variant.id}`}
                                         className="w-100 h-100 object-fit-cover"
@@ -311,13 +315,13 @@ const ProductDetail = () => {
                                 >
                                     <img
                                         src={
-                                            gallery.image == null  
-                                            ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
-                                            : STORAGE_URL + gallery.image
+                                            gallery.image == null
+                                                ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
+                                                : STORAGE_URL + gallery.image
                                         }
                                         alt={`Product gallery ${gallery.id}`}
                                         className="w-100 h-100 object-fit-cover"
-                                        // onClick={() => setProductVariant(variant)}
+                                    // onClick={() => setProductVariant(variant)}
                                     />
                                 </div>
                             ))}
@@ -342,8 +346,8 @@ const ProductDetail = () => {
                         </span>
                     </div>
                     <span className="price">
-                        {product !== null 
-                            ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular) 
+                        {product !== null
+                            ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular)
                             : ""}
                         đ
                     </span>
@@ -394,9 +398,8 @@ const ProductDetail = () => {
                             {getUniqueSizes().map((size: any) => (
                                 <button
                                     key={size.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${
-                                        selectedSize === size.id ? "active" : ""
-                                    }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
+                                        }`}
                                     onClick={() => setSelectedSize(size.id)}
                                 >
                                     {size.name}
@@ -412,11 +415,10 @@ const ProductDetail = () => {
                             {getUniqueColors().map((color: any) => (
                                 <button
                                     key={color.id}
-                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${
-                                        selectedColor === color.id
-                                            ? "active"
-                                            : ""
-                                    }`}
+                                    className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id
+                                        ? "active"
+                                        : ""
+                                        }`}
                                     onClick={() => setSelectedColor(color.id)}
                                 >
                                     <span
@@ -531,7 +533,7 @@ const ProductDetail = () => {
                                             style={{
                                                 color:
                                                     star <=
-                                                    (hoverRating || rating)
+                                                        (hoverRating || rating)
                                                         ? "#ffc107"
                                                         : "#ddd",
                                             }}
@@ -713,7 +715,7 @@ const ProductDetail = () => {
 
                                         {comment.comment_images &&
                                             comment.comment_images.length >
-                                                0 && (
+                                            0 && (
                                                 <div className="d-flex flex-wrap gap-2">
                                                     {comment.comment_images.map(
                                                         (
@@ -727,9 +729,8 @@ const ProductDetail = () => {
                                                                     "/" +
                                                                     img.image
                                                                 }
-                                                                alt={`Ảnh ${
-                                                                    imgIndex + 1
-                                                                }`}
+                                                                alt={`Ảnh ${imgIndex + 1
+                                                                    }`}
                                                                 className="img-thumbnail"
                                                                 style={{
                                                                     width: "80px",
@@ -756,22 +757,42 @@ const ProductDetail = () => {
                 </span>
                 <div className="service-info d-flex flex-column mb-4 gap-1">
                     <div className="service py-2 d-flex gap-3 align-items-center">
-                        <img src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv1.png?1740630578329" />
+                        <img
+                            width="50"
+                            height="50"
+                            src={ico_sv1}
+                            alt="Service 1"
+                        />
                         <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                     </div>
 
                     <div className="service py-2 d-flex gap-3 align-items-center">
-                        <img src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv2.png?1740630578329" />
+                        <img
+                            width="50"
+                            height="50"
+                            src={ico_sv2}
+                            alt="Service 2"
+                        />
                         <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                     </div>
 
                     <div className="service py-2 d-flex gap-3 align-items-center">
-                        <img src="https://bizweb.dktcdn.net/100/456/060/themes/1004041/assets/ico_sv3.png?1743759267039" />
+                        <img
+                            width="50"
+                            height="50"
+                            src={ico_sv3}
+                            alt="Service 3"
+                        />
                         <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                     </div>
 
                     <div className="service py-2 d-flex gap-3 align-items-center">
-                        <img src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/ico_sv4.png?1740630578329" />
+                        <img
+                            width="50"
+                            height="50"
+                            src={ico_sv4}
+                            alt="Service 4"
+                        />
                         <span className="fw-bold">Dịch vụ đóng gói riêng</span>
                     </div>
                 </div>
