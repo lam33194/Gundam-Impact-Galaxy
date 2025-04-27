@@ -29,6 +29,15 @@ export const addCommentForProduct = (data: any, productSlug: any): Promise<any> 
     });
 }
 
+export const updateCommentForProduct = (data: any, productSlug: any, commentId: any): Promise<any> => {
+    return customizeAxios.put(`/api/v1/products/${productSlug}/comments/${commentId}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json'
+        },
+    });
+}
+
 export const getCommentForProduct = (productSlug: any): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${productSlug}/comments`);
 }

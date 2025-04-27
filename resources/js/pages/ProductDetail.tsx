@@ -7,6 +7,7 @@ import {
     deleteCommentOfProduct,
     getCommentForProduct,
     getDetail,
+    updateCommentForProduct,
 } from "../services/ProductService";
 import { addToCart } from "../services/CartService";
 import { toast } from "react-toastify";
@@ -25,6 +26,8 @@ import ico_sv1 from '../assets/ico_sv1.png';
 import ico_sv2 from '../assets/ico_sv2.webp';
 import ico_sv3 from '../assets/ico_sv3.webp';
 import ico_sv4 from '../assets/ico_sv4.png';
+import CommentForm from "../components/CommentForm";
+
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -68,6 +71,9 @@ const ProductDetail = () => {
     const [selectedSize, setSelectedSize] = useState<number | null>(null);
     const [selectedColor, setSelectedColor] = useState<number | null>(null);
     const [commentList, setCommentList] = useState<any>([]);
+    const [showCommentForm, setShowCommentForm] = useState<any>(false);
+    const [opacity, setOpacity] = useState<any>(1);
+    const [updateComment, setUpdateComment] = useState<any>(false);
 
     const voucherListId = "productVoucherList";
     const canScrollVouchers = useScrollable(voucherListId, 4, vouchers);
@@ -180,6 +186,40 @@ const ProductDetail = () => {
         }
     };
 
+    const onUpdateComment = async(content: any, rating: any, images: any) =>{
+        try {
+            const res = await updateCommentForProduct(
+                { content: content, rating: rating, "images[]": images },
+                slug, updateComment.id
+            );
+            if (res && res.data) {
+                toast.success("Sửa comment thành công!", {
+                    autoClose: 1100,      
+                    onClose: () => {
+                      window.location.reload();
+                    }
+                  });
+            }
+        } catch (error : any) {
+            toast.error(error.response.data.message);
+            // console.log(error.response);
+        }
+        console.log({ content, rating, images });
+    };
+
+    const onCloseForm = () =>{
+        setShowCommentForm(false);
+        setOpacity(1);
+    }
+    
+
+    const openUpdateCommentForm = (comment: any) =>{
+        setOpacity(0.2);
+        setUpdateComment(comment);
+        setShowCommentForm(true);
+    }
+
+
     const getUniqueSizes = () => {
         if (!product?.variants) return [];
         const sizes = product.variants.map((v: { size: any }) => v.size);
@@ -274,7 +314,8 @@ const ProductDetail = () => {
     // }, []);
 
     return (
-        <div className="product-detail container d-flex gap-5">
+        <>
+        <div className="product-detail container d-flex gap-5" style={{opacity: opacity}}>
             <div className="detail row col-9 gap-4">
                 <div className="image col-lg-5">
                     <div
@@ -675,7 +716,7 @@ const ProductDetail = () => {
                                                         }}
                                                     >
                                                         <li>
-                                                            <button className="dropdown-item">
+                                                            <button className="dropdown-item" onClick={() => openUpdateCommentForm(comment)}> 
                                                                 Sửa
                                                             </button>
                                                         </li>
@@ -807,6 +848,8 @@ const ProductDetail = () => {
                 </div>
             </div>
         </div>
+        <CommentForm onCloseForm={onCloseForm} onUpdateComment={onUpdateComment} comment={updateComment} isOpen={showCommentForm} onClose={() => {setShowCommentForm(false); setOpacity(1)}}/>
+        </>
     );
 };
 
