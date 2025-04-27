@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
@@ -29,9 +31,22 @@ class SocialAuthController extends Controller
             ], [
                 'name'     => $googleUser->getName(),
                 'email'    => $googleUser->getEmail(),
-                'avatar'   => $googleUser->getAvatar(),
-                'password' => bcrypt(uniqid())
+                'password' => bcrypt(uniqid()),
             ]);
+
+            // Lưu ảnh avatar vào Storage nếu chưa có avatar
+            if ($googleUser->getAvatar()) {
+                $response = Http::get($googleUser->getAvatar());
+
+                if (!$user->avatar && $response->successful()) {
+                    $fileName = 'avatars/' . uniqid('google_avatar_') . '.jpg';
+
+                    Storage::disk('public')->put($fileName, $response->body());
+
+                    $user->avatar = $fileName;
+                    $user->save();
+                }
+            }
 
             return $this->ok('Đăng nhập thành công', [
                 $user,

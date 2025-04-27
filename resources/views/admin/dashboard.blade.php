@@ -94,9 +94,7 @@
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div {{ $percentageChange >= 0 ? 'data-colors=["--bs-success"]' : 'data-colors=["--bs-danger"]' }}
-                            dir="ltr" id="newOrdersChart">
-                            </div>
+                            <div {{ $percentageChange >= 0 ? 'data-colors=["--bs-success"]' : 'data-colors=["--bs-danger"]' }} dir="ltr" id="newOrdersChart"></div>
                         </div>
                     </div>
                 </div>
@@ -184,7 +182,25 @@
         <div class="col-lg-3">
             <div class="card">
                 <div class="card-body">
-                    Bộ lọc từ ngày đến ngày...
+                    <form action="{{ route('admin.dashboard') }}" method="get" id="dateRangeForm">
+                        <div class="mb-3">
+                            <label for="from_date" class="form-label">From Date</label>
+                            <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request('from_date', '') }}">
+                            <div class="invalid-feedback" id="fromDateFeedback">
+                                Start date cannot be after end date
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="to_date" class="form-label">To Date</label>
+                            <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request('to_date', '') }}">
+                            <div class="invalid-feedback" id="toDateFeedback">
+                                End date cannot be before start date
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Lọc</button>
+                        <a href="{{ route('admin.dashboard') }}" class="mt-3 btn btn-secondary w-100">Đặt lại</a>
+                    </form>
                 </div>
             </div>
         </div>
@@ -211,8 +227,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div data-colors='["--bs-primary", "--bs-success", "--bs-warning", "--bs-info"]' dir="ltr" id="chart">
-                    </div>
+                    <div dir="ltr" id="chart"></div>
                 </div>
             </div>
         </div>
@@ -1013,6 +1028,61 @@
 
 @section('script')
     <script>
+        // Pass PHP data to JavaScript
+        var orderChartData = @json($orderChartData);
+        var userChartData = @json($userChartData);
+        var productChartData = @json($productChartData);
+    </script>
+
+    <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
+
+    <script>
+        const fromDateInput = document.getElementById('from_date');
+        const toDateInput = document.getElementById('to_date');
+        const form = document.getElementById('dateRangeForm');
+        const fromDateFeedback = document.getElementById('fromDateFeedback');
+        const toDateFeedback = document.getElementById('toDateFeedback');
+
+        // Set max date to today for both inputs
+        const today = new Date().toISOString().split('T')[0];
+        fromDateInput.setAttribute('max', today);
+        toDateInput.setAttribute('max', today);
+
+        // Validate dates on input change
+        fromDateInput.addEventListener('change', validateDates);
+        toDateInput.addEventListener('change', validateDates);
+
+        // Validate on form submit
+        form.addEventListener('submit', function(e) {
+            if (!validateDates()) {
+                e.preventDefault();
+            }
+        });
+
+        function validateDates() {
+            const fromDate = fromDateInput.value;
+            const toDate = toDateInput.value;
+            let isValid = true;
+
+            // Reset validation states
+            fromDateInput.classList.remove('is-invalid');
+            toDateInput.classList.remove('is-invalid');
+            fromDateFeedback.style.display = 'none';
+            toDateFeedback.style.display = 'none';
+
+            // Check if both dates are selected
+            if (fromDate && toDate) {
+                // Compare dates
+                if (fromDate > toDate) {
+                    toDateInput.classList.add('is-invalid');
+                    toDateFeedback.style.display = 'block';
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
         // Dữ liệu từ PHP
         const data = {
             day: {
@@ -1037,24 +1107,7 @@
             },
         };
 
-        // Hàm lấy màu từ data-colors
-        function getChartColorsArray(elementId) {
-            const element = document.getElementById(elementId);
-            if (!element) return null;
-
-            const colors = JSON.parse(element.getAttribute("data-colors"));
-            return colors.map(color => {
-                color = color.replace(" ", "");
-                if (color.indexOf(",") === -1) {
-                    return getComputedStyle(document.documentElement).getPropertyValue(color) || color;
-                }
-                const [baseColor, opacity] = color.split(",");
-                return `rgba(${getComputedStyle(document.documentElement).getPropertyValue(baseColor)},${opacity})`;
-            });
-        }
-
-        // Cấu hình ban đầu
-        const statisticsApplicationColors = getChartColorsArray("chart");
+        // default
         let options = {
             series: [{
                 name: "Doanh thu",
@@ -1079,7 +1132,6 @@
                     colors: ['#000000'],
                 },
             },
-            // border
             stroke: { show: true, width: 2, colors: ['transparent'] },
             xaxis: {
                 categories: data.day.labels,
@@ -1099,9 +1151,9 @@
                     }
                 }
             },
-            colors: statisticsApplicationColors,
+            colors: ['#556EE6'],
             title: {
-                text: data.day.total + ' VNĐ'
+                text: new Intl.NumberFormat('vi-VN').format(data.day.total) + ' VNĐ'
             }
         };
 
@@ -1112,29 +1164,27 @@
         // Hàm cập nhật biểu đồ
         function updateChart(timeUnit) {
             const newData = data[timeUnit];
+
             let timeTitle;
+
             switch (timeUnit) {
                 case 'day': {
                     timeTitle = 'Thời gian (Ngày)'; 
-                    newTextTitle = 'Tuần vừa qua ';
                     break;
                 }
 
                 case 'week': {
                     timeTitle = 'Thời gian (Tuần)';
-                    newTextTitle = '5 tuần vừa qua ';
                     break;
                 }
 
                 case 'month': {
                     timeTitle = 'Thời gian (Tháng)';
-                    newTextTitle = '1 năm qua ';
                     break;
                 }
 
                 case 'year': {
                     timeTitle = 'Thời gian (Năm)';
-                    newTextTitle = '4 năm vừa qua ';
                     break;
                 }
             }
@@ -1146,7 +1196,7 @@
                 },
                 series: [{ data: newData.revenue }],
                 title: {
-                    text: newTextTitle + newData.total + ' VNĐ',
+                    // 
                 }
             });
 
@@ -1160,13 +1210,4 @@
             });
         }
     </script>
-
-    <script>
-        // Pass PHP data to JavaScript
-        var orderChartData = @json($orderChartData);
-        var userChartData = @json($userChartData);
-        var productChartData = @json($productChartData);
-    </script>
-
-    <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
 @endsection
