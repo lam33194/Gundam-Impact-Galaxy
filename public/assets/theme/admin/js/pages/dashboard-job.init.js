@@ -240,4 +240,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const topProductChart = new ApexCharts(document.querySelector("#topProductChart"), productOptions);
     topProductChart.render();
+
+    // Lọc doanh thu ===================================================
+
+    
 })

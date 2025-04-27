@@ -190,67 +190,124 @@ class DashboardController extends Controller
     // Thống kê doanh thu ==============================================================================
     public function revenueChartData()
     {
-        // Dữ liệu theo ngày (7 ngày gần nhất)
-        $dailyData = [];
-        // Ngày bắt đầu (6 ngày trước)
-        $startDate = Carbon::now()->subDays(6);
-        for ($i = 0; $i < 7; $i++) {
-            $date = $startDate->copy()->addDays($i);
-            $dailyData[$date->format('d/m')] = 0;
-            // ['01/01' => 0]
+        // Lấy start_date và end_date từ request, mặc định là 6 ngày trước và hôm nay
+        $startDate = request()->has('from_date')
+            ? Carbon::parse(request('from_date'))
+            : null;
+
+        $endDate = request()->has('to_date')
+            ? Carbon::parse(request('to_date'))
+            : Carbon::now();
+
+        // Tính doanh thu theo thời gian mặc định: 10 ngày, 10 tuần, 12 tháng, 4 năm
+        if (!$startDate) {
+            $dailyStart = Carbon::now()->subDays(9); // 10 ngày gần nhất (bao gồm hôm nay)
+            $weeklyStart = Carbon::now()->subWeeks(6); // 10 tuần gần nhất
+            $monthlyStart = Carbon::now()->subMonths(11); // 12 tháng gần nhất
+            $yearlyStart = Carbon::now()->subYears(3); // 4 năm gần nhất
+        } else {
+            // Nếu có start_date, dùng chung cho tất cả
+            $dailyStart = $weeklyStart = $monthlyStart = $yearlyStart = $startDate;
         }
 
-        // lấy đơn hàng đã thanh toán   
+        if ($startDate && $endDate->lt($startDate)) {
+            $endDate = $startDate->copy();
+        }
+
+        // --- Dữ liệu theo ngày (tối đa 30 ngày từ start_date) ---
+        $dailyData = [];
+        $daysLimit = $startDate
+            ? min($startDate->diffInDays($endDate) + 1, 30) // Có lọc: tối đa 30 ngày
+            : 10;
+
+        $dailyStartDate = $startDate ?: $dailyStart;
+
+        for ($i = 0; $i < $daysLimit; $i++) {
+            $date = $dailyStartDate->copy()->addDays($i);
+            $dailyData[$date->format('d/m')] = 0;
+        }
+
         $dailyRecords = Order::paid()
             ->selectRaw('DATE(created_at) as date, SUM(total_price) as revenue')
-            ->where('created_at', '>=', $startDate)
+            ->whereBetween('created_at', [$dailyStartDate, $endDate])
             ->groupBy('date')
             ->orderBy('date')
             ->get();
 
         foreach ($dailyRecords as $record) {
-            $dailyData[Carbon::parse($record->date)->format('d/m')] = $record->revenue;
+            $dateKey = Carbon::parse($record->date)->format('d/m');
+            if (isset($dailyData[$dateKey])) {
+                $dailyData[$dateKey] = $record->revenue;
+            }
         }
 
         $dailyData = collect($dailyData)->toArray();
 
-        // Lấy 5 tuần gần nhất
+        // --- Dữ liệu theo tuần (mặc định 10 tuần, hoặc tối đa 10 tuần nếu có lọc) ---
         $weeklyData = [];
-        $startWeek = Carbon::now()->subWeeks(4);
+        $weeksLimit = $startDate
+            ? min(ceil($startDate->diffInWeeks($endDate) + 1), 10) // Có lọc: tối đa 10 tuần
+            : 10;
+        $weeklyStartDate = $startDate ?: $weeklyStart;
+        $currentWeek = Carbon::now()->weekOfYear;
+        $currentYear = Carbon::now()->year;
 
-        for ($i = 0; $i < 5; $i++) {
-            $weeksAgo = 4 - $i;
-            $key = $weeksAgo > 0 ? "$weeksAgo tuần trước" : "tuần này";
+        for ($i = 0; $i < $weeksLimit; $i++) {
+            $weekStart = $weeklyStartDate->copy()->addWeeks($i);
+            $weekNumber = $weekStart->weekOfYear;
+            $weekYear = $weekStart->year;
+            $weekDiff = ($currentYear * 52 + $currentWeek) - ($weekYear * 52 + $weekNumber);
+
+            if ($weekDiff > 5) {
+                $key = "Tuần $weekNumber $weekYear";
+            } else {
+                $key = $weekDiff > 0 ? "$weekDiff tuần trước" : "tuần này";
+            }
             $weeklyData[$key] = 0;
         }
 
-        // Lấy dữ liệu từ database
         $weeklyRecords = Order::paid()
-            ->selectRaw('WEEK(created_at) as week, SUM(total_price) as revenue')
-            ->where('created_at', '>=', $startWeek)
-            ->groupBy('week')
+            ->selectRaw('WEEK(created_at, 1) as week, YEAR(created_at) as year, SUM(total_price) as revenue')
+            ->whereBetween('created_at', [$weeklyStartDate, $weeklyStartDate->copy()->addWeeks($weeksLimit - 1)])
+            ->groupBy('week', 'year')
+            ->orderBy('year')
             ->orderBy('week')
             ->get();
 
         foreach ($weeklyRecords as $record) {
-            $weekDiff = Carbon::now()->weekOfYear - $record->week;
-            $key = $weekDiff > 0 ? "$weekDiff tuần trước" : "tuần này";
-            $weeklyData[$key] = $record->revenue;
+            $weekStart = Carbon::create($record->year, 1, 1)->addWeeks($record->week - 1);
+            $weekNumber = $weekStart->weekOfYear;
+            $weekYear = $record->year;
+            $weekDiff = ($currentYear * 52 + $currentWeek) - ($weekYear * 52 + $weekNumber);
+
+            if ($weekDiff > 5) {
+                $key = "Tuần $weekNumber $weekYear";
+            } else {
+                $key = $weekDiff > 0 ? "$weekDiff tuần trước" : "tuần này";
+            }
+
+            if (isset($weeklyData[$key])) {
+                $weeklyData[$key] = $record->revenue;
+            }
         }
 
         $weeklyData = collect($weeklyData)->toArray();
 
-        // Dữ liệu theo tháng (12 tháng gần nhất)
+        // --- Dữ liệu theo tháng (mặc định 12 tháng, hoặc tối đa 12 tháng nếu có lọc) ---
         $monthlyData = [];
-        $startMonth = Carbon::now()->subMonths(11);
-        for ($i = 0; $i < 12; $i++) {
-            $monthDate = $startMonth->copy()->addMonths($i);
+        $monthsLimit = $startDate
+            ? min($startDate->diffInMonths($endDate) + 1, 12) // Có lọc: tối đa 12 tháng
+            : 12;
+        $monthlyStartDate = $startDate ?: $monthlyStart;
+
+        for ($i = 0; $i < $monthsLimit; $i++) {
+            $monthDate = $monthlyStartDate->copy()->addMonths($i);
             $monthlyData[$monthDate->format('m/Y')] = 0;
         }
 
         $monthlyRecords = Order::paid()
             ->selectRaw('MONTH(created_at) as month, YEAR(created_at) as year, SUM(total_price) as revenue')
-            ->where('created_at', '>=', $startMonth)
+            ->whereBetween('created_at', [$monthlyStartDate, $endDate])
             ->groupBy('month', 'year')
             ->orderBy('year')
             ->orderBy('month')
@@ -258,48 +315,46 @@ class DashboardController extends Controller
 
         foreach ($monthlyRecords as $record) {
             $monthKey = Carbon::create($record->year, $record->month, 1)->format('m/Y');
-            $monthlyData[$monthKey] = $record->revenue;
+            if (isset($monthlyData[$monthKey])) {
+                $monthlyData[$monthKey] = $record->revenue;
+            }
         }
 
         $monthlyData = collect($monthlyData)->toArray();
 
-        // Dữ liệu theo năm (4 năm gần nhất)
+        // --- Dữ liệu theo năm (mặc định 4 năm, hoặc tối đa 4 năm nếu có lọc) ---
         $yearlyData = [];
-        $startYear = Carbon::now()->subYears(3);
-        for ($i = 0; $i < 4; $i++) {
-            $year = $startYear->copy()->addYears($i);
+        $yearsLimit = $startDate
+            ? min($startDate->diffInYears($endDate) + 1, 4) // Có lọc: tối đa 4 năm
+            : 4;
+        $yearlyStartDate = $startDate ?: $yearlyStart;
+
+        for ($i = 0; $i < $yearsLimit; $i++) {
+            $year = $yearlyStartDate->copy()->addYears($i);
             $yearlyData[$year->format('Y')] = 0;
         }
 
         $yearlyRecords = Order::paid()
             ->selectRaw('YEAR(created_at) as year, SUM(total_price) as revenue')
-            ->where('created_at', '>=', $startYear)
+            ->whereBetween('created_at', [$yearlyStartDate, $endDate])
             ->groupBy('year')
             ->orderBy('year')
             ->get();
 
         foreach ($yearlyRecords as $record) {
-            $yearlyData[$record->year] = $record->revenue;
+            $yearKey = (string) $record->year;
+            if (isset($yearlyData[$yearKey])) {
+                $yearlyData[$yearKey] = $record->revenue;
+            }
         }
 
         $yearlyData = collect($yearlyData)->toArray();
 
-        // Doanh thu tổng
+        // --- Tính doanh thu tổng ---
         $dailyRevenue = array_sum(array_values($dailyData));
         $weeklyRevenue = array_sum(array_values($weeklyData));
         $monthlyRevenue = array_sum(array_values($monthlyData));
         $yearlyRevenue = array_sum(array_values($yearlyData));
-
-        // dd(
-        //     $dailyData,      // [01/01 => n, 02/01 => ..., 07/01 => n]    doanh thu mỗi ngày
-        //     $weeklyData,     // [4 tuần trước => n, 3 ..., tuần này => n] doanh thu mỗi tuần
-        //     $monthlyData,    // [01/2025 => n, 02/202x ..., 12/202x => n] doanh thu mỗi năm
-        //     $yearlyData,
-        //     $dailyRevenue,   // Tổng doanh thu 7 ngày trở lại
-        //     $weeklyRevenue,  // Tổng doanh thu 4 tuần trở lại
-        //     $monthlyRevenue, // Tổng doanh thu 1 năm trở lại
-        //     $yearlyRevenue,
-        // );
 
         return [
             'dailyData' => $dailyData,
