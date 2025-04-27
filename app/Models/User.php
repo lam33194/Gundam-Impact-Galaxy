@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -19,6 +21,8 @@ class User extends Authenticatable
         true => 'Active',
         false => 'No Active'
     ];
+
+    protected $appends = ['total_price'];
 
     /**
      * The attributes that are mass assignable.
@@ -55,6 +59,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
+    }
+
     public function isAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
@@ -68,7 +77,7 @@ class User extends Authenticatable
             $this->load('cartItems.variant.product');
         }
 
-        return $this->cartItems->sum(function ($cartItem) {
+        $total = $this->cartItems->sum(function ($cartItem) {
             $variant = $cartItem->variant;
             $product = $variant->product;
 
@@ -77,6 +86,9 @@ class User extends Authenticatable
 
             return $price * $cartItem->quantity;
         });
+
+        $this->unsetRelation('cartItems');
+        return $total;
     }
 
     public function cartItems()

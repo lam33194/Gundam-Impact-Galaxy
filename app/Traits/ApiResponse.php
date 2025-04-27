@@ -74,7 +74,7 @@ trait ApiResponse
     }
 
     // 422 (Unprocessable Entity): Xảy ra khi ko pass hay thỏa mãn rules, validation
-    protected function failedValidation($msg)
+    protected function failed_validation($msg)
     {
         return $this->error($msg, 422);
     }

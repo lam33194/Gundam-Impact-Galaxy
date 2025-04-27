@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserVoucherController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\ProductColorController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductSizeController;
@@ -44,11 +45,12 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('product-sizes', ProductSizeController::class);
     Route::resource('user_vouchers', UserVoucherController::class);
     Route::resource('comments', CommentController::class);
+    Route::resource('posts', PostController::class);
+
 
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::controller(StatController::class)->group(function() {
-        Route::get('stats', 'index')->name('stats.index');
         Route::get('stats-user', 'user')->name('stats.user');
         Route::get('stats-revenue', 'revenue')->name('stats.revenue');
     });
@@ -59,4 +61,13 @@ Route::prefix('admin')->name('admin.')->group(function() {
 
     Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+
+    Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
+    Route::post('orders-bulk', [OrderController::class, 'bulkAction'])->name('orders.bulk');
+
+    Route::get('test', function() {
+        return view('admin.test', [
+            'user' => App\Models\User::find(12),
+        ]);
+    });
 });

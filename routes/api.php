@@ -8,6 +8,10 @@ use App\Http\Controllers\Api\V1\ProductController;
 use App\Http\Controllers\Api\V1\UserController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
+use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\VoucherController;
+use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\Api\V1\SocialAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -38,8 +42,14 @@ Route::prefix('v1')->group(function () {
         Route::get('products/{slug}/comments', 'index');
 
         Route::middleware(['auth:sanctum'])->group(function() {
+            // Danh sách comment của user
+            Route::get('getUserComments', 'getUserComments');
             // Thêm bình luận
             Route::post('products/{slug}/comments', 'store');
+            // Sửa bình luận
+            Route::put('products/{slug}/comments/{id}', 'update');
+            // Xóa bình luận
+            Route::delete('comments/{id}', 'destroy');
         });
     });
 
@@ -78,10 +88,37 @@ Route::prefix('v1')->group(function () {
         Route::put('users',      'update')->middleware('auth:sanctum');
     });
 
+    Route::controller(UserAddressController::class)->group(function () {
+        Route::middleware(['auth:sanctum'])->group(function () {
+            // List địa chỉ
+            Route::get('addresses', 'index');
+            // Get địa chỉ
+            Route::get('addresses/{id}', 'show');
+            // Thêm địa chỉ
+            Route::post('addresses', 'store');
+            // Sửa địa chỉ
+            Route::put('addresses/{id}', 'update');
+            // Xóa địa chỉ
+            Route::delete('addresses/{id}', 'destroy');
+        });
+    });
+
+    Route::controller(VoucherController::class)->group(function () {
+        // Lấy tất cả user
+        Route::get('vouchers', 'index');
+    });
+
     Route::controller(PaymentController::class)->group(function(){
         // Tạo đường dẫn thanh toán online
         Route::get('orders/{id}/payment', 'createPayment')->middleware('auth:sanctum');
         Route::get('vnpay/return', 'vnpayReturn');
+    });
+
+    Route::controller(PostController::class)->group(function () {
+        // Lấy tất cả post
+        Route::get('posts', 'index');
+        // Chi tiết post
+        Route::get('posts/{id}', 'show');
     });
 
     Route::prefix('auth')->group(function () {
@@ -95,5 +132,13 @@ Route::prefix('v1')->group(function () {
             // Đổi mật khẩu
             Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Đăng nhập bên thứ 3
+        Route::get('google-login',    [SocialAuthController::class, 'googleLogin']);
+        Route::get('google-callback', [SocialAuthController::class, 'googleCallback']);
+
+        // Quên mật khẩu
+        Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
+        Route::post('reset-password',  [AuthController::class, 'resetPassword'])->name('password.reset');
     });
 });

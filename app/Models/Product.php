@@ -45,22 +45,42 @@ class Product extends Model
         'is_show_home' => 0,
     ];
 
+    protected function loadCommentStats()
+    {
+        if (!isset($this->commentStats)) {
+            $this->commentStats = $this->comments()
+                ->selectRaw('
+                    ROUND(AVG(CASE WHEN rating IS NOT NULL THEN rating END), 2) as average_rating,
+                    COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as total_ratings,
+                    COUNT(CASE WHEN content IS NOT NULL OR EXISTS (
+                        SELECT 1 FROM comment_images WHERE comment_images.comment_id = comments.id
+                    ) THEN 1 END) as total_comments
+                ')
+                ->first([
+                    'average_rating',
+                    'total_ratings',
+                    'total_comments'
+                ]);
+        }
+        return $this->commentStats;
+    }
+
     // Accessor cho trung bình rating
     public function getAverageRatingAttribute(): float
     {
-        return round($this->comments()->whereNotNull('rating')->avg('rating'), 2) ?? 0;
+        return $this->loadCommentStats()->average_rating ?? 0;
     }
 
     // Accessor cho tổng lượt đánh giá
     public function getTotalRatingsAttribute(): int
     {
-        return $this->comments()->whereNotNull('rating')->count();
+        return $this->loadCommentStats()->total_ratings ?? 0;
     }
 
     // Accessor cho tổng số bình luận
     public function getTotalCommentsAttribute(): int
     {
-        return $this->comments()->whereNotNull('content')->count();
+        return $this->loadCommentStats()->total_comments ?? 0;
     }
 
     public function variants()
@@ -111,4 +131,16 @@ class Product extends Model
         }
         return $query;
     }
+
+    // Mutator đặt is_good_deal và is_hot_deal
+    // public function setPriceSaleAttribute($value)
+    // {
+    //     $this->attributes['price_sale'] = $value;
+
+    //     if ($this->price_regular > 0 && $value > 0) {
+    //         $discount = (($this->price_regular - $value) / $this->price_regular) * 100;
+    //         $this->attributes['is_hot_deal'] = $discount >= 30;
+    //         $this->attributes['is_good_deal'] = $discount >= 10 && $discount < 30;
+    //     }
+    // }
 }
