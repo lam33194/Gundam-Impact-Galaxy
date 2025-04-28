@@ -39,6 +39,7 @@ class CommentController extends Controller
 
     public function getUserComments(Request $request)
     {
+        /** @var User */
         $user = auth('sanctum')->user();
 
         $comments = $user->comments()->with([
@@ -123,10 +124,11 @@ class CommentController extends Controller
 
     private function deleteCommentImages(Comment $comment)
     {
-        $comment->load('commentImages:image');
+        $comment->load('commentImages');
 
         foreach ($comment->commentImages as $commentImage) {
             $this->delete_storage_file($commentImage, 'image');
+            $commentImage->delete();
         }
 
         $comment->unsetRelation('commentImages');

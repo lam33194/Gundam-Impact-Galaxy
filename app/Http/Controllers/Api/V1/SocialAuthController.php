@@ -48,10 +48,7 @@ class SocialAuthController extends Controller
                 }
             }
 
-            return $this->ok('Đăng nhập thành công', [
-                $user,
-                $user->createToken('token-google-login')->plainTextToken,
-            ]);
+            return redirect()->to('login-success/' . $user->createToken('token-google-login')->plainTextToken);
 
         } catch (\Exception $e) {
             return $this->error('Xác thực thất bại',401,[

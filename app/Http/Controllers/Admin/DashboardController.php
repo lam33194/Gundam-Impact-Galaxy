@@ -22,6 +22,10 @@ class DashboardController extends Controller
         $totalOrderDelivered = Order::statusOrderFilter(Order::STATUS_ORDER_DELIVERED)->count();
         // Tổng đơn hàng bị hủy
         $totalOrderCanceled = Order::statusOrderFilter(Order::STATUS_ORDER_CANCELED)->count();
+        // Giá trị trung bình mỗi đơn hàng
+        $averageOrderValue = Order::statusOrderFilter(Order::STATUS_ORDER_DELIVERED)->avg('total_price');
+        // Total orders
+        $totalOrders = Order::count();
 
         // Top user
         $userChartData = $this->getTopUsers();
@@ -39,6 +43,8 @@ class DashboardController extends Controller
             'newOrderLastMonth',
             'totalOrderDelivered',
             'totalOrderCanceled',
+            'averageOrderValue',
+            'totalOrders',
             // Thống kê user
             'userChartData',
             // Thống kê product
