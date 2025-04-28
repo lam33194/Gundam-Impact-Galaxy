@@ -48,7 +48,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
                                     <label for="code" class="form-label">
                                         <span class="required">*</span> Mã giảm giá (Tự động)
@@ -61,7 +61,35 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
+                                <div class="mb-3">
+                                    <label for="start_date_time" class="form-label">
+                                        <span class="required">*</span> Ngày bắt đầu
+                                    </label>
+                                    <input type="datetime-local" name="start_date_time" id="start_date_time"
+                                        class="form-control"
+                                        value="{{ old('start_date_time', $voucher->start_date_time ?\Carbon\Carbon::parse($voucher->start_date_time)->format('Y-m-d\TH:i') : '') }}">
+                                    @error('start_date_time')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="mb-3">
+                                    <label for="end_date_time" class="form-label">
+                                        <span class="required">*</span> Ngày kết thúc
+                                    </label>
+                                    <input type="datetime-local" name="end_date_time" id="end_date_time"
+                                        class="form-control"
+                                        value="{{ old('end_date_time', $voucher->end_date_time ? \Carbon\Carbon::parse($voucher->end_date_time)->format('Y-m-d\TH:i') : '') }}">
+                                    @error('end_date_time')
+                                        <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
                                 <div class="mb-3">
                                     <label for="formatted_discount" class="form-label">
                                         <span class="required">*</span> Giảm giá (VNĐ)
@@ -80,32 +108,38 @@
                                 </div>
                             </div>
 
-
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label for="start_date_time" class="form-label">
-                                        <span class="required">*</span> Ngày bắt đầu
+                                    <label for="min_order_amount" class="form-label">
+                                        Đơn hàng tối thiểu
                                     </label>
-                                    <input type="datetime-local" name="start_date_time" id="start_date_time"
-                                        class="form-control"
-                                        value="{{ old('start_date_time', $voucher->start_date_time ?\Carbon\Carbon::parse($voucher->start_date_time)->format('Y-m-d\TH:i') : '') }}">
-                                    @error('start_date_time')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
+                                    <input type="number" name="min_order_amount" id="min_order_amount"
+                                        class="form-control {{ $errors->has('min_order_amount') ? 'is-invalid' : (old('min_order_amount') ? 'is-valid' : '') }}"
+                                        value="{{ old('min_order_amount', $voucher->min_order_amount) }}">
+                                    <div
+                                        class="{{ $errors->has('min_order_amount') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('min_order_amount'))
+                                            {{ $errors->first('min_order_amount') }}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label for="end_date_time" class="form-label">
-                                        <span class="required">*</span> Ngày kết thúc
+                                    <label for="max_usage" class="form-label">
+                                        <!-- <span class="required">*</span> -->
+                                        Số lần sử dụng tối đa
                                     </label>
-                                    <input type="datetime-local" name="end_date_time" id="end_date_time"
-                                        class="form-control"
-                                        value="{{ old('end_date_time', $voucher->end_date_time ? \Carbon\Carbon::parse($voucher->end_date_time)->format('Y-m-d\TH:i') : '') }}">
-                                    @error('end_date_time')
-                                        <div class="text-danger">{{ $message }}</div>
-                                    @enderror
+                                    <input type="number" name="max_usage" id="max_usage"
+                                        class="form-control {{ $errors->has('max_usage') ? 'is-invalid' : (old('max_usage') ? 'is-valid' : '') }}"
+                                        value="{{ old('max_usage', $voucher->max_usage) }}">
+                                    <div
+                                        class="{{ $errors->has('max_usage') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('max_usage'))
+                                            {{ $errors->first('max_usage') }}
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
 
