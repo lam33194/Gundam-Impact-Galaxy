@@ -19,7 +19,7 @@ class VoucherRequest extends FormRequest
      */
     public function rules(): array
     {
-        if ($this->isMethod('post')) {
+        if ($this->isMethod(method: 'post')) {
             return $this->rulesForCreate();
         } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
             return $this->rulesForUpdate();
@@ -35,6 +35,8 @@ class VoucherRequest extends FormRequest
             'start_date_time' => 'required|date',
             'end_date_time' => 'required|date|after:start_date_time',
             'description' => 'nullable|string',
+            'min_order_amount' => 'nullable|integer|min:100000',
+            'max_usage' => 'nullable|integer|min:1',
         ];
     }
 
@@ -49,6 +51,8 @@ class VoucherRequest extends FormRequest
             'start_date_time' => 'required|date',
             'end_date_time' => 'required|date|after:start_date_time',
             'description' => 'nullable|string',
+            'min_order_amount' => 'nullable|integer|min:100000',
+            'max_usage' => 'nullable|integer|min:1',
         ];
     }
     public function messages(): array
@@ -63,6 +67,7 @@ class VoucherRequest extends FormRequest
             'start_date_time.required' => 'Vui lòng chọn ngày bắt đầu.',
             'end_date_time.required' => 'Vui lòng chọn ngày kết thúc.',
             'end_date_time.after' => 'Ngày kết thúc phải sau ngày bắt đầu.',
+            'min_order_amount.min' => 'Đơn hàng phải có trị giá tối thiểu :min VNĐ',
         ];
     }
 }

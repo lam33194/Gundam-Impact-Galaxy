@@ -59,30 +59,43 @@
             <h4 class="card-title mb-4 flex-grow-1">Thống kê đơn hàng</h4>
         </div>
 
-        <div class="col-lg-3">
+        {{-- <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
-                            <p class="text-muted fw-medium">Total Rejected</p>
-                            <h4 class="mb-0">12,487</h4>
+                            <p class="text-muted fw-medium">Tỉ lệ thành công/hủy</p>
+                            <h4 class="mb-0">70%</h4>
                         </div>
 
                         <div class="flex-shrink-0 align-self-center">
-                            <div data-colors='["--bs-danger", "--bs-transparent"]' dir="ltr" id="total_rejected_charts"></div>
+                            <div class="progress rounded-pill p-0" style="height: 45px; width: 45px;">
+                                <div class="progress-bar bg-success" role="progressbar"
+                                    style="width: 70%; height: 45px;" aria-valuenow="70"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                                <div class="progress-bar bg-danger" role="progressbar"
+                                    style="width: 70%; height: 45px;" aria-valuenow="70"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="card-body border-top py-3">
                     <p class="mb-0">
-                        <span class="badge badge-soft-danger me-1">
-                            <i class="bx bx-trending-down align-bottom me-1"></i>20.63%
+                        <span class="badge badge-soft-success me-1">
+                            <i class="fa-regular fa-circle-check me-1"></i>
+                            70%
                         </span>
-                        Decrease last month
+                        <span class="badge badge-soft-danger me-1">
+                            <i class="fa-solid fa-ban me-1"></i>
+                            30%
+                        </span>
                     </p>
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         <div class="col-lg-3">
             <div class="card mini-stats-wid">
@@ -130,25 +143,14 @@
 
                         <i class="fa-regular fa-circle-check fs-2 text-success"></i>
 
-                        <div class="flex-shrink-0 align-self-center">
+                        {{-- <div class="flex-shrink-0 align-self-center">
                             <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="new_application_charts">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
-                <!-- <div class="card-body border-top py-3">
-                    <p class="mb-0">
-                        <span class="badge badge-soft-success me-1">
-                            <i class="bx bx-trending-up align-bottom me-1"></i>
-                            24.07%
-                        </span>
-                        Increase
-                    </p>
-                </div> -->
             </div>
-        </div>
 
-        <div class="col-lg-3">
             <div class="card mini-stats-wid">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -159,17 +161,41 @@
 
                         <i class="fa-solid fa-ban fs-2 text-danger"></i>
 
-                        <div class="flex-shrink-0 align-self-center">
+                        {{-- <div class="flex-shrink-0 align-self-center">
                             <div data-colors='["--bs-success", "--bs-transparent"]' dir="ltr" id="total_approved_charts">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
-                <!-- <div class="card-body border-top py-3">
-                    <p class="mb-0"> <span class="badge badge-soft-success me-1"><i
-                                class="bx bx-trending-up align-bottom me-1"></i> 8.41%</span> Increase
-                        last month</p>
-                </div> -->
+            </div>
+        </div>
+
+        <!-- NEW: Total Orders -->
+        <div class="col-lg-3">
+            <div class="card mini-stats-wid">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-muted fw-medium">Tổng tất cả đơn hàng</p>
+                            <h4 class="mb-0">{{ $totalOrders }}</h4>
+                        </div>
+
+                        <i class="fa-solid fa-shopping-cart fs-2 text-primary"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mini-stats-wid">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="text-muted fw-medium">Giá trị trung bình mỗi đơn</p>
+                            <h4 class="mb-0">{{ number_format($averageOrderValue, 0, ',', '.') }} VNĐ</h4>
+                        </div>
+
+                        <i class="fa-solid fa-money-bill-wave fs-2 text-warning"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -184,18 +210,20 @@
                 <div class="card-body">
                     <form action="{{ route('admin.dashboard') }}" method="get" id="dateRangeForm">
                         <div class="mb-3">
-                            <label for="from_date" class="form-label">From Date</label>
-                            <input type="date" class="form-control" id="from_date" name="from_date" value="{{ request('from_date', '') }}">
+                            <label for="from_date" class="form-label">Ngày bắt đầu</label>
+                            <input type="date" class="form-control" id="from_date" name="from_date" required
+                                value="{{ request('from_date', '') }}">
                             <div class="invalid-feedback" id="fromDateFeedback">
-                                Start date cannot be after end date
+                                Ngày bắt đầu không hợp lệ
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="to_date" class="form-label">To Date</label>
-                            <input type="date" class="form-control" id="to_date" name="to_date" value="{{ request('to_date', '') }}">
+                            <label for="to_date" class="form-label">Ngày kết thúc</label>
+                            <input type="date" class="form-control" id="to_date" name="to_date"
+                                value="{{ request('to_date', '') }}">
                             <div class="invalid-feedback" id="toDateFeedback">
-                                End date cannot be before start date
+                                Ngày kết thúc không hợp lệ
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Lọc</button>
@@ -227,243 +255,13 @@
                             </ul>
                         </div>
                     </div>
-                    <div dir="ltr" id="chart"></div>
+                    <div dir="ltr" id="revenueChart"></div>
                 </div>
             </div>
         </div>
     </div>
 
     {{-- <div class="row">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-sm-flex flex-wrap">
-                        <h4 class="card-title mb-4">Statistics Applications</h4>
-                        <div class="ms-auto">
-                            <ul class="nav nav-pills">
-                                <li class="nav-item">
-                                    <a class="nav-link" href="javascript:void(0);">Week</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" href="javascript:void(0);">Month</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link active" href="javascript:void(0);">Year</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div data-colors='["--bs-primary", "--bs-success", "--bs-warning", "--bs-info"]' dir="ltr" id="chart">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex">
-                        <div>
-                            <h4 class="card-title mb-3">Invite your friends to Skote</h4>
-                            <p class="text-muted">
-                                Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because
-                                it is pain, but because occasionally.
-                            </p>
-                            <div>
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">
-                                    <i class='bx bx-user-plus align-middle'></i> Invite Friends
-                                </a>
-                            </div>
-                        </div>
-
-                        <div>
-                            <img src="/assets/theme/admin/images/jobs.png" alt="" height="130">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title mb-3">Popular Candidate</h4>
-                    <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active" data-bs-interval="3000">
-                                <div class="bg-light p-3 d-flex mb-3 rounded">
-                                    <img src="/assets/theme/admin/images/users/avatar-4.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Stephen Hadley</a> <span
-                                                class="badge badge-soft-info">Freelance</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i>
-                                            Germany
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton11"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton11">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-light p-3 d-flex">
-                                    <img src="/assets/theme/admin/images/users/avatar-2.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Charles Brown</a> <span
-                                                class="badge badge-soft-success">Full Time</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i>
-                                            Cambodia
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton12"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton12">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item" data-bs-interval="3000">
-                                <div class="bg-light p-3 d-flex mb-3 rounded">
-                                    <img src="/assets/theme/admin/images/users/avatar-1.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Adam Miller</a> <span
-                                                class="badge badge-soft-warning">Internship</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i>
-                                            Australia
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton13"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton13">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-light p-3 d-flex">
-                                    <img src="/assets/theme/admin/images/users/avatar-3.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Keith Gonzales</a> <span
-                                                class="badge badge-soft-info">Freelance</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i>
-                                            Belgium
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton14"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton14">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item" data-bs-interval="3000">
-                                <div class="bg-light p-3 d-flex mb-3 rounded">
-                                    <img src="/assets/theme/admin/images/users/avatar-4.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Bonnie Harney</a> <span
-                                                class="badge badge-soft-success">Full Timer</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i> Syria
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton15"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton15">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-light p-3 d-flex">
-                                    <img src="/assets/theme/admin/images/users/avatar-2.jpg" alt=""
-                                        class="avatar-sm rounded me-3">
-                                    <div class="flex-grow-1">
-                                        <h5 class="font-size-15 mb-2"><a href="candidate-overview.html"
-                                                class="text-body">Dolores Minter</a> <span
-                                                class="badge badge-soft-danger">Part Time</span></h5>
-                                        <p class="mb-0 text-muted"><i class="bx bx-map text-body align-middle"></i> San
-                                            Marino
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <div class="dropdown">
-                                            <button class="btn btn-soft-primary" type="button" id="dropdownMenuButton16"
-                                                data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class='bx bx-dots-vertical-rounded'></i>
-                                            </button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton16">
-                                                <li><a class="dropdown-item" href="candidate-overview.html">View
-                                                        Details</a>
-                                                </li>
-                                                <li><a class="dropdown-item" href="dashboard-job.html#">Download CV</a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
         <div class="col-lg-12">
             <div class="d-flex">
                 <h4 class="card-title mb-4 flex-grow-1">New Job Vacancy</h4>
@@ -589,9 +387,9 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 
-    <div class="row">
+    {{-- <div class="row">
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-body">
@@ -934,10 +732,10 @@
                     <table class="table table-hover align-middle mb-0">
                         <tbody>
                             @foreach ($userChartData['users'] as $i => $username)
-                            <tr>
-                                <td class="text-center">{{$i+1}}</td>
-                                <td>{{$username}}</td>
-                            </tr>
+                                <tr>
+                                    <td class="text-center">{{$i + 1}}</td>
+                                    <td>{{$username}}</td>
+                                </tr>
                             @endforeach
 
                             {{-- <tr class="row-rank-1">
@@ -1032,59 +830,7 @@
         var orderChartData = @json($orderChartData);
         var userChartData = @json($userChartData);
         var productChartData = @json($productChartData);
-    </script>
-
-    <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
-
-    <script>
-        const fromDateInput = document.getElementById('from_date');
-        const toDateInput = document.getElementById('to_date');
-        const form = document.getElementById('dateRangeForm');
-        const fromDateFeedback = document.getElementById('fromDateFeedback');
-        const toDateFeedback = document.getElementById('toDateFeedback');
-
-        // Set max date to today for both inputs
-        const today = new Date().toISOString().split('T')[0];
-        fromDateInput.setAttribute('max', today);
-        toDateInput.setAttribute('max', today);
-
-        // Validate dates on input change
-        fromDateInput.addEventListener('change', validateDates);
-        toDateInput.addEventListener('change', validateDates);
-
-        // Validate on form submit
-        form.addEventListener('submit', function(e) {
-            if (!validateDates()) {
-                e.preventDefault();
-            }
-        });
-
-        function validateDates() {
-            const fromDate = fromDateInput.value;
-            const toDate = toDateInput.value;
-            let isValid = true;
-
-            // Reset validation states
-            fromDateInput.classList.remove('is-invalid');
-            toDateInput.classList.remove('is-invalid');
-            fromDateFeedback.style.display = 'none';
-            toDateFeedback.style.display = 'none';
-
-            // Check if both dates are selected
-            if (fromDate && toDate) {
-                // Compare dates
-                if (fromDate > toDate) {
-                    toDateInput.classList.add('is-invalid');
-                    toDateFeedback.style.display = 'block';
-                    isValid = false;
-                }
-            }
-
-            return isValid;
-        }
-
-        // Dữ liệu từ PHP
-        const data = {
+        var revenueChartData = {
             day: {
                 labels: @json(array_keys($revenueChartData['dailyData'])),
                 revenue: @json(array_values($revenueChartData['dailyData'])),
@@ -1106,108 +852,7 @@
                 total: {{$revenueChartData['yearlyRevenue']}},
             },
         };
-
-        // default
-        let options = {
-            series: [{
-                name: "Doanh thu",
-                type: "column",
-                data: data.day.revenue
-            }],
-            chart: {
-                height: 350,
-                type: "bar",
-                toolbar: { show: true }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '50%',
-                    endingShape: 'rounded'
-                }
-            },
-            dataLabels: {
-                enabled: false,
-                style: {
-                    colors: ['#000000'],
-                },
-            },
-            stroke: { show: true, width: 2, colors: ['transparent'] },
-            xaxis: {
-                categories: data.day.labels,
-                title: { text: 'Thời gian (Ngày)' }
-            },
-            yaxis: {
-                title: { 
-                    text: 'Doanh thu (VNĐ)',
-                    offsetX: 5,
-                }
-            },
-            fill: { opacity: 1 },
-            tooltip: {
-                y: {
-                    formatter: function (val) {
-                        return val.toLocaleString() + " VNĐ";
-                    }
-                }
-            },
-            colors: ['#556EE6'],
-            title: {
-                text: new Intl.NumberFormat('vi-VN').format(data.day.total) + ' VNĐ'
-            }
-        };
-
-        // Khởi tạo biểu đồ
-        let chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-
-        // Hàm cập nhật biểu đồ
-        function updateChart(timeUnit) {
-            const newData = data[timeUnit];
-
-            let timeTitle;
-
-            switch (timeUnit) {
-                case 'day': {
-                    timeTitle = 'Thời gian (Ngày)'; 
-                    break;
-                }
-
-                case 'week': {
-                    timeTitle = 'Thời gian (Tuần)';
-                    break;
-                }
-
-                case 'month': {
-                    timeTitle = 'Thời gian (Tháng)';
-                    break;
-                }
-
-                case 'year': {
-                    timeTitle = 'Thời gian (Năm)';
-                    break;
-                }
-            }
-
-            chart.updateOptions({
-                xaxis: {
-                    categories: newData.labels,
-                    title: { text: timeTitle }
-                },
-                series: [{ data: newData.revenue }],
-                title: {
-                    // 
-                }
-            });
-
-            // Cập nhật active class
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.classList.remove('active');
-                // if (link.textContent.toLowerCase() === timeUnit) {
-                if (link.getAttribute('data-time') === timeUnit) {
-                    link.classList.add('active');
-                }
-            });
-        }
     </script>
+
+    <script src="{{ asset('assets/theme/admin/js/pages/dashboard-job.init.js') }}"></script>
 @endsection
