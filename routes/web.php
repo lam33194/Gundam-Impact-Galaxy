@@ -32,7 +32,7 @@ Route::get('/{any}', function () {
     return view('index');
 })->where('any', '^(?!admin).*');
 
-Route::prefix('admin')->name('admin.')->group(function() {
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function() {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('categories', CategoryController::class);
@@ -47,7 +47,6 @@ Route::prefix('admin')->name('admin.')->group(function() {
     Route::resource('comments', CommentController::class);
     Route::resource('posts', PostController::class);
 
-
     Route::post('/vouchers/{id}/toggle', [VoucherController::class, 'toggleStatus'])->name('vouchers.toggle');
 
     Route::controller(StatController::class)->group(function() {
@@ -59,15 +58,23 @@ Route::prefix('admin')->name('admin.')->group(function() {
         Route::get('product_statistics', 'index')->name('product_statistics.index');
     });
 
-    Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login');
-    Route::post('/login', [LoginController::class, 'login']);
-
     Route::post('orders/{order}/confirm', [OrderController::class, 'confirm'])->name('orders.confirm');
     Route::post('orders-bulk', [OrderController::class, 'bulkAction'])->name('orders.bulk');
 
-    Route::get('test', function() {
-        return view('admin.test', [
-            'user' => App\Models\User::find(12),
-        ]);
-    });
+    Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [LoginController::class, 'showFormLogin'])->name('login')->middleware('guest');
+    Route::post('/login', [LoginController::class, 'login']);
+});
+
+Route::get('test', function() {
+
+    $user = auth('sanctum')->user();
+
+    return view('admin.test', [
+        'user' => $user,
+    ]);
 });

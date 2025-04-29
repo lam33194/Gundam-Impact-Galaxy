@@ -27,19 +27,29 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
 
             /** @var User $user */
             $user = Auth::user();
 
-            $redirectRoute = $user->isAdmin() ? 'admin.dashboard' : 'login';
+            if ($user->isAdmin()) {
 
-            Toastr::success(null, self::LOGIN_MESSAGE);
+                $request->session()->regenerate();
 
-            return redirect()->route($redirectRoute);
+                Toastr::success(null, self::LOGIN_MESSAGE);
+
+                return redirect()->intended(route('admin.dashboard'));
+
+            } else {
+
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect()->to('/');
+            }
         }
 
-        return back()->withErrors(['email' => __('auth.failed')])->onlyInput('email');
+        return back()->withErrors(['email' => 'Thông tin đăng nhập không chính xác'])->onlyInput('email');
     }
     public function logout(){
         Auth::logout();
