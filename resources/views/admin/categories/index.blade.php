@@ -42,7 +42,7 @@
                         </div><!-- end col-->
                     </div>
 
-                    <div class="table-responsive min-vh-100">
+                    <div class="table-responsive">
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>

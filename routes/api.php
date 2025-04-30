@@ -35,6 +35,8 @@ Route::prefix('v1')->group(function () {
         Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
         // Sản phẩm bán chạy
         Route::get('getTopSellingProducts', 'getTopSellingProducts');
+        // Sản phẩm liên quan
+        Route::get('products/{slug}/related', 'getRelatedProducts');
     });
 
     Route::controller(CommentController::class)->group(function () {
@@ -86,6 +88,8 @@ Route::prefix('v1')->group(function () {
         Route::get('users/{id}', 'show');
         // Cập nhật thông tin user
         Route::put('users',      'update')->middleware('auth:sanctum');
+        // Get Current Login User
+        Route::get('current-user', 'getCurrentUser')->middleware('auth:sanctum');
     });
 
     Route::controller(UserAddressController::class)->group(function () {

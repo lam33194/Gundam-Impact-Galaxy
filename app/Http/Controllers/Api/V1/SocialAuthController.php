@@ -48,7 +48,7 @@ class SocialAuthController extends Controller
                 }
             }
 
-            return redirect()->to('login-success/' . $user->createToken('token-google-login')->plainTextToken);
+            return redirect()->to('login-success?token=' . $user->createToken('token-google-login')->plainTextToken);
 
         } catch (\Exception $e) {
             return $this->error('Xác thực thất bại',401,[
