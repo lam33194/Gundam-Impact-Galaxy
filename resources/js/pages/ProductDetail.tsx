@@ -28,10 +28,16 @@ import ico_sv2 from '../assets/ico_sv2.webp';
 import ico_sv3 from '../assets/ico_sv3.webp';
 import ico_sv4 from '../assets/ico_sv4.png';
 import CommentForm from "../components/CommentForm";
-
+import ConfirmModal from "../components/ConfirmModal";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 const ProductDetail = () => {
     const nav = useNavigate();
+    const { updateCartCount } = useCart();
+    const { isAuthenticated } = useAuth();
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [pendingAction, setPendingAction] = useState<'buy' | 'cart' | null>(null);
 
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -296,13 +302,19 @@ const ProductDetail = () => {
         }
     };
 
-    const updateCart = async (index?: any) => {
-        try {
-            if (!selectedSize || !selectedColor) {
-                toast.error("Vui lòng chọn kích thước và màu sắc!");
-                return;
-            }
+    const updateCart = async (index?: number) => {
+        if (!selectedSize || !selectedColor) {
+            toast.error("Vui lòng chọn kích thước và màu sắc!");
+            return;
+        }
 
+        if (!isAuthenticated) {
+            setPendingAction(index === -1 ? 'buy' : 'cart');
+            setShowLoginModal(true);
+            return;
+        }
+
+        try {
             const selectedVariant = product.variants.find(
                 (v: { size: { id: number }; color: { id: number } }) =>
                     v.size.id === selectedSize && v.color.id === selectedColor
@@ -320,6 +332,7 @@ const ProductDetail = () => {
 
             if (res?.data) {
                 toast.success("Đã thêm vào giỏ hàng!");
+                await updateCartCount();
             }
             if (index === -1) {
                 nav("/cart");
@@ -331,6 +344,12 @@ const ProductDetail = () => {
                 "Có lỗi xảy ra, vui lòng thử lại!";
             toast.error(errorMessage);
         }
+    };
+
+    const handleLoginConfirm = () => {
+        setShowLoginModal(false);
+        const currentPath = window.location.pathname;
+        nav(`/login?prevUrl=${encodeURIComponent(currentPath)}`);
     };
 
     const getRelated = async () => {
@@ -958,6 +977,16 @@ const ProductDetail = () => {
                 </div>
             </div>
             <CommentForm onCloseForm={onCloseForm} onUpdateComment={onUpdateComment} comment={updateComment} isOpen={showCommentForm} onClose={() => { setShowCommentForm(false); setOpacity(1) }} />
+            <ConfirmModal
+                show={showLoginModal}
+                onHide={() => setShowLoginModal(false)}
+                onConfirm={handleLoginConfirm}
+                title="Yêu cầu đăng nhập"
+                message={`Bạn cần đăng nhập để ${pendingAction === 'buy' ? 'mua sản phẩm này' : 'thêm vào giỏ hàng'}. Bạn có muốn đăng nhập ngay?`}
+                confirmText="Đăng nhập"
+                confirmVariant="primary"
+                size="lg"
+            />
         </>
     );
 };

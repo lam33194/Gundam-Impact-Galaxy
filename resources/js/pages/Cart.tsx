@@ -5,6 +5,8 @@ import { FormatCurrency } from "../utils/FormatCurrency";
 import { toast } from "react-toastify";
 import useDebounce from "../hooks/useDebounce";
 import { STORAGE_URL } from "../utils/constants";
+import { useCart } from "../context/CartContext";
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
@@ -12,6 +14,8 @@ const Cart = () => {
     const [isUpdating, setIsUpdating] = useState(false);
     const [pendingUpdates, setPendingUpdates] = useState<Record<number, number>>({});
     const [originalQuantities, setOriginalQuantities] = useState<Record<number, number>>({});
+    const { updateCartCount } = useCart();
+    const navigate = useNavigate();
 
     const debouncedUpdates = useDebounce(pendingUpdates, 1500);
 
@@ -23,8 +27,8 @@ const Cart = () => {
                 let t = 0;
                 const originalQtys: Record<number, number> = {};
                 res.data.data.forEach((element: any) => {
-                    let tempPrice = element.variant.product.price_sale != 0 
-                        ? element.variant.product.price_sale 
+                    let tempPrice = element.variant.product.price_sale != 0
+                        ? element.variant.product.price_sale
                         : element.variant.product.price_regular;
 
                     t += Number(tempPrice) * Number(element.quantity);
@@ -36,11 +40,11 @@ const Cart = () => {
         } catch (error) { }
     };
 
-    const redirectToDetail = (slug: any) => {
-        window.location.href = "/product/" + slug;
+    const redirectToDetail = (slug: string) => {
+        navigate(`/product/${slug}`);
     };
 
-    const handleQuantityChange = (itemId: number, newQuantity: number) => {
+    const handleQuantityChange = async (itemId: number, newQuantity: number) => {
         const currentQuantity = pendingUpdates[itemId] ?? cart.find((item: any) => item.id === itemId)?.quantity ?? 0;
 
         const updatedQuantity = newQuantity === currentQuantity + 1 ? currentQuantity + 1 :
@@ -52,23 +56,6 @@ const Cart = () => {
             [itemId]: updatedQuantity
         }));
         setIsUpdating(true);
-
-        // const updatedCart = cart.map((item: any) => {
-        //     if (item.id === itemId) {
-        //         return {
-        //             ...item,
-        //             quantity: updatedQuantity
-        //         };
-        //     }
-        //     return item;
-        // });
-
-        // let newTotal = 0;
-        // updatedCart.forEach((element: any) => {
-        //     newTotal += Number(element.variant.product.price_sale) *
-        //         (element.id === itemId ? updatedQuantity : element.quantity);
-        // });
-        // setTotal(newTotal);
     };
 
     useEffect(() => {
@@ -80,6 +67,7 @@ const Cart = () => {
                         await updateCart(quantity, Number(itemId));
                     }
                     await getCartDetail();
+                    await updateCartCount();
                     toast.success("Cập nhật giỏ hàng thành công!");
                     setPendingUpdates({});
                 } catch (error) {
@@ -143,7 +131,7 @@ const Cart = () => {
                                 </td>
                             </tr>
                         ) : (
-                            cart.map((p : any, index) => {
+                            cart.map((p: any, index) => {
                                 const product_price = p.variant.product.price_sale != 0 ? p.variant.product.price_sale : p.variant.product.price_regular;
                                 return (
                                     <tr key={index}>
@@ -155,15 +143,19 @@ const Cart = () => {
                                                         redirectToDetail(p.variant.product.slug)
                                                     }
                                                     style={{
-                                                        backgroundImage: p.variant.image == null 
-                                                        ? `url(${STORAGE_URL + p.variant.product?.thumb_image})`
-                                                        : `url(${STORAGE_URL + p.variant?.image})`,
+                                                        backgroundImage: p.variant.image == null
+                                                            ? `url(${STORAGE_URL + p.variant.product?.thumb_image})`
+                                                            : `url(${STORAGE_URL + p.variant?.image})`,
                                                         cursor: 'pointer',
                                                     }}
                                                 ></div>
 
                                                 <div className="info d-flex flex-column justify-content-center align-items-start">
-                                                    <span className="product-name mb-1">
+                                                    <span
+                                                        className="product-name mb-1"
+                                                        onClick={() => redirectToDetail(p.variant.product.slug)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
                                                         {p.variant.product.name}
                                                     </span>
                                                     <div className="product-variants d-flex gap-2 mb-2">

@@ -299,6 +299,7 @@ function Profile() {
                 confirmText="Xoá"
                 loadingText="Đang xoá..."
                 confirmVariant="danger"
+                size="lg"
             />
         </div>
     );

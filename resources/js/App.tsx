@@ -20,6 +20,7 @@ import ChangePassword from './pages/ChangePassword';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
 import { LoginSuccess } from './pages/LoginSuccess';
+import { CartProvider } from './context/CartContext';
 
 function App() {
     return (
@@ -27,63 +28,69 @@ function App() {
             <ToastContainer />
             <BrowserRouter>
                 <AuthProvider>
-                    <Routes>
-                        <Route path="/" element={<Layout />}>
-                            <Route index element={<Home />} />
-                            <Route path="/home" element={<Navigate to="/" replace />} />
-                            <Route path="/product/:slug" element={<ProductDetail />} />
-                            <Route path="/blog-detail" element={<BlogDetail />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path='/login' element={
-                                <AuthRoute>
-                                    <Login />
-                                </AuthRoute>
-                            } />
+                    <CartProvider>
+                        <Routes>
+                            <Route path="/" element={<Layout />}>
+                                <Route index element={<Home />} />
+                                <Route path="/home" element={<Navigate to="/" replace />} />
+                                <Route path="/product/:slug" element={<ProductDetail />} />
+                                <Route path="/blog-detail" element={<BlogDetail />} />
+                                <Route path='/login' element={
+                                    <AuthRoute>
+                                        <Login />
+                                    </AuthRoute>
+                                } />
 
-                              <Route path='/login-success' element={
-                                <AuthRoute>
-                                    <LoginSuccess />
-                                </AuthRoute>
-                            } />
-                            <Route path='/signup' element={
-                                <AuthRoute>
-                                    <Signup />
-                                </AuthRoute>
-                            } />
-                            <Route path='/checkout' element={
-                                <ProtectedRoute>
-                                    <Checkout />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/blog-list' element={<BlogList />} />
-                            <Route path='/search' element={<Search />} />
-                            <Route path='/order-history' element={
-                                <ProtectedRoute>
-                                    <OrderHistory />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/profile' element={
-                                <ProtectedRoute>
-                                    <Profile />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/change-password' element={
-                                <ProtectedRoute>
-                                    <ChangePassword />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/forget-password' element={
-                                <AuthRoute>
-                                    <ForgetPassword />
-                                </AuthRoute>
-                            } />
-                            <Route path='/reset-password' element={
-                                <AuthRoute>
-                                    <ResetPassword />
-                                </AuthRoute>
-                            } />
-                        </Route>
-                    </Routes>
+                                <Route path='/login-success' element={
+                                    <AuthRoute>
+                                        <LoginSuccess />
+                                    </AuthRoute>
+                                } />
+                                <Route path='/signup' element={
+                                    <AuthRoute>
+                                        <Signup />
+                                    </AuthRoute>
+                                } />
+                                <Route path="/cart" element={
+                                    <ProtectedRoute>
+                                        <Cart />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/checkout' element={
+                                    <ProtectedRoute>
+                                        <Checkout />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/blog-list' element={<BlogList />} />
+                                <Route path='/search' element={<Search />} />
+                                <Route path='/order-history' element={
+                                    <ProtectedRoute>
+                                        <OrderHistory />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/profile' element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/change-password' element={
+                                    <ProtectedRoute>
+                                        <ChangePassword />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/forget-password' element={
+                                    <AuthRoute>
+                                        <ForgetPassword />
+                                    </AuthRoute>
+                                } />
+                                <Route path='/reset-password' element={
+                                    <AuthRoute>
+                                        <ResetPassword />
+                                    </AuthRoute>
+                                } />
+                            </Route>
+                        </Routes>
+                    </CartProvider>
                 </AuthProvider>
             </BrowserRouter>
         </div>
