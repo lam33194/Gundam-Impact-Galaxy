@@ -62,3 +62,11 @@ export const resetPassword = (data: any): Promise<any> => {
     });
 };
 
+export const loginByGoogle = (): Promise<any> =>{
+     return customizeAxios.get('/api/v1/auth/google-login')
+}
+
+export const fetchCurrentUser = (): Promise<any> =>{
+    return customizeAxios.get('/api/v1/current-user')
+}
+

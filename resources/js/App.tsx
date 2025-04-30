@@ -19,6 +19,7 @@ import OrderHistory from './pages/OrderHistory';
 import ChangePassword from './pages/ChangePassword';
 import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
+import { LoginSuccess } from './pages/LoginSuccess';
 
 function App() {
     return (
@@ -36,6 +37,12 @@ function App() {
                             <Route path='/login' element={
                                 <AuthRoute>
                                     <Login />
+                                </AuthRoute>
+                            } />
+
+                              <Route path='/login-success' element={
+                                <AuthRoute>
+                                    <LoginSuccess />
                                 </AuthRoute>
                             } />
                             <Route path='/signup' element={

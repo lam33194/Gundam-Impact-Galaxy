@@ -2,7 +2,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { useEffect, useState } from "react";
-import { authenticate } from "../services/AuthService";
+import { authenticate, loginByGoogle } from "../services/AuthService";
 import { useAuth } from "../context/AuthContext";
 
 interface LoginResponse {
@@ -21,7 +21,7 @@ interface LoginResponse {
   1: string;
 }
 
-function Login() {
+const Login = ()=> {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,6 +56,17 @@ function Login() {
       }
     }
   };
+
+  const loginGoogle = async() =>{
+    try {
+      const res = await loginByGoogle();
+      if (res && res.data){
+        window.location.href = res.data.data;
+      }
+    } catch (error) {
+      
+    }
+  }
 
   useEffect(() => {
     if (location.state?.email && location.state?.password) {
@@ -118,7 +129,7 @@ function Login() {
           </button>
 
 
-          <button className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
+          <button onClick={loginGoogle} className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
             <i className="fab fa-google me-2"></i> <span>Google</span>
           </button>
 
