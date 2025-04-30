@@ -46,3 +46,7 @@ export const deleteCommentOfProduct = (commentId: any): Promise<any> => {
     return customizeAxios.delete(`/api/v1/comments/${commentId}`);
 }
 
+export const getRelatedProducts = (slug: string): Promise<any> => {
+    return customizeAxios.get(`/api/v1/products/${slug}/related`);
+};
+
