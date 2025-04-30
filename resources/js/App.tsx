@@ -35,7 +35,6 @@ function App() {
                                 <Route path="/home" element={<Navigate to="/" replace />} />
                                 <Route path="/product/:slug" element={<ProductDetail />} />
                                 <Route path="/blog-detail" element={<BlogDetail />} />
-                                <Route path="/cart" element={<Cart />} />
                                 <Route path='/login' element={
                                     <AuthRoute>
                                         <Login />
@@ -51,6 +50,11 @@ function App() {
                                     <AuthRoute>
                                         <Signup />
                                     </AuthRoute>
+                                } />
+                                <Route path="/cart" element={
+                                    <ProtectedRoute>
+                                        <Cart />
+                                    </ProtectedRoute>
                                 } />
                                 <Route path='/checkout' element={
                                     <ProtectedRoute>
