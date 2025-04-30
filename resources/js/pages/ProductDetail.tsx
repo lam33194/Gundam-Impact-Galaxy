@@ -248,6 +248,22 @@ const ProductDetail = () => {
         return [...new Map(colors.map((c: { id: any }) => [c.id, c])).values()];
     };
 
+    const getAvailableSizes = (selectedColorId: number | null) => {
+        if (!product?.variants) return [];
+        const availableSizes = product.variants
+            .filter((v: { color: { id: number; }; }) => !selectedColorId || v.color.id === selectedColorId)
+            .map((v: { size: any; }) => v.size);
+        return [...new Map(availableSizes.map((s: { id: any; }) => [s.id, s])).values()];
+    };
+
+    const getAvailableColors = (selectedSizeId: number | null) => {
+        if (!product?.variants) return [];
+        const availableColors = product.variants
+            .filter((v: { size: { id: number; }; }) => !selectedSizeId || v.size.id === selectedSizeId)
+            .map((v: { color: any; }) => v.color);
+        return [...new Map(availableColors.map((c: { id: any; }) => [c.id, c])).values()];
+    };
+
     const getProductDetail = async () => {
         try {
             const res = await getDetail(slug);
@@ -337,14 +353,6 @@ const ProductDetail = () => {
             getRelated();
         }
     }, [slug]);
-
-    useEffect(() => {
-        if (product?.variants && product.variants.length > 0) {
-            const firstVariant = product.variants[0];
-            setSelectedSize(firstVariant.size.id);
-            setSelectedColor(firstVariant.color.id);
-        }
-    }, [product]);
 
     useEffect(() => {
         getAllVouchers();
@@ -473,16 +481,20 @@ const ProductDetail = () => {
                         <div className="variant-selection mb-3">
                             <span className="d-block mb-2">Kích thước:</span>
                             <div className="size-options d-flex gap-2 flex-wrap">
-                                {getUniqueSizes().map((size: any) => (
-                                    <button
-                                        key={size.id}
-                                        className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
-                                            }`}
-                                        onClick={() => setSelectedSize(size.id)}
-                                    >
-                                        {size.name}
-                                    </button>
-                                ))}
+                                {getUniqueSizes().map((size: any) => {
+                                    const isAvailable = getAvailableSizes(selectedColor).some(s => s.id === size.id);
+                                    return (
+                                        <button
+                                            key={size.id}
+                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
+                                                }`}
+                                            onClick={() => setSelectedSize(size.id)}
+                                            disabled={!isAvailable}
+                                        >
+                                            {size.name}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -490,28 +502,30 @@ const ProductDetail = () => {
                         <div className="variant-selection mb-3">
                             <span className="d-block mb-2">Màu sắc:</span>
                             <div className="color-options d-flex gap-2 flex-wrap">
-                                {getUniqueColors().map((color: any) => (
-                                    <button
-                                        key={color.id}
-                                        className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id
-                                            ? "active"
-                                            : ""
-                                            }`}
-                                        onClick={() => setSelectedColor(color.id)}
-                                    >
-                                        <span
-                                            className="color-preview"
-                                            style={{
-                                                width: "20px",
-                                                height: "20px",
-                                                borderRadius: "50%",
-                                                backgroundColor: color.code,
-                                                border: "1px solid #dee2e6",
-                                            }}
-                                        ></span>
-                                        {color.name}
-                                    </button>
-                                ))}
+                                {getUniqueColors().map((color: any) => {
+                                    const isAvailable = getAvailableColors(selectedSize).some(c => c.id === color.id);
+                                    return (
+                                        <button
+                                            key={color.id}
+                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id ? "active" : ""
+                                                }`}
+                                            onClick={() => setSelectedColor(color.id)}
+                                            disabled={!isAvailable}
+                                        >
+                                            <span
+                                                className="color-preview"
+                                                style={{
+                                                    width: "20px",
+                                                    height: "20px",
+                                                    borderRadius: "50%",
+                                                    backgroundColor: color.code,
+                                                    border: "1px solid #dee2e6",
+                                                }}
+                                            ></span>
+                                            {color.name}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                         {/* Hiển thị tồn kho ? */}
@@ -558,6 +572,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-10 d-flex flex-column"
                                 onClick={() => updateCart(-1)}
+                                disabled={!selectedSize || !selectedColor}
                             >
                                 <span>Thanh toán online hoặc ship COD</span>
                                 <span className="fw-bold">Mua ngay</span>
@@ -565,6 +580,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-2"
                                 onClick={() => updateCart()}
+                                disabled={!selectedSize || !selectedColor}
                             >
                                 <i className="fa-solid fa-cart-shopping"></i>
                             </button>

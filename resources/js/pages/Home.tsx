@@ -14,9 +14,9 @@ import ico_sv3 from '../assets/ico_sv3.webp';
 import ico_sv4 from '../assets/ico_sv4.png';
 
 function Home() {
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<any[]>([]);
     const [revenueProducts, setRevenueProducts] = useState([]);
-    const [sellingProducts, setSellingProducts] = useState([]);
+    const [sellingProducts, setSellingProducts] = useState<any[]>([]);
     const [vouchers, setVouchers] = useState([]);
 
     const containerId = 'voucherList';
