@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import useDebounce from "../hooks/useDebounce";
 import { STORAGE_URL } from "../utils/constants";
 import { useCart } from "../context/CartContext";
+import { useNavigate } from 'react-router-dom';
 
 const Cart = () => {
     const [cart, setCart] = useState([]);
@@ -14,6 +15,7 @@ const Cart = () => {
     const [pendingUpdates, setPendingUpdates] = useState<Record<number, number>>({});
     const [originalQuantities, setOriginalQuantities] = useState<Record<number, number>>({});
     const { updateCartCount } = useCart();
+    const navigate = useNavigate();
 
     const debouncedUpdates = useDebounce(pendingUpdates, 1500);
 
@@ -38,8 +40,8 @@ const Cart = () => {
         } catch (error) { }
     };
 
-    const redirectToDetail = (slug: any) => {
-        window.location.href = "/product/" + slug;
+    const redirectToDetail = (slug: string) => {
+        navigate(`/product/${slug}`);
     };
 
     const handleQuantityChange = async (itemId: number, newQuantity: number) => {
@@ -149,7 +151,11 @@ const Cart = () => {
                                                 ></div>
 
                                                 <div className="info d-flex flex-column justify-content-center align-items-start">
-                                                    <span className="product-name mb-1">
+                                                    <span
+                                                        className="product-name mb-1"
+                                                        onClick={() => redirectToDetail(p.variant.product.slug)}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
                                                         {p.variant.product.name}
                                                     </span>
                                                     <div className="product-variants d-flex gap-2 mb-2">
