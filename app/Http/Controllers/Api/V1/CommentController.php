@@ -131,4 +131,5 @@ class CommentController extends Controller
 
         $comment->unsetRelation('commentImages');
     }
+
 }
