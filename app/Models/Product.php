@@ -109,6 +109,10 @@ class Product extends Model
     }
 
     // Scope
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
     public function scopeNameFilter($query, $name)
     {
         return $query->where('name', 'LIKE', "%$name%");
@@ -121,14 +125,28 @@ class Product extends Model
     {
         return $query->where('sku', $sku);
     }
+    public function scopeTagFilter($query, array $tags)
+    {
+        // Giả sử tags được gửi dưới dạng slug hoặc tên, cần lấy ID của tags
+        $tagIds = Tag::whereIn('id', $tags)
+            ->orWhereIn('name', $tags)
+            ->pluck('id')->toArray();
+
+        if (empty($tagIds)) {
+            return $query;
+        }
+
+        // Lọc sản phẩm có tất cả các tag được yêu cầu
+        $query->whereHas('tags', function ($q) use ($tagIds) {
+            $q->whereIn('tags.id', $tagIds);
+        }, '=', count($tagIds));
+    }
     public function scopePriceRangeFilter($query, $minPrice, $maxPrice)
     {
-        if ($minPrice !== null) {
-            $query->where('price_regular', '>=', $minPrice);
-        }
-        if ($maxPrice !== null) {
-            $query->where('price_regular', '<=', $maxPrice);
-        }
+        $query->whereRaw(
+            '(CASE WHEN price_sale IS NOT NULL AND price_sale != 0 THEN price_sale ELSE price_regular END) BETWEEN ? AND ?',
+            [$minPrice ?? 0, $maxPrice ?? PHP_INT_MAX]
+        );
         return $query;
     }
 

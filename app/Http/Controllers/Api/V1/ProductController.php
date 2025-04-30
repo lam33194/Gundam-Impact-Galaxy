@@ -25,7 +25,7 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::query()->select(
+        $products = Product::query()->active()->select(
             'id',
             'category_id',
             'name',
@@ -135,11 +135,6 @@ class ProductController extends Controller
             $product->nameFilter($queryParams['name']);
         }
 
-        // Tìm kiếm theo slug
-        if (!empty($queryParams['slug'])) {
-            $product->slugFilter($queryParams['slug']);
-        }
-
         // Tìm kiếm theo sku
         if (!empty($queryParams['sku'])) {
             $product->skuFilter($queryParams['sku']);
@@ -150,13 +145,57 @@ class ProductController extends Controller
             $product->priceRangeFilter($queryParams['min_price'] ?? null, $queryParams['max_price'] ?? null);
         }
 
-        $boolean_fields = ['is_active', 'is_hot_deal', 'is_good_deal', 'is_new', 'is_show_home'];
+        // $boolean_fields = ['is_active', 'is_hot_deal', 'is_good_deal', 'is_new', 'is_show_home'];
 
-        foreach ($boolean_fields as $field) {
-            if (isset($queryParams[$field])) {
-                $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
-            }
+        // foreach ($boolean_fields as $field) {
+        //     if (isset($queryParams[$field])) {
+        //         $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
+        //     }
+        // }
+
+        // Lọc theo tags
+        if (!empty($queryParams['tags'])) {
+            $tags = is_array($queryParams['tags']) ? $queryParams['tags'] : explode(',', $queryParams['tags']);
+            $product->tagFilter($tags);
         }
+    }
+    
+    public function getRelatedProducts(string $slug)
+    {
+        $product = Product::with(['tags', 'category'])->whereSlug($slug)->first();
+
+        if(!$product) return $this->not_found('Sản phẩm không tồn tại');
+
+        // Lấy 8 sản phẩm liên quan
+        $relateProducts = Product::active()->select(
+            'id',
+            'category_id',
+            'name',
+            'slug',
+            'sku',
+            'thumb_image',
+            'price_regular',
+            'price_sale',
+        )->where('id', '!=', $product->id)
+            ->where(function ($query) use ($product) {
+                // Sản phẩm chung danh mục
+                if ($product->category) {
+                    $query->orWhere('category_id', $product->category->id);
+                }
+
+                // Sản phẩm chung tag
+                if ($product->tags->isNotEmpty()) {
+                    $tagIds = $product->tags->pluck('id')->toArray();
+                    $query->orWhereHas('tags', function ($q) use ($tagIds) {
+                        $q->whereIn('tags.id', $tagIds);
+                    });
+                }
+            })
+            ->with(['tags', 'category'])
+            ->take(8)
+            ->get();
+
+        return $this->ok('Lấy sản phẩm liên quan thành công', $relateProducts);
     }
 
     // private function loadSubRelations($user, bool $isInstance = false)
