@@ -21,11 +21,14 @@ interface LoginResponse {
   1: string;
 }
 
-const Login = ()=> {
+const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { login } = useAuth();
+
+  const searchParams = new URLSearchParams(location.search);
+  const prevUrl = searchParams.get('prevUrl');
+
   const [formData, setFormData] = useState({
     email: location.state?.email || "",
     password: location.state?.password || ""
@@ -45,9 +48,17 @@ const Login = ()=> {
       const response = await authenticate(formData);
       const data = response.data as LoginResponse;
 
-      login(data[0], data[1]);
+      // Lưu URL trước khi login
+      const redirectUrl = prevUrl ? decodeURIComponent(prevUrl) : '/';
 
-      navigate('/');
+      // Login và đợi hoàn thành
+      await login(data[0], data[1]);
+
+      // Thêm setTimeout để đảm bảo state đã được cập nhật
+      setTimeout(() => {
+        navigate(redirectUrl);
+      }, 100);
+
     } catch (error: any) {
       if (error.response?.status === 401) {
         alert(error.response.data.message);
@@ -57,16 +68,21 @@ const Login = ()=> {
     }
   };
 
-  const loginGoogle = async() =>{
+  const loginGoogle = async () => {
     try {
       const res = await loginByGoogle();
-      if (res && res.data){
-        window.location.href = res.data.data;
+      if (res && res.data) {
+        const redirectUrl = res.data.data;
+        if (prevUrl) {
+          window.location.href = `${redirectUrl}&state=${encodeURIComponent(prevUrl)}`;
+        } else {
+          window.location.href = redirectUrl;
+        }
       }
     } catch (error) {
-      
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     if (location.state?.email && location.state?.password) {
@@ -78,7 +94,6 @@ const Login = ()=> {
   }, [location]);
 
   return (
-
     <div className="login-container d-flex m-auto row col-lg-8">
       <div className="left d-flex flex-column col-lg-8 p-5 gap-3">
         <form onSubmit={handleSubmit}>
@@ -128,11 +143,9 @@ const Login = ()=> {
             <i className="fab fa-facebook-f me-2"></i> <span>Facebook</span>
           </button>
 
-
           <button onClick={loginGoogle} className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
             <i className="fab fa-google me-2"></i> <span>Google</span>
           </button>
-
         </div>
         <h6 className="text-center">
           Bạn quên mật khẩu nhấn <a href="/forget-password">vào đây</a>

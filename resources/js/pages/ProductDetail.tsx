@@ -348,7 +348,8 @@ const ProductDetail = () => {
 
     const handleLoginConfirm = () => {
         setShowLoginModal(false);
-        nav('/login');
+        const currentPath = window.location.pathname;
+        nav(`/login?prevUrl=${encodeURIComponent(currentPath)}`);
     };
 
     const getRelated = async () => {
