@@ -64,7 +64,6 @@ const ProductDetail = () => {
     const [hoverRating, setHoverRating] = useState(0);
     const [images, setImages] = useState<any>([]);
     const [imagePreviews, setImagePreviews] = useState<any>([]);
-    const [vouchers, setVouchers] = useState([]);
     const [validVouchers, setValidVouchers] = useState([]);
     const { slug } = useParams();
     const [quantity, setQuantity] = useState(1);
@@ -482,7 +481,7 @@ const ProductDetail = () => {
                             <span className="d-block mb-2">Kích thước:</span>
                             <div className="size-options d-flex gap-2 flex-wrap">
                                 {getUniqueSizes().map((size: any) => {
-                                    const isAvailable = getAvailableSizes(selectedColor).some(s => s.id === size.id);
+                                    const isAvailable = getAvailableSizes(selectedColor).some((s: any) => s.id === size.id);
                                     return (
                                         <button
                                             key={size.id}
@@ -503,7 +502,7 @@ const ProductDetail = () => {
                             <span className="d-block mb-2">Màu sắc:</span>
                             <div className="color-options d-flex gap-2 flex-wrap">
                                 {getUniqueColors().map((color: any) => {
-                                    const isAvailable = getAvailableColors(selectedSize).some(c => c.id === color.id);
+                                    const isAvailable = getAvailableColors(selectedSize).some((c: any) => c.id === color.id);
                                     return (
                                         <button
                                             key={color.id}
