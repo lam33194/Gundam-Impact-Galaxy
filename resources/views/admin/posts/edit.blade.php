@@ -36,13 +36,12 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3 col-11">
                             <label class="form-label">Nội dung</label>
-                            <textarea name="content" class="form-control" rows="10" placeholder="Nhập nội dung bài viết...">{{ old('content', $post->content) }}</textarea>
+                            <textarea id="elm1" rows="1"
+                                name="content">{{ old('content') ?? $post->content }}</textarea>
                             @error('content')
-                            <div class="text-danger fst-italic mt-2">
-                                * {{ $message }}
-                            </div>
+                                <div class="text-danger fst-italic">*{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -76,4 +75,34 @@
         </form>
     </div>
 </div>
+@endsection
+
+@section('script')
+    <script>
+        const post = {!! json_encode($post) !!};
+
+        $(document).ready(function () {
+
+            tinymce.init({
+                selector: "textarea#elm1",
+                height: 700,
+                plugins: [
+                    "advlist", "autolink", "lists", "link", "image", "charmap", "preview",
+                    "anchor", "searchreplace", "visualblocks", "code", "fullscreen",
+                    "insertdatetime", "media", "table", "help", "wordcount"
+                ],
+                toolbar: "undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help",
+                content_style: 'body { font-family:"Poppins",sans-serif; font-size:16px }',
+                setup: function (editor) {
+                    editor.on('init', function () {
+                        if (post && post.content) {
+                            editor.setContent(post.content);
+                        }
+                    });
+                }
+            });
+        })
+
+    </script>
+    <script src="https://themesbrand.com/skote/layouts/assets/libs/tinymce/tinymce.min.js"></script>
 @endsection

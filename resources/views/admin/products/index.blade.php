@@ -146,15 +146,13 @@
                                                 </td> --}}
                                                 <td>{{$product->id}}</td>
                                                 <td>
+                                                    <a href="{{ route('admin.products.show', $product->id) }}">
                                                     @if ($product->thumb_image && Storage::exists($product->thumb_image))
-                                                        <a href="{{ route('admin.products.show', $product->id) }}">
-                                                            <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}"
-                                                                width="50" height="auto">
-                                                        </a>
+                                                        <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}" width="50" height="auto">
                                                     @else
-                                                        <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" width="50"
-                                                            height="auto">
+                                                        <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" width="50" height="auto">
                                                     @endif
+                                                    </a>
                                                 </td>
                                                 <td>{{ Str::length($product->name) > 20 ? Str::limit($product->name, 20, '...') : $product->name }}
                                                 </td>

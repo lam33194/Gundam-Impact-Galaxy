@@ -158,52 +158,6 @@
                 </div>
             </div>
 
-            <!-- description -->
-            <div class="card">
-                <h4 class="mb-sm-0 font-size-18 card-header">Mô tả</h4>
-                <div class="card-body">
-                    <!-- Product Description -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0 font-size-15">Mô tả ngắn</h5>
-                                </div>
-                                <div class="card-body">
-                                    @if($product->description)
-                                        <div class="border p-3 rounded">
-                                            {!! $product->description !!}
-                                        </div>
-                                    @else
-                                        <div class="alert alert-info mb-0">Chưa có mô tả</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product Content -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0 font-size-15">Nội dung chi tiết</h5>
-                                </div>
-                                <div class="card-body">
-                                    @if($product->content)
-                                        <div class="border p-3 rounded">
-                                            <p>{!! $product->content !!}</p>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-info mb-0">Chưa có nội dung chi tiết</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <!-- galleries -->
             <div class="card">
                 <h4 class="mb-sm-0 font-size-18 card-header">Ảnh sản phẩm</h4>
@@ -302,6 +256,52 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- description -->
+            <div class="card">
+                <h4 class="mb-sm-0 font-size-18 card-header">Mô tả</h4>
+                <div class="card-body">
+                    <!-- Product Description -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 font-size-15">Mô tả ngắn</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if($product->description)
+                                        <div class="border p-3 rounded">
+                                            {!! $product->description !!}
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info mb-0">Chưa có mô tả</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 font-size-15">Nội dung chi tiết</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if($product->content)
+                                        <div class="border p-3 rounded">
+                                            <p>{!! $product->content !!}</p>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info mb-0">Chưa có nội dung chi tiết</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

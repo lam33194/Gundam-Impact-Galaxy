@@ -73,7 +73,8 @@ if (!function_exists('matchStatusPayMent')) {
     {
         return match ($status) {
             'unpaid' => "Chưa thanh toán",
-            'paid' => "Đã thanh toán"
+            'paid' => "Đã thanh toán",
+            'failed' => "Thanh toán thất bại",
         };
     }
 }
@@ -96,8 +97,9 @@ if (!function_exists('statusPaymentClass')) {
     function statusPaymentClass($status)
     {
         return match ($status) {
-            'unpaid' => 'bg-danger text-white',
-            'paid' => 'bg-primary text-white'
+            'unpaid' => 'bg-secondary text-white',
+            'paid' => 'bg-primary text-white',
+            'failed' => 'bg-danger text-white',
         };
     }
 }

@@ -383,9 +383,8 @@
         <div class="dropdown d-inline-block">
             <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="rounded-circle header-profile-user" src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}"
-                    alt="Header Avatar">
-                <span class="d-none d-xl-inline-block ms-1" key="t-henry">gundam</span>
+                <img class="rounded-circle header-profile-user" src="{{ asset('assets\default-avatar.png') }}" alt="Header Avatar">
+                <span class="d-none d-xl-inline-block ms-1" key="t-henry">{{ auth()->user()->name }}</span>
                 <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
@@ -402,7 +401,7 @@
                         class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Lock
                         screen</span></a>
                 <div class="dropdown-divider"></div> -->
-                <a class="dropdown-item text-danger" href="dashboard-job.html#"><i
+                <a class="dropdown-item text-danger" href="{{ route('admin.logout') }}"><i
                         class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span
                         key="t-logout">Đăng xuất</span></a>
             </div>

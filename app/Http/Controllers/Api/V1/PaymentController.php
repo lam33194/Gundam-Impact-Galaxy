@@ -63,6 +63,9 @@ class PaymentController extends Controller
         $vnp_Locale = 'vn';
         $vnp_IpAddr = $request->ip();
         $vnp_BankCode = $request->input('bank_code', '');
+        // Tạo thời gian hết hạn (n phút sau)
+        // $expire_After = 15;
+        // $expire = date('YmdHis', strtotime("+$expire_After minutes", strtotime(date("YmdHis"))));
 
         // Dữ liệu gửi sang VNPAY
         $inputData = [
@@ -78,6 +81,7 @@ class PaymentController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_ReturnUrl,
             "vnp_TxnRef" => $vnp_TxnRef,
+            // "vnp_ExpireDate" => $expire,
         ];
 
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
@@ -109,9 +113,6 @@ class PaymentController extends Controller
 
         // Kiểm tra tính hợp lệ của dữ liệu trả về
         if ($computedHash !== $vnp_SecureHash) return $this->error('Dữ liệu trả về không hợp lệ');
-        // if ($computedHash !== $vnp_SecureHash) {
-        //     return redirect()->away(config('payment.frontend.payment_failed_url') . '?error=' . urlencode('Dữ liệu trả về không hợp lệ'));
-        // }
 
         // Lấy order_sku từ vnp_TxnRef
         $orderSku = $vnp_ReturnData['vnp_TxnRef'];
@@ -129,22 +130,21 @@ class PaymentController extends Controller
                 'status_order'   => Order::STATUS_ORDER_CONFIRMED,
             ]);
 
-            // return $this->ok('Thanh toán thành công!', $order);
             return redirect()->away(config('payment.frontend.payment_success_url') . '?' . $hashData);
-        }
-        // else if ($responseCode === null) {
-            // ...
-        // }
-        else {
+        } else {
             // Thanh toán thất bại
             $order->update([
-                'status_payment' => Order::STATUS_PAYMENT_UNPAID,
-                'status_order'   => Order::STATUS_ORDER_PENDING,
+                'status_payment' => Order::STATUS_PAYMENT_FAILED,
+                'status_order'   => Order::STATUS_ORDER_CANCELED,
             ]);
 
-            // return $this->error('Thanh toán thất bại. Vui lòng thử lại sau', 400, [
-            //     'response_code' => $responseCode,
-            // ]);
+            // Tăng lại số lượng tồn kho trong product_variants
+            $orderItems = $order->orderItems()->with('variant')->get();
+
+            foreach ($orderItems as $orderItem) {
+                $orderItem->variant->increment('quantity', $orderItem->quantity);
+            }
+
             return redirect()->away(config('payment.frontend.payment_failed_url') . '?' . $hashData);
         }
     }

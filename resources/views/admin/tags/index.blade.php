@@ -40,6 +40,7 @@
                             <tr>
                                 <th>STT</th>
                                 <th>Name</th>
+                                <th>Sản phẩm</th>
                                 <th>Thời gian tạo</th>
                                 <th>Thời gian cập nhật</th>
                                 <th>Thao tác</th>
@@ -56,6 +57,10 @@
 
                                 <td>
                                     {{ $tag->name }}
+                                </td>
+
+                                <td>
+                                    {{ $tag->products_count }}
                                 </td>
 
                                 <td>
