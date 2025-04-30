@@ -135,7 +135,7 @@ function Header() {
               >
                 <i className="fas fa-shopping-cart me-1"></i>
                 <span>Giỏ hàng</span>
-                {cartItemCount > 0 && (
+                {isAuthenticated && cartItemCount > 0 && (
                   <span className="position-absolute badge rounded-pill bg-danger cart-counter">
                     {cartItemCount}
                   </span>
