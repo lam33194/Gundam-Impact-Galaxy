@@ -124,10 +124,6 @@ const ProductDetail = () => {
         setImagePreviews(newPreviews);
     };
 
-    const handleSubmit = (e: any) => {
-        e.preventDefault();
-        console.log({ content, rating, images });
-    };
 
     const handleSubmitComment = async (e: any) => {
         e.preventDefault();
@@ -189,7 +185,7 @@ const ProductDetail = () => {
     const onUpdateComment = async(content: any, rating: any, images: any) =>{
         try {
             const res = await updateCommentForProduct(
-                { content: content, rating: rating, "images[]": images },
+                { content: content, rating: rating, "images[]": images, _method: 'PUT' },
                 slug, updateComment.id
             );
             if (res && res.data) {
