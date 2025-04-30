@@ -10,9 +10,11 @@ import { getUserById } from "../services/UserService";
 import { getProvinces, getDistricts, getWards } from "../services/LocationService";
 import { STORAGE_URL } from "../utils/constants";
 import { District, Province, Ward } from "../interfaces/Location";
+import { useCart } from "../context/CartContext";
 
 const Checkout = () => {
     const { user: authUser } = useAuth();
+    const { updateCartCount } = useCart();
     const [isLoading, setIsLoading] = useState(true);
     const [cart, setCart] = useState([]);
     const [total, setTotal] = useState(0);
@@ -73,6 +75,7 @@ const Checkout = () => {
                     window.location.href = res.data.data.payment_url;
                 } else {
                     toast.success("Đặt hàng thành công!");
+                    await updateCartCount(); // Update cart count after successful order
                     setTimeout(() => {
                         window.location.href = "/order-history";
                     }, 1000);

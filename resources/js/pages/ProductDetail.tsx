@@ -28,10 +28,12 @@ import ico_sv2 from '../assets/ico_sv2.webp';
 import ico_sv3 from '../assets/ico_sv3.webp';
 import ico_sv4 from '../assets/ico_sv4.png';
 import CommentForm from "../components/CommentForm";
+import { useCart } from "../context/CartContext";
 
 
 const ProductDetail = () => {
     const nav = useNavigate();
+    const { updateCartCount } = useCart();
 
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -320,6 +322,7 @@ const ProductDetail = () => {
 
             if (res?.data) {
                 toast.success("Đã thêm vào giỏ hàng!");
+                await updateCartCount(); // Update cart count after adding
             }
             if (index === -1) {
                 nav("/cart");

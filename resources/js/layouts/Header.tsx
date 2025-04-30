@@ -1,10 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import './Header.scss';
 import { useState, useEffect } from 'react';
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
+  const { cartItemCount } = useCart();
   const navigate = useNavigate();
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -129,10 +131,15 @@ function Header() {
               )}
               <Link
                 to="/cart"
-                className="text-decoration-none d-flex align-items-center"
+                className="text-decoration-none d-flex align-items-center position-relative"
               >
                 <i className="fas fa-shopping-cart me-1"></i>
                 <span>Giỏ hàng</span>
+                {cartItemCount > 0 && (
+                  <span className="position-absolute badge rounded-pill bg-danger cart-counter">
+                    {cartItemCount}
+                  </span>
+                )}
               </Link>
             </div>
           </div>
