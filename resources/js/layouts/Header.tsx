@@ -52,7 +52,7 @@ function Header() {
                 src="/logo.svg"
                 alt="Gundam Impact Galaxy Logo"
               />
-              <h2 className="fw-bold">Gundam Impact Galaxy</h2>
+              <h2 className="fw-bold text-dark">Gundam Impact Galaxy</h2>
             </Link>
           </div>
 
@@ -80,67 +80,77 @@ function Header() {
           <div className="col-md-4">
             <div className="d-flex justify-content-end align-items-center">
               {isAuthenticated ? (
-                <div className="dropdown me-4">
-                  <button
-                    className={`btn dropdown-toggle d-flex align-items-center ${isDropdownOpen ? 'show' : ''}`}
-                    type="button"
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                <>
+                  <div className="dropdown me-4">
+                    <button
+                      className={`btn dropdown-toggle d-flex align-items-center ${isDropdownOpen ? 'show' : ''}`}
+                      type="button"
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    >
+                      <span className="me-2">Xin chào, {user?.name}</span>
+                    </button>
+                    <ul className={`dropdown-menu dropdown-menu-end ${isDropdownOpen ? 'show' : ''}`}>
+                      <li>
+                        <Link className="dropdown-item" to="/profile">
+                          <i className="fas fa-user me-2"></i>
+                          Thông tin người dùng
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/change-password">
+                          <i className="fas fa-key me-2"></i>
+                          Đổi mật khẩu
+                        </Link>
+                      </li>
+                      <li>
+                        <Link className="dropdown-item" to="/order-history">
+                          <i className="fas fa-shopping-bag me-2"></i>
+                          Lịch sử mua hàng
+                        </Link>
+                      </li>
+                      <li><hr className="dropdown-divider" /></li>
+                      <li>
+                        <button
+                          className="dropdown-item text-danger"
+                          onClick={logout}
+                        >
+                          <i className="fas fa-sign-out-alt me-2"></i>
+                          Đăng xuất
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <Link
+                    to="/cart"
+                    className="btn btn-outline-dark d-flex align-items-center gap-2 position-relative"
                   >
-                    <span className="me-2">Xin chào, {user?.name}</span>
-                  </button>
-                  <ul className={`dropdown-menu dropdown-menu-end ${isDropdownOpen ? 'show' : ''}`}>
-                    <li>
-                      <Link className="dropdown-item" to="/profile">
-                        <i className="fas fa-user me-2"></i>
-                        Thông tin người dùng
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/change-password">
-                        <i className="fas fa-key me-2"></i>
-                        Đổi mật khẩu
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/order-history">
-                        <i className="fas fa-shopping-bag me-2"></i>
-                        Lịch sử mua hàng
-                      </Link>
-                    </li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li>
-                      <button
-                        className="dropdown-item text-danger"
-                        onClick={logout}
-                      >
-                        <i className="fas fa-sign-out-alt me-2"></i>
-                        Đăng xuất
-                      </button>
-                    </li>
-                  </ul>
-                </div>
-              ) : (
-                <div className="me-4">
-                  <Link to="/login" className="text-decoration-none me-3">
-                    Đăng nhập
+                    <i className="fas fa-shopping-cart"></i>
+                    <span>Giỏ hàng</span>
+                    {cartItemCount > 0 && (
+                      <span className="position-absolute badge rounded-pill bg-danger cart-counter">
+                        {cartItemCount}
+                      </span>
+                    )}
                   </Link>
-                  <Link to="/signup" className="text-decoration-none">
-                    Đăng ký
+                </>
+              ) : (
+                <div className="auth-buttons d-flex align-items-center gap-3">
+                  <Link
+                    to="/login"
+                    className="btn btn-outline-dark d-flex align-items-center gap-2"
+                  >
+                    <i className="fas fa-sign-in-alt"></i>
+                    <span>Đăng nhập</span>
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="btn btn-dark d-flex align-items-center gap-2"
+                  >
+                    <i className="fas fa-user-plus"></i>
+                    <span>Đăng ký</span>
                   </Link>
                 </div>
               )}
-              <Link
-                to="/cart"
-                className="text-decoration-none d-flex align-items-center position-relative"
-              >
-                <i className="fas fa-shopping-cart me-1"></i>
-                <span>Giỏ hàng</span>
-                {isAuthenticated && cartItemCount > 0 && (
-                  <span className="position-absolute badge rounded-pill bg-danger cart-counter">
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
             </div>
           </div>
         </div>
