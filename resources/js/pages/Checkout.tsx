@@ -33,6 +33,9 @@ const Checkout = () => {
         user_email: "",
         user_phone: "",
         user_address: "",
+        ship_user_name: "",
+        ship_user_email: "",
+        ship_user_phone: "",
         province: "",
         district: "",
         ward: "",
@@ -41,6 +44,11 @@ const Checkout = () => {
     });
 
     const [voucherCode, setVoucherCode] = useState("");
+
+    const [addresses, setAddresses] = useState<any[]>([]);
+    const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isOrderForOther, setIsOrderForOther] = useState(false);
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
@@ -54,8 +62,48 @@ const Checkout = () => {
         setVoucherCode(e.target.value);
     };
 
+    const handleOrderForOtherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const isChecked = e.target.checked;
+        setIsOrderForOther(isChecked);
+
+        if (!isChecked) {
+            setFormData(prev => ({
+                ...prev,
+                ship_user_name: formData.user_name,
+                ship_user_email: formData.user_email,
+                ship_user_phone: formData.user_phone,
+            }));
+        }
+    };
+
     const createOrder = async () => {
-        const { user_address, province, district, ward } = formData;
+        let { user_address, province, district, ward } = formData;
+
+        if (!ward) {
+            ward = wards.find((w) => w.id === selectedWard)?.name || "";
+        }
+        if (!district) {
+            district = districts.find((d) => d.id === selectedDistrict)?.name || "";
+        }
+        if (!province) {
+            province = provinces.find((p) => p.id === selectedProvince)?.name || "";
+        }
+
+        if (!user_address || !province || !district || !ward) {
+            toast.error('Vui lòng điền đầy đủ thông tin địa chỉ');
+            return;
+        }
+
+        if (formData.type_payment === "") {
+            toast.error('Vui lòng chọn phương thức thanh toán');
+            return;
+        }
+
+        if (!formData.user_name || !formData.user_email || !formData.user_phone) {
+            toast.error('Vui lòng điền đầy đủ thông tin cá nhân');
+            return;
+        }
+
         const fullAddress = `${user_address}, ${ward}, ${district}, ${province}`;
 
         const data = {
@@ -65,17 +113,28 @@ const Checkout = () => {
             user_address: fullAddress,
             user_note: formData.user_note || "",
             type_payment: formData.type_payment,
-            voucher_code: voucherCode || null
+            voucher_code: voucherCode || null,
+            same_as_buyer: !isOrderForOther
         };
+
+        if (isOrderForOther) {
+            Object.assign(data, {
+                ship_user_name: formData.ship_user_name,
+                ship_user_email: formData.ship_user_email,
+                ship_user_phone: formData.ship_user_phone,
+                ship_user_address: fullAddress,
+            });
+        }
+
+        console.log("Order data:", data);
         try {
             const res = await addOrder(data);
             if (res && res.data) {
                 if (formData.type_payment === 'vnpay' && res.data.data.payment_url) {
-                    // Redirect directly to VNPAY URL
                     window.location.href = res.data.data.payment_url;
                 } else {
                     toast.success("Đặt hàng thành công!");
-                    await updateCartCount(); // Update cart count after successful order
+                    await updateCartCount();
                     setTimeout(() => {
                         window.location.href = "/order-history";
                     }, 1000);
@@ -103,89 +162,148 @@ const Checkout = () => {
                         : element.variant.product.price_regular;
 
                     t += Number(tempPrice) * Number(element.quantity);
-                    // t +=
-                    // Number(element.variant.product.price_sale) *
-                    // Number(element.quantity);
                 });
-                console.log(t);
                 setTotal(t);
             }
         } catch (error) { }
     };
 
     const loadLocationData = async (city: string, district: string, ward: string) => {
-        const provincesResponse = await getProvinces();
-        setProvinces(provincesResponse.data);
+        try {
+            const provincesResponse = await getProvinces();
+            setProvinces(provincesResponse.data);
 
-        if (city) {
-            const matchingProvince = provincesResponse.data.find(p => p.name === city);
-            if (matchingProvince) {
-                setSelectedProvince(matchingProvince.id);
+            if (city) {
+                const matchingProvince = provincesResponse.data.find(p => p.name === city);
+                if (matchingProvince) {
+                    setSelectedProvince(matchingProvince.id);
 
-                const districtsResponse = await getDistricts(matchingProvince.id);
-                setDistricts(districtsResponse.data);
+                    const districtsResponse = await getDistricts(matchingProvince.id);
+                    setDistricts(districtsResponse.data);
 
-                if (district) {
-                    const matchingDistrict = districtsResponse.data.find(d => d.name === district);
-                    if (matchingDistrict) {
-                        setSelectedDistrict(matchingDistrict.id);
+                    if (district) {
+                        const matchingDistrict = districtsResponse.data.find(d => d.name === district);
+                        if (matchingDistrict) {
+                            setSelectedDistrict(matchingDistrict.id);
 
-                        const wardsResponse = await getWards(matchingDistrict.id);
-                        setWards(wardsResponse.data);
+                            const wardsResponse = await getWards(matchingDistrict.id);
+                            setWards(wardsResponse.data);
 
-                        if (ward) {
-                            const matchingWard = wardsResponse.data.find(w => w.name === ward);
-                            if (matchingWard) {
-                                setSelectedWard(matchingWard.id);
+                            if (ward) {
+                                const matchingWard = wardsResponse.data.find(w => w.name === ward);
+                                if (matchingWard) {
+                                    setSelectedWard(matchingWard.id);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        ward: matchingWard.name
+                                    }));
+                                }
                             }
                         }
                     }
                 }
             }
+        } catch (error) {
+            console.error('Failed to load location data:', error);
         }
     };
 
-    useEffect(() => {
-        getCartDetail();
-    }, []);
+    const fetchUserData = async () => {
+        try {
+            if (!authUser?.id) return;
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                if (!authUser?.id) return;
+            setIsLoading(true);
+            const response = await getUserById(authUser.id, {
+                include: 'addresses'
+            });
+            const userData = response.data.data;
 
-                setIsLoading(true);
-                const response = await getUserById(authUser.id, {
-                    include: 'addresses'
-                });
-                const userData = response.data.data;
-                const userAddress = userData.addresses?.[0];
+            // Store all addresses
+            setAddresses(userData.addresses || []);
 
+            // Find primary address or first address
+            const primaryAddress = userData.addresses?.find((addr: any) => addr.is_primary === 1) ||
+                userData.addresses?.[0];
+
+            if (primaryAddress) {
+                setSelectedAddressId(primaryAddress.id.toString()); // Convert to string
                 setFormData({
                     ...formData,
                     user_name: userData.name || '',
                     user_email: userData.email || '',
                     user_phone: userData.phone || '',
-                    user_address: userAddress?.address || '',
-                    province: userAddress?.city || '',
-                    district: userAddress?.district || '',
-                    ward: userAddress?.ward || '',
+                    user_address: primaryAddress.address || '',
+                    province: primaryAddress.city || '',
+                    district: primaryAddress.district || '',
+                    ward: primaryAddress.ward || '',
+                    ship_user_name: isOrderForOther ? '' : userData.name || '',
+                    ship_user_email: isOrderForOther ? '' : userData.email || '',
+                    ship_user_phone: isOrderForOther ? '' : userData.phone || '',
                 });
 
                 await loadLocationData(
-                    userAddress?.city || '',
-                    userAddress?.district || '',
-                    userAddress?.ward || ''
+                    primaryAddress.city || '',
+                    primaryAddress.district || '',
+                    primaryAddress.ward || ''
                 );
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-            } finally {
-                setIsLoading(false);
             }
-        };
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
+    const handleAddressChange = async (addressId: string) => {
+        setSelectedAddressId(addressId);
+        const selectedAddress = addresses.find(addr => addr.id.toString() === addressId);
+
+        if (selectedAddress) {
+            // Reset form data
+            setFormData(prev => ({
+                ...prev,
+                user_name: selectedAddress.name || prev.user_name,
+                user_phone: selectedAddress.phone || prev.user_phone,
+                user_address: selectedAddress.address || '',
+                province: selectedAddress.city || '',
+                district: selectedAddress.district || '',
+                ward: selectedAddress.ward || '',
+            }));
+
+            // Reset selection states
+            setSelectedProvince('');
+            setSelectedDistrict('');
+            setSelectedWard('');
+            setDistricts([]);
+            setWards([]);
+
+            // Load location data
+            await loadLocationData(
+                selectedAddress.city || '',
+                selectedAddress.district || '',
+                selectedAddress.ward || ''
+            );
+        } else {
+            // Reset everything if no address is selected
+            setFormData(prev => ({
+                ...prev,
+                user_address: '',
+                province: '',
+                district: '',
+                ward: '',
+            }));
+            setSelectedProvince('');
+            setSelectedDistrict('');
+            setSelectedWard('');
+            setDistricts([]);
+            setWards([]);
+        }
+    };
+
+    useEffect(() => {
+        getCartDetail();
         fetchUserData();
-    }, [authUser?.id]);
+    }, []);
 
     useEffect(() => {
         if (selectedProvince) {
@@ -244,44 +362,133 @@ const Checkout = () => {
                     <div className="col-md-6">
                         <h5>Thông tin nhận hàng</h5>
                         <div className="mb-3">
-                            {/* Personal info fields */}
+                            <div className="form-check mb-3">
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="orderForOther"
+                                    checked={isOrderForOther}
+                                    onChange={handleOrderForOtherChange}
+                                />
+                                <label className="form-check-label" htmlFor="orderForOther">
+                                    Đặt cho người khác
+                                </label>
+                            </div>
+
+                            {/* Personal info fields - show different fields based on isOrderForOther */}
                             <div className="form-floating mb-3">
                                 <input
                                     type="text"
                                     className="form-control"
-                                    name="user_name"
+                                    name={isOrderForOther ? "ship_user_name" : "user_name"}
                                     placeholder="Họ và tên"
-                                    value={formData.user_name}
+                                    value={isOrderForOther ? formData.ship_user_name : formData.user_name}
                                     onChange={handleChange}
+                                    readOnly={!isOrderForOther}
                                 />
-                                <label htmlFor="floatingFullName">Họ và tên</label>
+                                <label>Họ và tên</label>
                             </div>
 
                             <div className="form-floating mb-3">
                                 <input
                                     type="email"
                                     className="form-control"
-                                    name="user_email"
+                                    name={isOrderForOther ? "ship_user_email" : "user_email"}
                                     placeholder="Email"
-                                    value={formData.user_email}
+                                    value={isOrderForOther ? formData.ship_user_email : formData.user_email}
                                     onChange={handleChange}
+                                    readOnly={!isOrderForOther}
                                 />
-                                <label htmlFor="floatingEmail">Email</label>
+                                <label>Email</label>
                             </div>
 
                             <div className="form-floating mb-3">
                                 <input
                                     type="text"
                                     className="form-control"
-                                    name="user_phone"
+                                    name={isOrderForOther ? "ship_user_phone" : "user_phone"}
                                     placeholder="Số điện thoại"
-                                    value={formData.user_phone}
+                                    value={isOrderForOther ? formData.ship_user_phone : formData.user_phone}
                                     onChange={handleChange}
+                                    readOnly={!isOrderForOther}
                                 />
-                                <label htmlFor="floatingPhone">Số điện thoại</label>
+                                <label>Số điện thoại</label>
                             </div>
 
                             <h6 className="mt-4 mb-3">Địa chỉ nhận hàng</h6>
+                            <div className="form-floating mb-3">
+                                <div className="custom-select-container">
+                                    <label className="position-absolute" style={{ top: '-5px', left: '10px', zIndex: 1, backgroundColor: 'white', padding: '0 5px', fontSize: '12px' }}>
+                                        Địa chỉ đã lưu
+                                    </label>
+                                    <div
+                                        className="custom-select-header form-select address-select"
+                                        onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                    >
+                                        {selectedAddressId ?
+                                            (() => {
+                                                const addr = addresses.find(addr => addr.id.toString() === selectedAddressId);
+                                                return addr ? `${addr.address}, ${addr.ward}, ${addr.district}, ${addr.city}` : 'Địa chỉ khác';
+                                            })()
+                                            : 'Địa chỉ khác'}
+                                    </div>
+                                    {isDropdownOpen && (
+                                        <div className="custom-select-options">
+                                            {addresses.map(address => (
+                                                <div
+                                                    key={address.id}
+                                                    className={`custom-select-option ${selectedAddressId === address.id.toString() ? 'selected' : ''}`}
+                                                    onClick={() => {
+                                                        handleAddressChange(address.id.toString());
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <div className="d-flex justify-content-between align-items-start w-100">
+                                                        <div className="address-content d-flex align-items-center flex-grow-1">
+                                                            <span className="address-text">
+                                                                {address.address}, {address.ward}, {address.district}, {address.city}
+                                                            </span>
+                                                            {address.is_primary === 1 && (
+                                                                <span className="badge bg-primary ms-2">Mặc định</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="radio-circle">
+                                                            <div className="inner-circle"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {/* Add new option for other address */}
+                                            <div
+                                                className={`custom-select-option ${selectedAddressId === '' ? 'selected' : ''}`}
+                                                onClick={() => {
+                                                    setSelectedAddressId('');
+                                                    setFormData(prev => ({
+                                                        ...prev,
+                                                        user_address: '',
+                                                        province: '',
+                                                        district: '',
+                                                        ward: '',
+                                                    }));
+                                                    setSelectedProvince('');
+                                                    setSelectedDistrict('');
+                                                    setSelectedWard('');
+                                                    setDistricts([]);
+                                                    setWards([]);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                            >
+                                                <div className="d-flex justify-content-between align-items-center w-100">
+                                                    <span className="address-text">Địa chỉ khác</span>
+                                                    <div className="radio-circle">
+                                                        <div className="inner-circle"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
 
                             <div className="form-floating mb-3">
                                 <input
@@ -376,7 +583,7 @@ const Checkout = () => {
                                 htmlFor="codPaymentMethod"
                                 className="form-check-label"
                             >
-                                Thanh toán khi giao hàng (COD)
+                                Thanh toán khi nhận hàng (COD)
                             </label>
                         </div>
 
@@ -451,7 +658,6 @@ const Checkout = () => {
                                     <div
                                         className="cart-product-item-image"
                                         style={{
-                                            // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
                                             backgroundImage: item.variant.image == null
                                                 ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
                                                 : `url(${STORAGE_URL + item.variant?.image})`,
@@ -494,7 +700,6 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <span className="item-price text-danger fw-bold">
-                                    {/* {FormatCurrency(product_price * item.quantity)}đ */}
                                     {FormatCurrency(product_price)}đ
                                 </span>
                             </div>

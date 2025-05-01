@@ -36,14 +36,55 @@ const OrderHistory = () => {
 
     const getStatusClass = (status: string) => {
         switch (status) {
-            case 'paid':
-                return 'bg-success';
+            // Order status colors
+            case 'pending':
+                return 'bg-warning text-white';
+            case 'confirmed':
+                return 'bg-primary text-white';
+            case 'preparing':
+                return 'bg-info text-white';
+            case 'shipping':
+                return 'bg-secondary text-white';
+            case 'delivered':
+                return 'bg-success text-white';
+            case 'canceled':
+                return 'bg-danger text-white';
+            // Payment status colors
             case 'unpaid':
-                return 'bg-warning';
+                return 'bg-secondary text-white';
+            case 'paid':
+                return 'bg-primary text-white';
             case 'failed':
-                return 'bg-danger';
+                return 'bg-danger text-white';
             default:
-                return 'bg-warning';
+                return 'bg-warning text-white';
+        }
+    };
+
+    const getStatusText = (status: string) => {
+        switch (status) {
+            // Order status 
+            case 'pending':
+                return 'Chờ xác nhận';
+            case 'confirmed':
+                return 'Đã xác nhận';
+            case 'preparing':
+                return 'Đang chuẩn bị hàng';
+            case 'shipping':
+                return 'Đang vận chuyển';
+            case 'delivered':
+                return 'Đã giao hàng';
+            case 'canceled':
+                return 'Đơn hàng đã bị hủy';
+            // Payment status 
+            case 'unpaid':
+                return 'Chưa thanh toán';
+            case 'paid':
+                return 'Đã thanh toán';
+            case 'failed':
+                return 'Thanh toán thất bại';
+            default:
+                return status;
         }
     };
 
@@ -85,17 +126,17 @@ const OrderHistory = () => {
                                         Đơn hàng #{order.order_sku}
                                     </h5>
                                     <p className="card-text">
-                                        <strong>Người đặt:</strong>{" "}
-                                        {order.user_name}
+                                        <strong>Người nhận:</strong>{" "}
+                                        {!order.same_as_buyer ? order.ship_user_name : order.user_name}
                                         <br />
                                         <strong>Email:</strong>{" "}
-                                        {order.user_email}
+                                        {!order.same_as_buyer ? order.ship_user_email : order.user_email}
                                         <br />
                                         <strong>Số điện thoại:</strong>{" "}
-                                        {order.user_phone}
+                                        {!order.same_as_buyer ? order.ship_user_phone : order.user_phone}
                                         <br />
                                         <strong>Địa chỉ:</strong>{" "}
-                                        {order.user_address}
+                                        {!order.same_as_buyer ? order.ship_user_address : order.user_address}
                                         <br />
                                         <strong>Tổng giá:</strong>{" "}
                                         {order.total_price.toLocaleString()} VND
@@ -105,13 +146,11 @@ const OrderHistory = () => {
                                         </strong>{" "}
                                         <div className="d-inline-flex gap-2 align-items-center">
                                             <span className={`badge ${getStatusClass(order.status_order)}`}>
-                                                {order.status_order}
+                                                {getStatusText(order.status_order)}
                                             </span>
-                                            {order.type_payment === 'vnpay' && (
-                                                <span className={`badge ${getStatusClass(order.status_payment)}`}>
-                                                    {order.status_payment}
-                                                </span>
-                                            )}
+                                            <span className={`badge ${getStatusClass(order.status_payment)}`}>
+                                                {getStatusText(order.status_payment)}
+                                            </span>
                                         </div>
                                         <br />
                                         <strong>
@@ -126,7 +165,9 @@ const OrderHistory = () => {
                                                 />
                                             </span>
                                         ) : (
-                                            order.type_payment
+                                            <span className="badge bg-dark text-white">
+                                                {order.type_payment.toUpperCase()}
+                                            </span>
                                         )}
                                     </p>
 
@@ -144,14 +185,13 @@ const OrderHistory = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {order.order_items.map((item) => {
+                                            {order.order_items.map((item: any) => {
                                                 const item_price = item.product_price_sale != 0 ? item.product_price_sale : item.product_price_regular;
                                                 return (
                                                     <tr key={item.id}>
                                                         <td>
                                                             <img
                                                                 src={
-                                                                    // item.product_img_thumbnail? image : ''
                                                                     STORAGE_URL + item.product_img_thumbnail
                                                                 }
                                                                 alt={
@@ -181,15 +221,6 @@ const OrderHistory = () => {
                                             })}
                                         </tbody>
                                     </table>
-
-                                    {/* <button
-                                        className="btn btn-primary"
-                                        onClick={() =>
-                                            redirectToDetail(order.slug)
-                                        }
-                                    >
-                                        Xem Chi Tiết
-                                    </button> */}
                                 </div>
                             </div>
                         </div>
