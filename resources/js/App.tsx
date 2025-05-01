@@ -34,7 +34,7 @@ function App() {
                                 <Route index element={<Home />} />
                                 <Route path="/home" element={<Navigate to="/" replace />} />
                                 <Route path="/product/:slug" element={<ProductDetail />} />
-                                <Route path="/blog-detail" element={<BlogDetail />} />
+                                <Route path="/blog-detail/:id" element={<BlogDetail />} />
                                 <Route path='/login' element={
                                     <AuthRoute>
                                         <Login />
