@@ -43,6 +43,13 @@ function Header() {
     navigate('/');
   };
 
+  const formatName = (name: string) => {
+    if (name.length > 25) {
+      return name.slice(0, 25) + '...';
+    }
+    return name;
+  }
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isDropdownOpen && !(event.target as HTMLElement).closest('.dropdown')) {
@@ -57,10 +64,10 @@ function Header() {
   return (
     <>
       <header className="py-3">
-        <div className="container">
+        <div className="container-fluid">
           <div className="row align-items-center">
             <div className="col-md-3">
-              <Link to="/" className="header-logo text-decoration-none">
+              <Link to="/" className="header-logo text-decoration-none ms-5">
                 <img
                   src="/logo.svg"
                   alt="Gundam Impact Galaxy Logo"
@@ -68,7 +75,6 @@ function Header() {
                 <h2 className="fw-bold text-dark">Gundam Impact Galaxy</h2>
               </Link>
             </div>
-
             <div className="col-md-5">
               <div className="input-group">
                 <input
@@ -100,7 +106,7 @@ function Header() {
                         type="button"
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                       >
-                        <span className="me-2">Xin chào, {user?.name}</span>
+                        <span className="me-2">Xin chào, {formatName(user?.name!)}</span>
                       </button>
                       <ul className={`dropdown-menu dropdown-menu-end ${isDropdownOpen ? 'show' : ''}`}>
                         <li>
@@ -135,7 +141,7 @@ function Header() {
                     </div>
                     <Link
                       to="/cart"
-                      className="btn btn-outline-dark d-flex align-items-center gap-2 position-relative"
+                      className="btn btn-outline-dark d-flex align-items-center gap-2 position-relative me-5"
                     >
                       <i className="fas fa-shopping-cart"></i>
                       <span>Giỏ hàng</span>

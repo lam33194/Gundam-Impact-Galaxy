@@ -149,7 +149,6 @@ function Search() {
                         >
                             <option disabled value="">Tìm kiếm theo</option>
                             <option value="name">Tên sản phẩm</option>
-                            <option value="slug">Slug</option>
                             <option value="sku">SKU</option>
                         </select>
 
