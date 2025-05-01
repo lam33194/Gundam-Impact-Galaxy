@@ -55,7 +55,23 @@ const Checkout = () => {
     };
 
     const createOrder = async () => {
-        const { user_address, province, district, ward } = formData;
+        let { user_address, province, district, ward } = formData;
+
+        if (!ward) {
+            ward = wards.find((w) => w.id === selectedWard)?.name || "";
+        }
+        if (!district) {
+            district = districts.find((d) => d.id === selectedDistrict)?.name || "";
+        }
+        if (!province) {
+            province = provinces.find((p) => p.id === selectedProvince)?.name || "";
+        }
+
+        if (!user_address || !province || !district || !ward) {
+            toast.error('Vui lòng điền đầy đủ thông tin địa chỉ');
+            return;
+        }
+
         const fullAddress = `${user_address}, ${ward}, ${district}, ${province}`;
 
         const data = {
@@ -67,6 +83,7 @@ const Checkout = () => {
             type_payment: formData.type_payment,
             voucher_code: voucherCode || null
         };
+
         try {
             const res = await addOrder(data);
             if (res && res.data) {
@@ -102,11 +119,7 @@ const Checkout = () => {
                         : element.variant.product.price_regular;
 
                     t += Number(tempPrice) * Number(element.quantity);
-                    // t +=
-                    // Number(element.variant.product.price_sale) *
-                    // Number(element.quantity);
                 });
-                console.log(t);
                 setTotal(t);
             }
         } catch (error) { }
@@ -144,47 +157,44 @@ const Checkout = () => {
         }
     };
 
+    const fetchUserData = async () => {
+        try {
+            if (!authUser?.id) return;
+
+            setIsLoading(true);
+            const response = await getUserById(authUser.id, {
+                include: 'addresses'
+            });
+            const userData = response.data.data;
+            const userAddress = userData.addresses?.[0];
+
+            setFormData({
+                ...formData,
+                user_name: userData.name || '',
+                user_email: userData.email || '',
+                user_phone: userData.phone || '',
+                user_address: userAddress?.address || '',
+                province: userAddress?.city || '',
+                district: userAddress?.district || '',
+                ward: userAddress?.ward || '',
+            });
+
+            await loadLocationData(
+                userAddress?.city || '',
+                userAddress?.district || '',
+                userAddress?.ward || ''
+            );
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         getCartDetail();
-    }, []);
-
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                if (!authUser?.id) return;
-
-                setIsLoading(true);
-                const response = await getUserById(authUser.id, {
-                    include: 'addresses'
-                });
-                const userData = response.data.data;
-                const userAddress = userData.addresses?.[0];
-
-                setFormData({
-                    ...formData,
-                    user_name: userData.name || '',
-                    user_email: userData.email || '',
-                    user_phone: userData.phone || '',
-                    user_address: userAddress?.address || '',
-                    province: userAddress?.city || '',
-                    district: userAddress?.district || '',
-                    ward: userAddress?.ward || '',
-                });
-
-                await loadLocationData(
-                    userAddress?.city || '',
-                    userAddress?.district || '',
-                    userAddress?.ward || ''
-                );
-            } catch (error) {
-                console.error('Failed to fetch user data:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchUserData();
-    }, [authUser?.id]);
+    }, []);
 
     useEffect(() => {
         if (selectedProvince) {
@@ -450,7 +460,6 @@ const Checkout = () => {
                                     <div
                                         className="cart-product-item-image"
                                         style={{
-                                            // backgroundImage: `url(${STORAGE_URL + item.variant.image})`,
                                             backgroundImage: item.variant.image == null
                                                 ? `url(${STORAGE_URL + item.variant.product?.thumb_image})`
                                                 : `url(${STORAGE_URL + item.variant?.image})`,
@@ -493,7 +502,6 @@ const Checkout = () => {
                                     </div>
                                 </div>
                                 <span className="item-price text-danger fw-bold">
-                                    {/* {FormatCurrency(product_price * item.quantity)}đ */}
                                     {FormatCurrency(product_price)}đ
                                 </span>
                             </div>
