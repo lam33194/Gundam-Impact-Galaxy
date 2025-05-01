@@ -1,8 +1,29 @@
+import { useEffect, useState } from "react";
 import Blog from "../components/Blog";
 import Product from "../components/Product";
 import "./BlogList.scss";
+import { getAllBlogs } from "../services/BlogService";
+import { useNavigate } from "react-router-dom";
 
 function BlogList() {
+    const [blogList, setBlogList] = useState([]);
+    const nav = useNavigate();
+
+    const getBlogList = async() =>{
+        try {
+            const res = await getAllBlogs();
+            if (res && res.data){
+                setBlogList(res.data.data);
+                console.log(res.data.data);
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    useEffect(() =>{
+        getBlogList();
+    },[])
     return (
         <div className="container">
             <div className="nav d-flex align-items-center mb-2">
@@ -18,13 +39,19 @@ function BlogList() {
                 <div className="left col-9">
                     <h4 className="fw-bold my-3">TIN TỨC</h4>
                     <div className="blog-list">
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
+                    {blogList &&
+                            blogList.length > 0 &&
+                            blogList.map((b: any) => {
+                                return (
+                                    <div key={b.id} className="blog-item">
+                                        <Blog
+                                            display={"column"}
+                                            backgroundSize="100% 100%"
+                                            blog={b}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
 
