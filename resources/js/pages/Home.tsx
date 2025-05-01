@@ -4,14 +4,20 @@ import Product from "../components/Product";
 import Voucher from "../components/Voucher";
 import Blog from "../components/Blog";
 import { useEffect, useState, useCallback } from "react";
-import { getAll, getTopRevenue, getTopSelling } from "../services/ProductService";
+import {
+    getAll,
+    getTopRevenue,
+    getTopSelling,
+} from "../services/ProductService";
 import { getVouchers } from "../services/VoucherService";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 import { useScrollable } from "../hooks/useScrollable";
-import ico_sv1 from '../assets/ico_sv1.png';
-import ico_sv2 from '../assets/ico_sv2.webp';
-import ico_sv3 from '../assets/ico_sv3.webp';
-import ico_sv4 from '../assets/ico_sv4.png';
+import ico_sv1 from "../assets/ico_sv1.png";
+import ico_sv2 from "../assets/ico_sv2.webp";
+import ico_sv3 from "../assets/ico_sv3.webp";
+import ico_sv4 from "../assets/ico_sv4.png";
+import { useNavigate } from "react-router-dom";
+import { getAllBlogs } from "../services/BlogService";
 
 function Home() {
     const [products, setProducts] = useState([]);
@@ -19,9 +25,28 @@ function Home() {
     const [sellingProducts, setSellingProducts] = useState([]);
     const [vouchers, setVouchers] = useState([]);
 
-    const containerId = 'voucherList';
+    const containerId = "voucherList";
     const canScroll = useScrollable(containerId, 4, vouchers);
     useHorizontalScroll(containerId, canScroll, 0.5);
+
+    const [blogList, setBlogList] = useState([]);
+    const nav = useNavigate();
+
+    const getBlogList = async() =>{
+        try {
+            const res = await getAllBlogs();
+            if (res && res.data){
+                setBlogList(res.data.data);
+                console.log(res.data.data);
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    useEffect(() =>{
+        getBlogList();
+    },[])
 
     const getAllProducts = async () => {
         try {
@@ -71,18 +96,19 @@ function Home() {
         window.location.href = "/product/" + slug;
     };
 
-    const scrollVouchers = useCallback((direction: 'left' | 'right') => {
+    const scrollVouchers = useCallback((direction: "left" | "right") => {
         const container = document.getElementById(containerId);
         if (!container) return;
 
         const scrollAmount = 400;
-        const scrollPosition = direction === 'left'
-            ? container.scrollLeft - scrollAmount
-            : container.scrollLeft + scrollAmount;
+        const scrollPosition =
+            direction === "left"
+                ? container.scrollLeft - scrollAmount
+                : container.scrollLeft + scrollAmount;
 
         container.scrollTo({
             left: scrollPosition,
-            behavior: 'smooth'
+            behavior: "smooth",
         });
     }, []);
 
@@ -91,7 +117,7 @@ function Home() {
         getTopRevenueProducts();
         getTopSellingProducts();
         getAllVouchers();
-    }, [])
+    }, []);
     return (
         <div className="home-container container flex-column d-flex gap-5">
             <Carousel prevLabel="Previous" nextLabel="Next">
@@ -120,7 +146,10 @@ function Home() {
                     {sellingProducts &&
                         sellingProducts.map((p, index) => {
                             return (
-                                <div className="" onClick={() => redirectToDetail(p.slug)}>
+                                <div
+                                    className=""
+                                    onClick={() => redirectToDetail(p.slug)}
+                                >
                                     <Product key={index} p={p} />
                                 </div>
                             );
@@ -141,7 +170,10 @@ function Home() {
             </div>
             <div className="voucher-section position-relative">
                 {canScroll && (
-                    <div className="scroll-button scroll-left" onClick={() => scrollVouchers('left')}>
+                    <div
+                        className="scroll-button scroll-left"
+                        onClick={() => scrollVouchers("left")}
+                    >
                         <i className="fas fa-chevron-left"></i>
                     </div>
                 )}
@@ -150,8 +182,8 @@ function Home() {
                     className="coupon-list gap-2"
                     id={containerId}
                     style={{
-                        overflowX: canScroll ? 'auto' : 'hidden',
-                        cursor: canScroll ? 'grab' : 'default'
+                        overflowX: canScroll ? "auto" : "hidden",
+                        cursor: canScroll ? "grab" : "default",
                     }}
                 >
                     {vouchers.map((voucher, index) => (
@@ -160,7 +192,10 @@ function Home() {
                 </div>
 
                 {canScroll && (
-                    <div className="scroll-button scroll-right" onClick={() => scrollVouchers('right')}>
+                    <div
+                        className="scroll-button scroll-right"
+                        onClick={() => scrollVouchers("right")}
+                    >
                         <i className="fas fa-chevron-right"></i>
                     </div>
                 )}
@@ -170,25 +205,47 @@ function Home() {
                 <h4 className="fw-bold text-uppercase fs-5">BLOG TIN TỨC</h4>
                 <div className="list row">
                     <div className="col-6">
-                        <Blog display={"column"} />
+                        <Blog
+                            display={"column"}
+                            backgroundSize="100% 100%"
+                            blog={blogList[0]}
+                        />
                     </div>
                     <div className="d-flex flex-column gap-2 col-6">
-                        <Blog display={"row"} />
-                        <Blog display={"row"} />
-                        <Blog display={"row"} />
+                        <Blog
+                            display={"column"}
+                            backgroundSize="100% 100%"
+                            blog={blogList[1]}
+                        />
+                        <Blog
+                            display={"column"}
+                            backgroundSize="100% 100%"
+                            blog={blogList[1]}
+                        />
+                        <Blog
+                            display={"column"}
+                            backgroundSize="100% 100%"
+                            blog={blogList[1]}
+                        />
                     </div>
                 </div>
             </div>
             <div className="best-seller">
-                <h4 className="fw-bold text-uppercase fs-5">CÓ THỂ BẠN THÍCH</h4>
+                <h4 className="fw-bold text-uppercase fs-5">
+                    CÓ THỂ BẠN THÍCH
+                </h4>
                 <div className="product-list">
-                    {products && products.map((p, index) => {
-                        return (
-                            <div className="" onClick={() => redirectToDetail(p.slug)}>
-                                <Product key={index} p={p} />
-                            </div>
-                        );
-                    })}
+                    {products &&
+                        products.map((p, index) => {
+                            return (
+                                <div
+                                    className=""
+                                    onClick={() => redirectToDetail(p.slug)}
+                                >
+                                    <Product key={index} p={p} />
+                                </div>
+                            );
+                        })}
                 </div>
             </div>
             <div className="service-info row">

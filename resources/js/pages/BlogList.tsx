@@ -3,9 +3,11 @@ import Blog from "../components/Blog";
 import Product from "../components/Product";
 import "./BlogList.scss";
 import { getAllBlogs } from "../services/BlogService";
+import { useNavigate } from "react-router-dom";
 
 function BlogList() {
     const [blogList, setBlogList] = useState([]);
+    const nav = useNavigate();
 
     const getBlogList = async() =>{
         try {
