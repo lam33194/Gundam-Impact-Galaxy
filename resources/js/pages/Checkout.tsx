@@ -71,11 +71,10 @@ const Checkout = () => {
             const res = await addOrder(data);
             if (res && res.data) {
                 if (formData.type_payment === 'vnpay' && res.data.data.payment_url) {
-                    // Redirect directly to VNPAY URL
                     window.location.href = res.data.data.payment_url;
                 } else {
                     toast.success("Đặt hàng thành công!");
-                    await updateCartCount(); // Update cart count after successful order
+                    await updateCartCount();
                     setTimeout(() => {
                         window.location.href = "/order-history";
                     }, 1000);
