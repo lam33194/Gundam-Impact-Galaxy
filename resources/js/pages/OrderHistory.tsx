@@ -126,17 +126,17 @@ const OrderHistory = () => {
                                         Đơn hàng #{order.order_sku}
                                     </h5>
                                     <p className="card-text">
-                                        <strong>Người đặt:</strong>{" "}
-                                        {order.user_name}
+                                        <strong>Người nhận:</strong>{" "}
+                                        {!order.same_as_buyer ? order.ship_user_name : order.user_name}
                                         <br />
                                         <strong>Email:</strong>{" "}
-                                        {order.user_email}
+                                        {!order.same_as_buyer ? order.ship_user_email : order.user_email}
                                         <br />
                                         <strong>Số điện thoại:</strong>{" "}
-                                        {order.user_phone}
+                                        {!order.same_as_buyer ? order.ship_user_phone : order.user_phone}
                                         <br />
                                         <strong>Địa chỉ:</strong>{" "}
-                                        {order.user_address}
+                                        {!order.same_as_buyer ? order.ship_user_address : order.user_address}
                                         <br />
                                         <strong>Tổng giá:</strong>{" "}
                                         {order.total_price.toLocaleString()} VND
