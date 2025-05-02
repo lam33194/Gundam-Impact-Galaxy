@@ -32,21 +32,21 @@ function Home() {
     const [blogList, setBlogList] = useState([]);
     const nav = useNavigate();
 
-    const getBlogList = async() =>{
+    const getBlogList = async () => {
         try {
             const res = await getAllBlogs();
-            if (res && res.data){
+            if (res && res.data) {
                 setBlogList(res.data.data);
                 console.log(res.data.data);
             }
         } catch (error) {
-            
+
         }
     }
 
-    useEffect(() =>{
+    useEffect(() => {
         getBlogList();
-    },[])
+    }, [])
 
     const getAllProducts = async () => {
         try {

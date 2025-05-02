@@ -119,3 +119,70 @@ header {
         }
     }
 }
+
+.category-dropdown {
+    position: relative;
+
+    .dropdown-menu {
+        width: 200px;
+        padding: 0.5rem 0;
+        margin: 0;
+
+        &.show {
+            display: block;
+        }
+    }
+
+    .dropdown-submenu {
+        position: relative;
+
+        >.dropdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 1rem;
+
+            &:after {
+                content: '\f054';
+                font-family: 'Font Awesome 5 Free';
+                font-weight: 900;
+                font-size: 0.8rem;
+            }
+
+            &:hover {
+                background-color: #f8f9fa;
+            }
+        }
+
+        .submenu {
+            position: absolute;
+            left: 100%;
+            top: 0;
+            display: none;
+            width: 200px;
+            background: white;
+            border: 1px solid rgba(0, 0, 0, .15);
+            border-radius: 0.25rem;
+            padding: 0.5rem 0;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+
+            .dropdown-item {
+                padding: 0.5rem 1rem;
+
+                &:hover {
+                    background-color: #f8f9fa;
+                }
+            }
+        }
+
+        &:hover>.submenu {
+            display: block;
+        }
+    }
+}
+
+.col-md-5 {
+    @media (min-width: 768px) {
+        max-width: 40%;
+    }
+}

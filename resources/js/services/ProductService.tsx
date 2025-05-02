@@ -3,9 +3,9 @@ export const getAll = (params?: any): Promise<any> => {
     return customizeAxios.get('/api/v1/products', { params });
 };
 
-export const getAllByCategory = (category_slug: any): Promise<any> => {
-    return customizeAxios.get(`/api/v1/categories/${category_slug}/products`);
-};
+export const getAllCategories = () => {
+    return customizeAxios.get('/api/v1/categories');
+}
 
 
 export const getDetail = (slug: any): Promise<any> => {
@@ -49,4 +49,8 @@ export const deleteCommentOfProduct = (commentId: any): Promise<any> => {
 export const getRelatedProducts = (slug: string): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${slug}/related`);
 };
+
+export const getAllTags = (): Promise<any> => {
+    return customizeAxios.get('/api/v1/tags');
+}
 

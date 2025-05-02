@@ -587,7 +587,7 @@ const Checkout = () => {
                             </label>
                         </div>
 
-                        <div className="form-check mb-2 d-flex align-items-center">
+                        {/* <div className="form-check mb-2 d-flex align-items-center">
                             <input
                                 type="radio"
                                 name="type_payment"
@@ -603,7 +603,7 @@ const Checkout = () => {
                             >
                                 Momo
                             </label>
-                        </div>
+                        </div> */}
 
                         <div className="form-check mb-2 d-flex align-items-center">
                             <input
@@ -619,7 +619,7 @@ const Checkout = () => {
                                 htmlFor="vnpayPaymentMethod"
                                 className="form-check-label d-flex align-items-center ms-2"
                             >
-                                Vnpay
+                                VNPAY
                             </label>
                         </div>
 
