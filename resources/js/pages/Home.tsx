@@ -202,7 +202,7 @@ function Home() {
             </div>
 
             <div className="blog-list-home">
-                <h4 className="fw-bold text-uppercase fs-5">BLOG TIN TỨC</h4>
+                <h4 className="fw-bold text-uppercase fs-5" onClick={() => nav('/blog-list')}>BLOG TIN TỨC</h4>
                 <div className="list row">
                     <div className="col-6">
                         <Blog
