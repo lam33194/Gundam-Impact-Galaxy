@@ -1,3 +1,4 @@
+import { STORAGE_URL } from "../utils/constants";
 import { FormatDate } from "../utils/FormatDate";
 import "./Blog.scss";
 import DOMPurify from "dompurify";
@@ -17,7 +18,7 @@ function Blog({ display, backgroundSize = "cover", blog }) {
                 className="blog-image"
                 style={{
                     backgroundSize: backgroundSize,
-                    backgroundImage: blog?.thumbnail,
+                    backgroundImage: STORAGE_URL + "/" +  blog?.thumbnail,
                     // "url(https://bizweb.dktcdn.net/100/456/060/articles/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671380983)",
                     height:
                         display === "column"
@@ -34,7 +35,7 @@ function Blog({ display, backgroundSize = "cover", blog }) {
                     {/* Review mô hình Robo Quýt Kiếm Sĩ - Những cải tiến đáng kể bạn cần
           biết? */}
                 </span>
-                <span className="date">{blog?.updated_at}</span>
+                <span className="date">{FormatDate(blog?.updated_at)}</span>
                 <div
                     className="content "
                     dangerouslySetInnerHTML={{ __html: cleanHtml }}
