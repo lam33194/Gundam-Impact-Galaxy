@@ -67,26 +67,6 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    // Lấy danh sách products của category 
-    public function getByCategory(Request $request, string $slug)
-    {
-        $category = Category::whereSlug($slug)->first();
-
-        if (!$category) return $this->not_found("Danh mục không tồn tại");
-
-        $products = $category->products()->getQuery();
-
-        $this->loadRelations($products, $request);
-
-        // $this->loadSubRelations($products);
-
-        $this->applyFilters($products, $request->query());
-
-        $perPage = request()->query('per_page', 10);
-
-        return response()->json($products->paginate($perPage)->appends($request->query()));
-    }
-
     public function getTopRevenueProducts()
     {
         $perPage = request()->query('per_page', 10);
@@ -162,6 +142,11 @@ class ProductController extends Controller
 
                 // case 'average_rating':
             }
+        }
+
+        // Lọc theo danh mục
+        if (!empty($queryParams['category_id'])) {
+            $product->where('category_id', $queryParams['category_id']);
         }
     }
     

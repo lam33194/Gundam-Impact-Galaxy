@@ -50,7 +50,11 @@
                                             </tr>
                                             <tr>
                                                 <th>Slug</th>
-                                                <td><a target="_blank" href="{{ env('APP_URL')."/$product->slug" }}">{{ $product->slug }}</a></td>
+                                                <td>
+                                                    <a target="_blank" href="{{ env('APP_URL')."/$product->slug" }}">
+                                                        {{ $product->slug }}
+                                                    </a>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th>Danh mục</th>

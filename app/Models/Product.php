@@ -27,7 +27,7 @@ class Product extends Model
         'is_show_home'
     ];
 
-    protected $appends = ['average_rating', 'total_comments', 'total_ratings'];
+    protected $appends = ['average_rating', 'total_ratings'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -51,15 +51,11 @@ class Product extends Model
             $this->commentStats = $this->comments()
                 ->selectRaw('
                     ROUND(AVG(CASE WHEN rating IS NOT NULL THEN rating END), 2) as average_rating,
-                    COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as total_ratings,
-                    COUNT(CASE WHEN content IS NOT NULL OR EXISTS (
-                        SELECT 1 FROM comment_images WHERE comment_images.comment_id = comments.id
-                    ) THEN 1 END) as total_comments
+                    COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as total_ratings
                 ')
                 ->first([
                     'average_rating',
-                    'total_ratings',
-                    'total_comments'
+                    'total_ratings'
                 ]);
         }
         return $this->commentStats;
@@ -75,12 +71,6 @@ class Product extends Model
     public function getTotalRatingsAttribute(): int
     {
         return $this->loadCommentStats()->total_ratings ?? 0;
-    }
-
-    // Accessor cho tổng số bình luận
-    public function getTotalCommentsAttribute(): int
-    {
-        return $this->loadCommentStats()->total_comments ?? 0;
     }
 
     public function variants()
