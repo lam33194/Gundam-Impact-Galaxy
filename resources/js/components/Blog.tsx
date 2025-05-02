@@ -18,7 +18,7 @@ function Blog({ display, backgroundSize = "cover", blog }) {
                 className="blog-image"
                 style={{
                     backgroundSize: backgroundSize,
-                    backgroundImage: STORAGE_URL + "/" +  blog?.thumbnail,
+                    backgroundImage: STORAGE_URL + blog?.thumbnail,
                     // "url(https://bizweb.dktcdn.net/100/456/060/articles/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671380983)",
                     height:
                         display === "column"
