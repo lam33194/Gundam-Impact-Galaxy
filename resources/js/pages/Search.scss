@@ -1,5 +1,21 @@
-.list-group{
+.list-group {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
 }
 
+.active-filters {
+    .badge {
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+
+        .btn-close {
+            padding: 0.5em;
+            margin-left: 0.5em;
+            opacity: 0.8;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}

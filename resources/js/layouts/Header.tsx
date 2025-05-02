@@ -19,7 +19,6 @@ function Header() {
     } else {
       navigate('/search', {
         state: {
-          initialSearchType: 'name',
           initialKeyword: searchKeyword.trim()
         }
       });
