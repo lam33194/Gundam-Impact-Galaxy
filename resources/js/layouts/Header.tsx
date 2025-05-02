@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import './Header.scss';
 import { useState, useEffect } from 'react';
 import ConfirmModal from '../components/ConfirmModal';
+import { getAllCategories, getAllTags } from '../services/ProductService';
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -12,6 +13,9 @@ function Header() {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [tags, setTags] = useState<any[]>([]);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
 
   const handleSearch = () => {
     if (!searchKeyword.trim()) {
@@ -47,25 +51,102 @@ function Header() {
       return name.slice(0, 25) + '...';
     }
     return name;
-  }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const res = await getAllCategories();
+      if (res.data?.data) {
+        setCategories(res.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const res = await getAllTags();
+      if (res.data?.data) {
+        setTags(res.data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch tags:', error);
+    }
+  };
+
+  const navigateToCategory = (categorySlug: string, categoryName: string) => {
+    if (window.location.pathname === '/search') {
+      // If already on search page, use replace to reset history
+      navigate('/search', {
+        replace: true,
+        state: {
+          clearFilters: true,
+          selectedCategory: categorySlug,
+          categoryName: categoryName
+        }
+      });
+    } else {
+      // Normal navigation
+      navigate('/search', {
+        state: {
+          selectedCategory: categorySlug,
+          categoryName: categoryName
+        }
+      });
+    }
+    setIsCategoryDropdownOpen(false);
+  };
+
+  const navigateToTag = (tagId: string, tagName: string) => {
+    if (window.location.pathname === '/search') {
+      // If already on search page, use replace to reset history
+      navigate('/search', {
+        replace: true,
+        state: {
+          clearFilters: true,
+          selectedTags: [tagId],
+          tagName: tagName
+        }
+      });
+    } else {
+      // Normal navigation
+      navigate('/search', {
+        state: {
+          selectedTags: [tagId],
+          tagName: tagName
+        }
+      });
+    }
+    setIsCategoryDropdownOpen(false);
+  };
+
+  useEffect(() => {
+    fetchCategories();
+    fetchTags();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isDropdownOpen && !(event.target as HTMLElement).closest('.dropdown')) {
         setIsDropdownOpen(false);
       }
+      if (isCategoryDropdownOpen && !(event.target as HTMLElement).closest('.category-dropdown')) {
+        setIsCategoryDropdownOpen(false);
+      }
     };
 
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
-  }, [isDropdownOpen]);
+  }, [isDropdownOpen, isCategoryDropdownOpen]);
 
   return (
     <>
       <header className="py-3">
         <div className="container-fluid">
           <div className="row align-items-center">
-            <div className="col-md-3">
+            <div className="col-md-4 d-flex align-items-center">
+              {/* Logo and Category dropdown */}
               <Link to="/" className="header-logo text-decoration-none ms-5">
                 <img
                   src="/logo.svg"
@@ -73,8 +154,51 @@ function Header() {
                 />
                 <h2 className="fw-bold text-dark">Gundam Impact Galaxy</h2>
               </Link>
+              <div className="category-dropdown ms-4">
+                <button
+                  className={`btn btn-outline-dark dropdown-toggle ${isCategoryDropdownOpen ? 'show' : ''}`}
+                  onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                >
+                  Danh mục
+                </button>
+                <div className={`dropdown-menu ${isCategoryDropdownOpen ? 'show' : ''}`}>
+                  <div className="dropdown-submenu">
+                    <button className="dropdown-item">
+                      Thể loại
+                    </button>
+                    <div className="submenu">
+                      {categories.map(category => (
+                        <button
+                          key={category.slug}
+                          className="dropdown-item"
+                          onClick={() => navigateToCategory(category.slug, category.name)}
+                        >
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="dropdown-submenu">
+                    <button className="dropdown-item">
+                      Tags
+                    </button>
+                    <div className="submenu">
+                      {tags.map(tag => (
+                        <button
+                          key={tag.id}
+                          className="dropdown-item"
+                          onClick={() => navigateToTag(tag.id.toString(), tag.name)}
+                        >
+                          {tag.name}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="col-md-5">
+            <div className="col-md-4">
+              {/* Search input */}
               <div className="input-group">
                 <input
                   type="text"
@@ -94,8 +218,8 @@ function Header() {
                 </button>
               </div>
             </div>
-
             <div className="col-md-4">
+              {/* Auth buttons and cart */}
               <div className="d-flex justify-content-end align-items-center">
                 {isAuthenticated ? (
                   <>

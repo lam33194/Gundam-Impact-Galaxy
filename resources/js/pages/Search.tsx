@@ -211,8 +211,60 @@ function Search() {
 
     useEffect(() => {
         const performInitialSearch = async () => {
-            const state = location.state as { initialKeyword?: string };
-            if (state?.initialKeyword) {
+            const state = location.state as {
+                clearFilters?: boolean;
+                initialKeyword?: string;
+                selectedCategory?: string;
+                selectedTags?: string[];
+            };
+
+            // Clear all filters if requested
+            if (state?.clearFilters) {
+                setKeyword('');
+                setPriceRange({ min: '', max: '' });
+                setSelectedType('');
+                setSelectedTags([]);
+                setActiveFilters({
+                    search: '',
+                    min_price: '',
+                    max_price: '',
+                    category: '',
+                    tags: ''
+                });
+            }
+
+            // Apply new filter
+            if (state?.selectedCategory) {
+                setSelectedType(state.selectedCategory);
+                const params = { category: state.selectedCategory };
+                try {
+                    const res = await getAll(params);
+                    if (res.data?.data) {
+                        setProducts(res.data.data);
+                        setActiveFilters((prev: any) => ({
+                            ...prev,
+                            category: state.selectedCategory
+                        }));
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            } else if (state?.selectedTags) {
+                setSelectedTags(state.selectedTags);
+                const params = { tags: state.selectedTags.join(',') };
+                try {
+                    const res = await getAll(params);
+                    if (res.data?.data) {
+                        setProducts(res.data.data);
+                        setActiveFilters(prev => ({
+                            ...prev,
+                            tags: (state.selectedTags ?? []).join(',')
+                        }));
+                    }
+                } catch (error) {
+                    console.error(error);
+                }
+            } else if (state?.initialKeyword) {
                 setKeyword(state.initialKeyword);
                 try {
                     const params = {
