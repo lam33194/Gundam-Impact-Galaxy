@@ -50,3 +50,7 @@ export const getRelatedProducts = (slug: string): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${slug}/related`);
 };
 
+export const getAllTags = (): Promise<any> => {
+    return customizeAxios.get('/api/v1/tags');
+}
+
