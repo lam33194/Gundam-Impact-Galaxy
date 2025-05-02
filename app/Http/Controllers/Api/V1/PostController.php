@@ -14,7 +14,9 @@ class PostController extends Controller
 
     public function index()
     {
-        return $this->ok('Lấy danh sách bài viết thành công', Post::with('user')->get());
+        $posts = Post::with('user')->latest()->get();
+
+        return $this->ok('Lấy danh sách bài viết thành công', $posts);
     }
 
     public function show(string $slug)

@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Traits\ApiResponse;
 use App\Traits\LoadRelations;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -40,7 +41,7 @@ class ProductController extends Controller
             'is_good_deal',
             'is_new',
             'is_show_home',
-        )->latest();
+        );
 
         $this->loadRelations($products, $request);
 
@@ -127,17 +128,15 @@ class ProductController extends Controller
         return response()->json($topProducts->paginate($perPage));
     }
 
-    // còn thiếu: lọc theo price_sale. Sắp xếp theo views, time, price
-    private function applyFilters($product, $queryParams)
+    private function applyFilters(Builder $product, $queryParams)
     {
-        // Tìm kiếm theo tên
-        if (!empty($queryParams['name'])) {
-            $product->nameFilter($queryParams['name']);
-        }
-
-        // Tìm kiếm theo sku
-        if (!empty($queryParams['sku'])) {
-            $product->skuFilter($queryParams['sku']);
+        // Apply search filters (name, sku, id)
+        if (!empty($queryParams['search'])) {
+            $search = $queryParams['search'];
+            $product->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('sku', 'like', "%{$search}%");
+            });
         }
 
         // Lọc theo giá
@@ -145,18 +144,24 @@ class ProductController extends Controller
             $product->priceRangeFilter($queryParams['min_price'] ?? null, $queryParams['max_price'] ?? null);
         }
 
-        // $boolean_fields = ['is_active', 'is_hot_deal', 'is_good_deal', 'is_new', 'is_show_home'];
-
-        // foreach ($boolean_fields as $field) {
-        //     if (isset($queryParams[$field])) {
-        //         $product->where($field, filter_var($queryParams[$field], FILTER_VALIDATE_BOOLEAN));
-        //     }
-        // }
-
         // Lọc theo tags
         if (!empty($queryParams['tags'])) {
             $tags = is_array($queryParams['tags']) ? $queryParams['tags'] : explode(',', $queryParams['tags']);
             $product->tagFilter($tags);
+        }
+
+        // Sắp xếp theo: giá / đánh giá
+        if (!empty($queryParams['sort_direct']) && !empty($queryParams['sort_by'])) {
+            $sortDirect = strtolower($queryParams['sort_direct']) === 'asc' ? 'asc' : 'desc';
+            switch ($queryParams['sort_by']) {
+                case 'price':
+                    $product->orderByRaw(
+                        '(CASE WHEN price_sale IS NOT NULL AND price_sale != 0 THEN price_sale ELSE price_regular END) ' . $sortDirect
+                    );
+                break;
+
+                // case 'average_rating':
+            }
         }
     }
     
