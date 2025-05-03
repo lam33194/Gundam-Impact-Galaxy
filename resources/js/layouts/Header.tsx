@@ -276,7 +276,7 @@ function Header() {
                     </Link>
                   </>
                 ) : (
-                  <div className="auth-buttons d-flex align-items-center gap-3">
+                  <div className="auth-buttons d-flex align-items-center gap-3 me-5">
                     <Link
                       to="/login"
                       className="btn btn-outline-dark d-flex align-items-center gap-2"
