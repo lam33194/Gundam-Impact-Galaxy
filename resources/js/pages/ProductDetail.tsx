@@ -83,6 +83,7 @@ const ProductDetail = () => {
     const [opacity, setOpacity] = useState<any>(1);
     const [updateComment, setUpdateComment] = useState<any>(false);
     const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
     const voucherListId = "productVoucherList";
     const canScrollVouchers = useScrollable(voucherListId, 4, validVouchers);
@@ -294,16 +295,31 @@ const ProductDetail = () => {
         setSelectedVariantQuantity(variant ? variant.quantity : null);
     };
 
+    const calculateTotalQuantity = () => {
+        if (!product?.variants) return 0;
+        return product.variants.reduce((total: number, variant: any) => total + variant.quantity, 0);
+    };
+
+    const isOutOfStock = () => {
+        return calculateTotalQuantity() === 0;
+    };
+
+    const isLowStock = () => {
+        const totalQuantity = calculateTotalQuantity();
+        return totalQuantity > 0 && totalQuantity < 10;
+    };
+
     const getProductDetail = async () => {
         try {
+            setIsLoading(true);
             const res = await getDetail(slug);
-            console.log(res);
             if (res && res.data) {
                 setProduct(res.data);
-                console.log(res.data.variants[0].id);
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -409,7 +425,6 @@ const ProductDetail = () => {
                         <div
                             className="img"
                             style={{
-                                // backgroundImage: `url(${"https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"})`,
                                 backgroundImage: `url(${STORAGE_URL + product?.thumb_image})`,
                             }}
                         ></div>
@@ -462,6 +477,30 @@ const ProductDetail = () => {
                         <h5 className="fw-bold mb-0">
                             {product !== null ? product.name : ""}
                         </h5>
+
+                        {!isLoading && (
+                            <div className="d-flex gap-2 flex-wrap">
+                                {isOutOfStock() ? (
+                                    <span className="badge bg-danger">Hết hàng</span>
+                                ) : (
+                                    <>
+                                        {isLowStock() && (
+                                            <span className="badge bg-warning text-dark">Sắp hết hàng</span>
+                                        )}
+                                        {product?.is_good_deal && (
+                                            <span className="badge bg-info">Ưu đãi tốt</span>
+                                        )}
+                                        {product?.is_hot_deal && (
+                                            <span className="badge bg-danger">Hot Deal</span>
+                                        )}
+                                        {product?.is_new && (
+                                            <span className="badge bg-success">Hàng mới</span>
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
+
                         <div className="d-flex gap-4">
                             <span>
                                 Thương hiệu:&nbsp;
@@ -525,7 +564,7 @@ const ProductDetail = () => {
                             <span className="d-block mb-2">Kích thước:</span>
                             <div className="size-options d-flex gap-2 flex-wrap">
                                 {getUniqueSizes().map((size: any) => {
-                                    const isAvailable = getAvailableSizes(selectedColor).some((s: any) => s.id === size.id);
+                                    const isAvailable = !isOutOfStock() && getAvailableSizes(selectedColor).some((s: any) => s.id === size.id);
                                     return (
                                         <button
                                             key={size.id}
@@ -545,7 +584,7 @@ const ProductDetail = () => {
                             <span className="d-block mb-2">Màu sắc:</span>
                             <div className="color-options d-flex gap-2 flex-wrap">
                                 {getUniqueColors().map((color: any) => {
-                                    const isAvailable = getAvailableColors(selectedSize).some((c: any) => c.id === color.id);
+                                    const isAvailable = !isOutOfStock() && getAvailableColors(selectedSize).some((c: any) => c.id === color.id);
                                     return (
                                         <button
                                             key={color.id}
@@ -570,12 +609,27 @@ const ProductDetail = () => {
                             </div>
                         </div>
 
-                        {/* Add quantity display */}
-                        {selectedSize && selectedColor && (
+                        {!isLoading && (
+                            <>
+                                {selectedSize && selectedColor ? (
+                                    <div className="mb-3">
+                                        <span className="text-muted">
+                                            Số lượng có sẵn: {selectedVariantQuantity ?? 0}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <div className="mb-3">
+                                        <span className="text-muted">
+                                            Số lượng có sẵn: {calculateTotalQuantity()}
+                                        </span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+
+                        {isLoading && (
                             <div className="mb-3">
-                                <span className="text-muted">
-                                    Số lượng có sẵn: {selectedVariantQuantity ?? 0}
-                                </span>
+                                <span className="text-muted">Đang tải thông tin sản phẩm...</span>
                             </div>
                         )}
 
@@ -593,7 +647,7 @@ const ProductDetail = () => {
                                         ? setQuantity(quantity - 1)
                                         : setQuantity(1)
                                 }
-                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
+                                disabled={isOutOfStock()}
                             >
                                 <i className="bi bi-dash"></i>
                             </button>
@@ -611,7 +665,7 @@ const ProductDetail = () => {
                                 type="button"
                                 id="button-plus"
                                 onClick={() => quantity < (selectedVariantQuantity ?? 0) ? setQuantity(quantity + 1) : quantity}
-                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
+                                disabled={isOutOfStock()}
                             >
                                 <i className="bi bi-plus"></i>
                             </button>
@@ -621,7 +675,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-10 d-flex flex-column"
                                 onClick={() => updateCart(-1)}
-                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
+                                disabled={isOutOfStock() || (!selectedSize || !selectedColor)}
                             >
                                 <span>Thanh toán online hoặc ship COD</span>
                                 <span className="fw-bold">Mua ngay</span>
@@ -629,7 +683,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-2"
                                 onClick={() => updateCart()}
-                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
+                                disabled={isOutOfStock() || (!selectedSize || !selectedColor)}
                             >
                                 <i className="fa-solid fa-cart-shopping"></i>
                             </button>
