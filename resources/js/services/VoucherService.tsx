@@ -52,3 +52,7 @@ export const getVouchers = async (): Promise<any> => {
     }
     return response;
 };
+
+export const checkVoucher = (code: string): Promise<any> => {
+    return customizeAxios.get(`/api/v1/vouchers/${code}`);
+};

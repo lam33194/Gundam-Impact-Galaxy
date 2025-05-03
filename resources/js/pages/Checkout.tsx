@@ -11,6 +11,7 @@ import { getProvinces, getDistricts, getWards } from "../services/LocationServic
 import { STORAGE_URL } from "../utils/constants";
 import { District, Province, Ward } from "../interfaces/Location";
 import { useCart } from "../context/CartContext";
+import { checkVoucher } from "../services/VoucherService";
 
 const Checkout = () => {
     const { user: authUser } = useAuth();
@@ -49,17 +50,102 @@ const Checkout = () => {
     const [selectedAddressId, setSelectedAddressId] = useState<string>("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isOrderForOther, setIsOrderForOther] = useState(false);
+    const [appliedVoucher, setAppliedVoucher] = useState<any>(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
+        setFormData(prev => {
+            const newData = { ...prev };
+            if (name === 'user_phone' || name === 'ship_user_phone') {
+                if (isOrderForOther) {
+                    newData.user_phone = value;
+                    newData.ship_user_phone = value;
+                } else {
+                    newData.user_phone = value;
+                }
+            } else {
+                newData[name] = value;
+            }
+
+            return newData;
         });
+    };
+
+    const isVoucherValid = (voucher: any) => {
+        const now = new Date();
+        const endDate = new Date(voucher.end_date_time);
+        const isExpired = endDate < now;
+        const isFullyUsed = voucher.used_count >= voucher.max_usage;
+        const meetsMinAmount = total >= parseInt(voucher.min_order_amount || '0');
+
+        return !isExpired && !isFullyUsed && meetsMinAmount;
     };
 
     const handleVoucherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setVoucherCode(e.target.value);
+        if (e.target.value === '') {
+            setAppliedVoucher(null);
+            setDiscountAmount(0);
+        }
+    };
+
+    const applyVoucher = async () => {
+        if (!voucherCode) {
+            toast.error('Vui lòng nhập mã giảm giá');
+            return;
+        }
+
+        try {
+            const response = await checkVoucher(voucherCode);
+            const voucher = response.data.data;
+
+            if (!voucher || !voucher.is_active) {
+                toast.error('Mã giảm giá không hợp lệ');
+                setAppliedVoucher(null);
+                setDiscountAmount(0);
+                return;
+            }
+
+            const now = new Date();
+            const startDate = new Date(voucher.start_date_time);
+            const endDate = new Date(voucher.end_date_time);
+
+            if (now < startDate) {
+                toast.error('Mã giảm giá chưa có hiệu lực');
+                return;
+            }
+
+            if (now > endDate) {
+                toast.error('Mã giảm giá đã hết hạn');
+                return;
+            }
+
+            if (voucher.used_count >= voucher.max_usage) {
+                toast.error('Mã giảm giá đã hết lượt sử dụng');
+                return;
+            }
+
+            if (total < parseInt(voucher.min_order_amount)) {
+                toast.error(`Đơn hàng tối thiểu ${FormatCurrency(voucher.min_order_amount)}đ`);
+                return;
+            }
+
+            const discountValue = parseInt(voucher.discount);
+
+            setAppliedVoucher(voucher);
+            setDiscountAmount(discountValue);
+            toast.success('Áp dụng mã giảm giá thành công');
+        } catch (error: any) {
+            console.error('Failed to apply voucher:', error);
+            if (error.response?.data?.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error('Mã giảm giá không hợp lệ');
+            }
+            setAppliedVoucher(null);
+            setDiscountAmount(0);
+        }
     };
 
     const handleOrderForOtherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +157,11 @@ const Checkout = () => {
                 ...prev,
                 ship_user_name: formData.user_name,
                 ship_user_email: formData.user_email,
-                ship_user_phone: formData.user_phone,
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                ship_user_phone: prev.user_phone
             }));
         }
     };
@@ -113,7 +203,7 @@ const Checkout = () => {
             user_address: fullAddress,
             user_note: formData.user_note || "",
             type_payment: formData.type_payment,
-            voucher_code: voucherCode || null,
+            voucher_code: appliedVoucher ? voucherCode : null,
             same_as_buyer: !isOrderForOther
         };
 
@@ -225,27 +315,39 @@ const Checkout = () => {
             const primaryAddress = userData.addresses?.find((addr: any) => addr.is_primary === 1) ||
                 userData.addresses?.[0];
 
+            // Always set user's basic information regardless of address
+            setFormData(prev => ({
+                ...prev,
+                user_name: userData.name || '',
+                user_email: userData.email || '',
+                user_phone: userData.phone || '',
+                // Set shipping info based on user info if not ordering for other
+                ship_user_name: isOrderForOther ? '' : userData.name || '',
+                ship_user_email: isOrderForOther ? '' : userData.email || '',
+                ship_user_phone: isOrderForOther ? '' : userData.phone || '',
+            }));
+
+            // If user has addresses, set address information
             if (primaryAddress) {
-                setSelectedAddressId(primaryAddress.id.toString()); // Convert to string
-                setFormData({
-                    ...formData,
-                    user_name: userData.name || '',
-                    user_email: userData.email || '',
-                    user_phone: userData.phone || '',
+                setSelectedAddressId(primaryAddress.id.toString());
+                setFormData(prev => ({
+                    ...prev,
                     user_address: primaryAddress.address || '',
                     province: primaryAddress.city || '',
                     district: primaryAddress.district || '',
                     ward: primaryAddress.ward || '',
-                    ship_user_name: isOrderForOther ? '' : userData.name || '',
-                    ship_user_email: isOrderForOther ? '' : userData.email || '',
-                    ship_user_phone: isOrderForOther ? '' : userData.phone || '',
-                });
+                }));
 
                 await loadLocationData(
                     primaryAddress.city || '',
                     primaryAddress.district || '',
                     primaryAddress.ward || ''
                 );
+            } else {
+                // If no address, initialize location selects
+                const provincesResponse = await getProvinces();
+                setProvinces(provincesResponse.data);
+                setSelectedAddressId('');
             }
         } catch (error) {
             console.error('Failed to fetch user data:', error);
@@ -406,11 +508,10 @@ const Checkout = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    name={isOrderForOther ? "ship_user_phone" : "user_phone"}
+                                    name="user_phone"
                                     placeholder="Số điện thoại"
                                     value={isOrderForOther ? formData.ship_user_phone : formData.user_phone}
                                     onChange={handleChange}
-                                    readOnly={!isOrderForOther}
                                 />
                                 <label>Số điện thoại</label>
                             </div>
@@ -711,14 +812,19 @@ const Checkout = () => {
                     <div className="form-floating col-8">
                         <input
                             className="form-control"
-                            id="floatingNote"
+                            id="floatingVoucher"
                             placeholder="Nhập mã giảm giá"
                             value={voucherCode}
                             onChange={handleVoucherChange}
-                        ></input>
-                        <label htmlFor="floatingNote">Nhập mã giảm giá</label>
+                        />
+                        <label htmlFor="floatingVoucher">Nhập mã giảm giá</label>
                     </div>
-                    <button className="btn btn-primary col-4">Áp dụng</button>
+                    <button
+                        className="btn btn-primary col-4"
+                        onClick={applyVoucher}
+                    >
+                        Áp dụng
+                    </button>
                 </div>
 
                 <div className="line"></div>
@@ -726,6 +832,12 @@ const Checkout = () => {
                     <span>Tạm thời</span>
                     <span>{FormatCurrency(total)}đ</span>
                 </div>
+                {appliedVoucher && (
+                    <div className="discount d-flex justify-content-between align-items-center text-success">
+                        <span>Giảm giá</span>
+                        <span>-{FormatCurrency(discountAmount)}đ</span>
+                    </div>
+                )}
                 <div className="shipping-fee d-flex justify-content-between align-items-center">
                     <span>Vận chuyển</span>
                     <span>0đ</span>
@@ -733,7 +845,7 @@ const Checkout = () => {
                 <div className="line"></div>
                 <div className="total d-flex justify-content-between align-items-center">
                     <span>Tổng cộng</span>
-                    <span>{FormatCurrency(total)}đ</span>
+                    <span>{FormatCurrency(total - discountAmount)}đ</span>
                 </div>
                 <div className="order justify-content-end d-flex mt-3">
                     <button

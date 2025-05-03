@@ -12,7 +12,7 @@ function Blog({ display, backgroundSize = "cover", blog }) {
                     ? "blog d-flex flex-column gap-1"
                     : "blog d-flex gap-2"
             }
-            onClick={() => window.location.href="/blog-detail/" + blog?.slug}
+            onClick={() => window.location.href = "/blog-detail/" + blog?.slug}
         >
             <div
                 className="blog-image"
