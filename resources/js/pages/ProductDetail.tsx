@@ -77,6 +77,7 @@ const ProductDetail = () => {
     const [productVariant, setProductVariant] = useState({});
     const [selectedSize, setSelectedSize] = useState<number | null>(null);
     const [selectedColor, setSelectedColor] = useState<number | null>(null);
+    const [selectedVariantQuantity, setSelectedVariantQuantity] = useState<number | null>(null);
     const [commentList, setCommentList] = useState<any>([]);
     const [showCommentForm, setShowCommentForm] = useState<any>(false);
     const [opacity, setOpacity] = useState<any>(1);
@@ -267,6 +268,30 @@ const ProductDetail = () => {
             .filter((v: { size: { id: number; }; }) => !selectedSizeId || v.size.id === selectedSizeId)
             .map((v: { color: any; }) => v.color);
         return [...new Map(availableColors.map((c: { id: any; }) => [c.id, c])).values()];
+    };
+
+    const handleSizeSelect = (sizeId: number) => {
+        setSelectedSize(sizeId);
+        updateSelectedVariantQuantity(sizeId, selectedColor);
+    };
+
+    const handleColorSelect = (colorId: number) => {
+        setSelectedColor(colorId);
+        updateSelectedVariantQuantity(selectedSize, colorId);
+    };
+
+    const updateSelectedVariantQuantity = (sizeId: number | null, colorId: number | null) => {
+        if (!sizeId || !colorId) {
+            setSelectedVariantQuantity(null);
+            return;
+        }
+
+        const variant = product?.variants.find(
+            (v: { size: { id: number }; color: { id: number } }) =>
+                v.size.id === sizeId && v.color.id === colorId
+        );
+
+        setSelectedVariantQuantity(variant ? variant.quantity : null);
     };
 
     const getProductDetail = async () => {
@@ -504,9 +529,8 @@ const ProductDetail = () => {
                                     return (
                                         <button
                                             key={size.id}
-                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""
-                                                }`}
-                                            onClick={() => setSelectedSize(size.id)}
+                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 ${selectedSize === size.id ? "active" : ""}`}
+                                            onClick={() => handleSizeSelect(size.id)}
                                             disabled={!isAvailable}
                                         >
                                             {size.name}
@@ -525,9 +549,8 @@ const ProductDetail = () => {
                                     return (
                                         <button
                                             key={color.id}
-                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id ? "active" : ""
-                                                }`}
-                                            onClick={() => setSelectedColor(color.id)}
+                                            className={`btn btn-outline-dark rounded-pill px-4 py-2 d-flex align-items-center gap-2 ${selectedColor === color.id ? "active" : ""}`}
+                                            onClick={() => handleColorSelect(color.id)}
                                             disabled={!isAvailable}
                                         >
                                             <span
@@ -546,10 +569,16 @@ const ProductDetail = () => {
                                 })}
                             </div>
                         </div>
-                        {/* Hiển thị tồn kho ? */}
-                        {/* {product?.variants.forEach(element => {
-                        console.log(element.quantity);
-                    })} */}
+
+                        {/* Add quantity display */}
+                        {selectedSize && selectedColor && (
+                            <div className="mb-3">
+                                <span className="text-muted">
+                                    Số lượng có sẵn: {selectedVariantQuantity ?? 0}
+                                </span>
+                            </div>
+                        )}
+
                         <span>Số lượng:</span>
                         <div
                             className="input-group input-group-sm quantity-selector"
@@ -560,10 +589,11 @@ const ProductDetail = () => {
                                 type="button"
                                 id="button-minus"
                                 onClick={() =>
-                                    quantity > 0
+                                    quantity > 1
                                         ? setQuantity(quantity - 1)
-                                        : setQuantity(0)
+                                        : setQuantity(1)
                                 }
+                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
                             >
                                 <i className="bi bi-dash"></i>
                             </button>
@@ -580,7 +610,8 @@ const ProductDetail = () => {
                                 className="btn btn-outline-dark"
                                 type="button"
                                 id="button-plus"
-                                onClick={() => setQuantity(quantity + 1)}
+                                onClick={() => quantity < (selectedVariantQuantity ?? 0) ? setQuantity(quantity + 1) : quantity}
+                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
                             >
                                 <i className="bi bi-plus"></i>
                             </button>
@@ -590,7 +621,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-10 d-flex flex-column"
                                 onClick={() => updateCart(-1)}
-                                disabled={!selectedSize || !selectedColor}
+                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
                             >
                                 <span>Thanh toán online hoặc ship COD</span>
                                 <span className="fw-bold">Mua ngay</span>
@@ -598,7 +629,7 @@ const ProductDetail = () => {
                             <button
                                 className="btn btn-dark col-2"
                                 onClick={() => updateCart()}
-                                disabled={!selectedSize || !selectedColor}
+                                disabled={!selectedSize || !selectedColor || selectedVariantQuantity === 0}
                             >
                                 <i className="fa-solid fa-cart-shopping"></i>
                             </button>
