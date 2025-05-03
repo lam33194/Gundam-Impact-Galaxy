@@ -81,7 +81,7 @@
                                             <li>
                                                 <a href="{{ route('admin.product-colors.edit', $color) }}" class="dropdown-item edit-list">
                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1"></i>
-                                                    Edit
+                                                    Sửa
                                                 </a>
                                                 <form action="{{ route('admin.product-colors.destroy', $color->id) }}" method="POST"
                                                     style="display:inline;">
