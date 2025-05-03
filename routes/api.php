@@ -103,12 +103,16 @@ Route::prefix('v1')->group(function () {
             Route::put('addresses/{id}', 'update');
             // Xóa địa chỉ
             Route::delete('addresses/{id}', 'destroy');
+            // Đặt làm mặc định
+            Route::put('addresses/{id}/set-default', 'setDefaultAddress');
         });
     });
 
     Route::controller(VoucherController::class)->group(function () {
         // Lấy tất cả user
         Route::get('vouchers', 'index');
+        // Chi tiết voucher
+        Route::get('vouchers/{code}', 'show');
     });
 
     Route::controller(PaymentController::class)->group(function(){
