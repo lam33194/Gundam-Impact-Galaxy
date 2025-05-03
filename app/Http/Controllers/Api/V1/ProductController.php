@@ -145,8 +145,8 @@ class ProductController extends Controller
         }
 
         // Lọc theo danh mục
-        if (!empty($queryParams['category_id'])) {
-            $product->where('category_id', $queryParams['category_id']);
+        if (!empty($queryParams['category'])) {
+            $product->where('category_id', $queryParams['category']);
         }
     }
     

@@ -375,8 +375,8 @@ function Search() {
                                         <input
                                             className="form-check-input"
                                             type="checkbox"
-                                            checked={selectedType === c.slug}
-                                            onChange={() => handleTypeChange(c.slug)}
+                                            checked={selectedType === c.id}
+                                            onChange={() => handleTypeChange(c.id)}
                                         />
                                         <label className="form-check-label">
                                             {c.name}
