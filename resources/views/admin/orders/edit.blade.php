@@ -140,8 +140,9 @@
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Ảnh</th>
-                                    <th>Tên</th>
+                                    <th>Sản phẩm gốc</th>
                                     <th>Giá</th>
                                     <th>Số lượng</th>
                                     <th>Màu</th>
@@ -154,15 +155,21 @@
                                 @foreach ($order->orderItems as $orderItem)
                                     <tr>
                                         <td>
-                                            @if($orderItem->variant->image ?? $orderItem->product_thumbnail && Storage::exists($orderItem->variant->image ?? $orderItem->product_thumbnail))
-                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_thumbnail) }}" width="70" alt="variant_image">        
+                                            {{ $orderItem->id }}
+                                        </td>
+
+                                        <td>
+                                            @if($orderItem->variant->image ?? $orderItem->product_img_thumbnail && Storage::exists($orderItem->variant->image ?? $orderItem->product_img_thumbnail))
+                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_img_thumbnail) }}" width="70" alt="variant_image">        
                                             @else
-                                            <span>defaul variant image</span>
+                                            <span>Defaul variant image</span>
                                             @endif
                                         </td>
 
                                         <td>
-                                            {{ limitTextLeng($orderItem->product_name, 45) }}
+                                            <a href="{{ route('admin.products.show', $orderItem->variant->product->id) }}">
+                                                {{ limitTextLeng($orderItem->product_name, 45) }}
+                                            </a>
                                         </td>
 
                                         <td>

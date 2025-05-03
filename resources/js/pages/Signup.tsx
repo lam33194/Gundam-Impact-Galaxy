@@ -38,7 +38,7 @@ function Signup() {
           password: formData.password
         }
       });
-    } catch (error : any) {
+    } catch (error: any) {
       // console.error("Đăng ký thất bại:", error);
       toast.error(error.response.data.message);
     }
@@ -144,7 +144,7 @@ function Signup() {
           </button>
         </div>
         <h6 className="text-center">
-          Bạn quên mật khẩu nhấn <a href="">vào đây</a>
+          Bạn quên mật khẩu nhấn <a href="/forget-password">vào đây</a>
         </h6>
       </div>
 
@@ -168,7 +168,7 @@ function Signup() {
             trình hội viên, bạn có thể <a href="">xem tại đây</a>
           </li>
         </ul>
-        <button className="btn btn-lg col-8"><a href="/login" style={{ 'color': '#fff' }}>Đăng nhập</a></button>
+        <button className="btn btn-lg col-8" onClick={() => { navigate('/login') }}>Đăng nhập</button>
       </div>
     </div>
   );

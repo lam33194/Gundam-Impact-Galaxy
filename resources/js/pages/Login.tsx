@@ -172,7 +172,7 @@ const Login = () => {
             trình hội viên, bạn có thể <a href="">xem tại đây</a>
           </li>
         </ul>
-        <button className="btn btn-lg col-7"><a href="/signup" style={{ 'color': '#fff' }}>Đăng ký</a></button>
+        <button className="btn btn-lg col-7" onClick={() => navigate('/signup')}>Đăng ký</button>
       </div>
     </div>
   );
