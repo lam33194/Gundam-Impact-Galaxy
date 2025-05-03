@@ -52,9 +52,22 @@ const Checkout = () => {
 
     const handleChange = (e: any) => {
         const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
+        setFormData(prev => {
+            const newData = { ...prev };
+
+            // If changing phone number
+            if (name === 'user_phone' || name === 'ship_user_phone') {
+                if (isOrderForOther) {
+                    newData.user_phone = value;
+                    newData.ship_user_phone = value;
+                } else {
+                    newData.user_phone = value;
+                }
+            } else {
+                newData[name] = value;
+            }
+
+            return newData;
         });
     };
 
@@ -71,7 +84,12 @@ const Checkout = () => {
                 ...prev,
                 ship_user_name: formData.user_name,
                 ship_user_email: formData.user_email,
-                ship_user_phone: formData.user_phone,
+            }));
+        } else {
+            // When checking the box, set both phone numbers to current user_phone
+            setFormData(prev => ({
+                ...prev,
+                ship_user_phone: prev.user_phone
             }));
         }
     };
@@ -225,27 +243,39 @@ const Checkout = () => {
             const primaryAddress = userData.addresses?.find((addr: any) => addr.is_primary === 1) ||
                 userData.addresses?.[0];
 
+            // Always set user's basic information regardless of address
+            setFormData(prev => ({
+                ...prev,
+                user_name: userData.name || '',
+                user_email: userData.email || '',
+                user_phone: userData.phone || '',
+                // Set shipping info based on user info if not ordering for other
+                ship_user_name: isOrderForOther ? '' : userData.name || '',
+                ship_user_email: isOrderForOther ? '' : userData.email || '',
+                ship_user_phone: isOrderForOther ? '' : userData.phone || '',
+            }));
+
+            // If user has addresses, set address information
             if (primaryAddress) {
-                setSelectedAddressId(primaryAddress.id.toString()); // Convert to string
-                setFormData({
-                    ...formData,
-                    user_name: userData.name || '',
-                    user_email: userData.email || '',
-                    user_phone: userData.phone || '',
+                setSelectedAddressId(primaryAddress.id.toString());
+                setFormData(prev => ({
+                    ...prev,
                     user_address: primaryAddress.address || '',
                     province: primaryAddress.city || '',
                     district: primaryAddress.district || '',
                     ward: primaryAddress.ward || '',
-                    ship_user_name: isOrderForOther ? '' : userData.name || '',
-                    ship_user_email: isOrderForOther ? '' : userData.email || '',
-                    ship_user_phone: isOrderForOther ? '' : userData.phone || '',
-                });
+                }));
 
                 await loadLocationData(
                     primaryAddress.city || '',
                     primaryAddress.district || '',
                     primaryAddress.ward || ''
                 );
+            } else {
+                // If no address, initialize location selects
+                const provincesResponse = await getProvinces();
+                setProvinces(provincesResponse.data);
+                setSelectedAddressId('');
             }
         } catch (error) {
             console.error('Failed to fetch user data:', error);
@@ -406,11 +436,10 @@ const Checkout = () => {
                                 <input
                                     type="text"
                                     className="form-control"
-                                    name={isOrderForOther ? "ship_user_phone" : "user_phone"}
+                                    name="user_phone"
                                     placeholder="Số điện thoại"
                                     value={isOrderForOther ? formData.ship_user_phone : formData.user_phone}
                                     onChange={handleChange}
-                                    readOnly={!isOrderForOther}
                                 />
                                 <label>Số điện thoại</label>
                             </div>
