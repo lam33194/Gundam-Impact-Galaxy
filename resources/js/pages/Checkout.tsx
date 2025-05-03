@@ -139,6 +139,105 @@ const Checkout = () => {
                     }
                 }
             }
+<<<<<<< Updated upstream
+=======
+        } catch (error) {
+            console.error('Failed to load location data:', error);
+        }
+    };
+
+    const fetchUserData = async () => {
+        try {
+            if (!authUser?.id) return;
+
+            setIsLoading(true);
+            const response = await getUserById(authUser.id, {
+                include: 'addresses'
+            });
+            const userData = response.data.data;
+            console.log(userData)
+
+            // Store all addresses
+            setAddresses(userData.addresses || []);
+
+            // Find primary address or first address
+            const primaryAddress = userData.addresses?.find((addr: any) => addr.is_primary === 1) ||
+                userData.addresses?.[0];
+                console.log('de' + primaryAddress)
+
+            if (primaryAddress) {
+                setSelectedAddressId(primaryAddress.id.toString()); // Convert to string
+                setFormData({
+                    ...formData,
+                    user_name: userData.name || '',
+                    user_email: userData.email || '',
+                    user_phone: userData.phone || '',
+                    user_address: primaryAddress.address || '',
+                    province: primaryAddress.city || '',
+                    district: primaryAddress.district || '',
+                    ward: primaryAddress.ward || '',
+                    ship_user_name: isOrderForOther ? '' : userData.name || '',
+                    ship_user_email: isOrderForOther ? '' : userData.email || '',
+                    ship_user_phone: isOrderForOther ? '' : userData.phone || '',
+                });
+
+                await loadLocationData(
+                    primaryAddress.city || '',
+                    primaryAddress.district || '',
+                    primaryAddress.ward || ''
+                );
+            }
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleAddressChange = async (addressId: string) => {
+        setSelectedAddressId(addressId);
+        const selectedAddress = addresses.find(addr => addr.id.toString() === addressId);
+
+        if (selectedAddress) {
+            // Reset form data
+            setFormData(prev => ({
+                ...prev,
+                user_name: selectedAddress.name || prev.user_name,
+                user_phone: selectedAddress.phone || prev.user_phone,
+                user_address: selectedAddress.address || '',
+                province: selectedAddress.city || '',
+                district: selectedAddress.district || '',
+                ward: selectedAddress.ward || '',
+            }));
+
+            // Reset selection states
+            setSelectedProvince('');
+            setSelectedDistrict('');
+            setSelectedWard('');
+            setDistricts([]);
+            setWards([]);
+
+            // Load location data
+            await loadLocationData(
+                selectedAddress.city || '',
+                selectedAddress.district || '',
+                selectedAddress.ward || ''
+            );
+        } else {
+            // Reset everything if no address is selected
+            setFormData(prev => ({
+                ...prev,
+                user_address: '',
+                province: '',
+                district: '',
+                ward: '',
+            }));
+            setSelectedProvince('');
+            setSelectedDistrict('');
+            setSelectedWard('');
+            setDistricts([]);
+            setWards([]);
+>>>>>>> Stashed changes
         }
     };
 

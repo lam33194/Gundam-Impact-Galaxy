@@ -27,7 +27,14 @@ import ico_sv2 from '../assets/ico_sv2.webp';
 import ico_sv3 from '../assets/ico_sv3.webp';
 import ico_sv4 from '../assets/ico_sv4.png';
 import CommentForm from "../components/CommentForm";
+<<<<<<< Updated upstream
 
+=======
+import ConfirmModal from "../components/ConfirmModal";
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { getAllBlogs } from "../services/BlogService";
+>>>>>>> Stashed changes
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -79,6 +86,15 @@ const ProductDetail = () => {
     const canScrollVouchers = useScrollable(voucherListId, 4, vouchers);
     useHorizontalScroll(voucherListId, canScrollVouchers, 0.5);
 
+<<<<<<< Updated upstream
+=======
+    const relatedListId = "relatedProductsList";
+    const canScrollRelated = useScrollable(relatedListId, 4, relatedProducts);
+    useHorizontalScroll(relatedListId, canScrollRelated, 0.5);
+
+    const [blogList, setBlogList] = useState([]);
+
+>>>>>>> Stashed changes
     const scrollVouchers = useCallback(
         (direction: "left" | "right") => {
             const container = document.getElementById(voucherListId);
@@ -98,6 +114,36 @@ const ProductDetail = () => {
         [voucherListId]
     );
 
+<<<<<<< Updated upstream
+=======
+    const scrollRelatedProducts = useCallback((direction: 'left' | 'right') => {
+        const container = document.getElementById(relatedListId);
+        if (!container) return;
+
+        const scrollAmount = 2000;
+        const scrollPosition = direction === 'left'
+            ? container.scrollLeft - scrollAmount
+            : container.scrollLeft + scrollAmount;
+
+        container.scrollTo({
+            left: scrollPosition,
+            behavior: 'smooth'
+        });
+    }, []);
+
+    const getBlogList = async() =>{
+        try {
+            const res = await getAllBlogs();
+            if (res && res.data){
+                setBlogList(res.data.data);
+                console.log(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+>>>>>>> Stashed changes
     const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
         if (files.length + images.length > 5) {
@@ -293,7 +339,12 @@ const ProductDetail = () => {
         if (slug) {
             getProductDetail();
             getAllCommentsOfProduct();
+<<<<<<< Updated upstream
             console.log(commentList);
+=======
+            getRelated();
+            getBlogList();
+>>>>>>> Stashed changes
         }
     }, [slug]);
 
@@ -342,8 +393,41 @@ const ProductDetail = () => {
                                         }
                                     />
 
+<<<<<<< Updated upstream
                                 </div>
                             ))}
+=======
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={
+                                    !content && !rating && images.length === 0
+                                }
+                            >
+                                Gửi bình luận
+                            </button>
+                        </form>
+                    </div>
+                    <div className="container mt-4">
+                        <h3 className="text-center mb-4">Danh sách Bình luận {product?.total_comments > 0? '(' + product?.total_comments + ')' : ''}</h3>
+                        <div className="row justify-content-start">
+                            <div className="col-lg-12">
+                                {commentList.map((comment: any, index: any) => (
+                                    <div
+                                        key={index}
+                                        className="card mb-3 shadow-sm"
+                                    >
+                                        <div className="card-body">
+                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                <div>
+                                                    <h5 className="card-title mb-1">
+                                                        {comment.user.name}
+                                                    </h5>
+                                                    <small className="text-muted">
+                                                        {comment.user.email}
+                                                    </small>
+                                                </div>
+>>>>>>> Stashed changes
 
                             {product?.galleries.map((gallery: any) => (
                                 <div
@@ -445,6 +529,7 @@ const ProductDetail = () => {
                         </div>
                     </div>
 
+<<<<<<< Updated upstream
                     {/* Color Selection */}
                     <div className="variant-selection mb-3">
                         <span className="d-block mb-2">Màu sắc:</span>
@@ -784,6 +869,15 @@ const ProductDetail = () => {
                                 </div>
                             ))}
                         </div>
+=======
+                    <span className="fw-bold text-uppercase mb-1">
+                        Tin mới nhất
+                    </span>
+                    <div className="blog-list d-flex flex-column gap-4">
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]}/>
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]}/>
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]}/>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>

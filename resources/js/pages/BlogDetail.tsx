@@ -4,6 +4,8 @@ import "./BlogDetails.scss";
 import { useEffect, useState } from "react";
 import { getBlogById } from "../services/BlogService";
 import DOMPurify from "dompurify";
+import { STORAGE_URL } from "../utils/constants";
+import { getTopRevenue } from "../services/ProductService";
 
 function BlogDetail() {
     const product = {
@@ -15,20 +17,33 @@ function BlogDetail() {
 
     const [blog, setBlog] = useState<any>();
     const [cleanHtml, setCleanHtml] = useState<any>();
+    const [topRevenue, setTopRevenue] = useState<any>();
 
     const { id } = useParams();
+    const getTopRevenueProducts = async () => {
+        try {
+            const res = await getTopRevenue();
+            if (res && res.data) {
+                setTopRevenue(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
     useEffect(() => {
         const getDetail = async () => {
             try {
                 const res = await getBlogById(id);
                 if (res && res.data) {
                     setBlog(res.data.data);
-                    setCleanHtml(DOMPurify.sanitize(blog.content || ""));
+                    console.log(res.data);
+                    setCleanHtml(DOMPurify.sanitize(res.data.data.content || ""));
                 }
             } catch (error) {}
         };
         getDetail();
-    });
+        getTopRevenueProducts();
+    }, [id]);
     return (
         <div className="blog-detail container d-flex flex-column gap-4">
             <div className="nav d-flex align-items-center">
@@ -52,7 +67,9 @@ function BlogDetail() {
                                 className="col-5"
                                 src="https://bizweb.dktcdn.net/100/456/060/files/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671376577"
                             ></img>
-                            <p className="col-7 pe-2">Cách Lắp Ráp Mô Hình Gundam MG Cho Người</p>
+                            <p className="col-7 pe-2">
+                                Cách Lắp Ráp Mô Hình Gundam MG Cho Người
+                            </p>
                         </div>
                         <div className="line my-1"></div>
                         <div className="outstanding-blog d-flex gap-2">
@@ -79,10 +96,10 @@ function BlogDetail() {
 
                     <h4>SẢN PHẨM NỔI BẬT</h4>
                     <div className="outstanding-products d-flex flex-column gap-3">
-                        <Product p={product} />
-                        <Product />
-                        <Product />
-                        <Product />
+                        {topRevenue &&
+                            topRevenue.map((p: any) => {
+                                return <Product key={p.id} p={p} />;
+                            })}
                     </div>
                 </div>
                 <div className="right col-9">
@@ -94,14 +111,18 @@ function BlogDetail() {
                         </span>
                         <div
                             className="blog-img my-4"
-                            style={{ backgroundImage: `url(${blog?.thumbnail} || https://bizweb.dktcdn.net/100/456/060/files/review-mo-hinh-robo-trai-cay-quyt-kiem-si.png?v=1736671376577)`}}
+                            style={{
+                                backgroundImage: `url(${
+                                    STORAGE_URL + blog?.thumbnail
+                                } )`,
+                            }}
                         ></div>
                         <div
                             className="blog-content "
                             dangerouslySetInnerHTML={{ __html: cleanHtml }}
                         />
                     </div>
-                    <div className="comment mt-5">
+                    {/* <div className="comment mt-5">
                         <h5>Thảo luận về chủ đề này</h5>
                         <div className="form-group mt-3">
                             <input
@@ -125,7 +146,7 @@ function BlogDetail() {
                                 Gửi bình luận
                             </button>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </div>
