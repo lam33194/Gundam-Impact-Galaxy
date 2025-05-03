@@ -8,11 +8,11 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0 font-size-18">Users</h4>
+                <h4 class="mb-sm-0 font-size-18">Người dùng</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item active">Users</li>
+                        <li class="breadcrumb-item active">Người dùng</li>
                     </ol>
                 </div>
 
@@ -52,12 +52,12 @@
                                     <thead class="">
                                         <tr>
                                             <th>STT</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
+                                            <th>Ảnh</th>
+                                            <th>Tên</th>
                                             <th>Email</th>
-                                            <th>Phone</th>
-                                            <th>Role</th>
-                                            <th>Is_active</th>
+                                            <th>Số điện thoại</th>
+                                            <th>Chức vụ</th>
+                                            <th>Trạng thái</th>
                                             <th>Thao tác</th>
                                         </tr>
                                     </thead>
