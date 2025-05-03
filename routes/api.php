@@ -10,8 +10,9 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\VoucherController;
-use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\Api\V1\UserAddressController;
 use App\Http\Controllers\Api\V1\SocialAuthController;
+use App\Http\Controllers\Api\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -29,8 +30,6 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
-        // Lấy danh sách product theo category
-        Route::get('categories/{slug}/products', 'getByCategory');
         // Sản phẩm top doanh thu
         Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
         // Sản phẩm bán chạy
@@ -124,6 +123,9 @@ Route::prefix('v1')->group(function () {
         // Chi tiết post
         Route::get('posts/{id}', 'show');
     });
+
+    // Lấy tất cả thẻ
+    Route::get('tags', [TagController::class, 'index']);
 
     Route::prefix('auth')->group(function () {
         // Đăng ký

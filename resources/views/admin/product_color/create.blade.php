@@ -47,7 +47,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <button class="btn btn-primary">Submit</button>
+                            <button class="btn btn-primary">Thêm</button>
                         </div>
                     </div>
                 </div>

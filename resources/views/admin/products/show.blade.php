@@ -50,7 +50,11 @@
                                             </tr>
                                             <tr>
                                                 <th>Slug</th>
-                                                <td>{{ $product->slug }}</td>
+                                                <td>
+                                                    <a target="_blank" href="{{ env('APP_URL')."/$product->slug" }}">
+                                                        {{ $product->slug }}
+                                                    </a>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th>Danh mục</th>
@@ -246,7 +250,7 @@
 
                                         <td>
                                             @if($variant->image && Storage::exists($variant->image))
-                                            <img src="{{ Storage::url($variant->image) }}" width="70"
+                                            <img src="{{ Storage::url($variant->image) }}" width="120"
                                                 alt="variant_image">
                                             @else
                                             <span>defaul image</span>

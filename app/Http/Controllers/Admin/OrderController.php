@@ -64,7 +64,7 @@ class OrderController extends Controller
         // Lấy danh sách trạng thái
         $orderStatus = Order::STATUS_ORDER_DETAILS;
 
-        $order->load(['orderItems.variant:id,image']);
+        $order->load(['orderItems.variant.product:id']);
 
         // Xác định các trạng thái có thể chọn
         $allowedStatuses = $this->getAllowedStatuses($order->status_order);

@@ -121,11 +121,12 @@
                             </span>
                             so với tháng trước: <b>{{ $newOrderLastMonth }}</b>
                         @else
+                            Giảm
                             <span class="badge badge-soft-danger me-1">
                                 <i class="bx bx-trending-down align-bottom me-1"></i>
-                                {{ abs($percentageChange) }}%
+                                {{ $percentageChange }}%
                             </span>
-                            Giảm
+                            so với tháng trước: <b>{{ $newOrderLastMonth }}</b>
                         @endif
                     </p>
                 </div>

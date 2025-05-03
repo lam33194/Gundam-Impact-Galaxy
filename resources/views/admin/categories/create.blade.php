@@ -1,17 +1,17 @@
 @extends('admin.layouts.master')
-@section('title', 'New Category')
+@section('title', 'Thêm mới danh mục')
 @section('content')
     <div class="row">
         <div class="col-12">
             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 class="mb-sm-0 font-size-18">Create Category</h4>
+                <h4 class="mb-sm-0 font-size-18">Thêm mới danh mục</h4>
 
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.categories.index') }}">Categories</a>
+                            <a href="{{ route('admin.categories.index') }}">Danh mục</a>
                         </li>
-                        <li class="breadcrumb-item active">Create New</li>
+                        <li class="breadcrumb-item active">Thêm mới danh mục</li>
                     </ol>
                 </div>
             </div>
@@ -26,10 +26,10 @@
                                 <div class="mb-3">
                                     <label for="projectname-input" class="form-label">
                                         <span class="text-danger">*</span>
-                                        Name
+                                        Tên danh mục
                                     </label>
                                     <input id="projectname-input" name="name" type="text" class="form-control"
-                                        placeholder="Enter category name..." value="{{ old('name') }}" required>
+                                        placeholder="Nhập tên danh mục..." value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="text-danger fst-italic">
                                             * {{ $message }}
@@ -38,8 +38,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="projectname-input" class="form-label">Description</label>
-                                    <textarea name="description" type="text" class="form-control" placeholder="Enter category description..." required>
+                                    <label for="projectname-input" class="form-label">Miêu tả danh mục</label>
+                                    <textarea name="description" type="text" class="form-control" placeholder="Nhập miêu tả ..." required>
                                 </textarea>
                                 </div>
                             </div>
@@ -50,7 +50,7 @@
                     <div class="col-lg-4">
                         <div class="card">
                             <div class="card-body">
-                                <h5 class="card-title mb-3">Publish</h5>
+                                <h5 class="card-title mb-3">Trạng thái</h5>
 
                                 <div class="mb-3">
                                     <div class="form-check form-switch mb-3">
@@ -75,7 +75,7 @@
 
                     <div class="col-lg-8">
                         <div class="text-end mb-4">
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
                         </div>
                     </div>
                 </div>

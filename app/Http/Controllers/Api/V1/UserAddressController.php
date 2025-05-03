@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
+use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -48,7 +49,7 @@ class UserAddressController extends Controller
         return $this->created("Thêm địa chỉ giao hàng thành công", $address);
     }
 
-    public function update(AddressStoreRequest $request, string $id)
+    public function update(AddressUpdateRequest $request, string $id)
     {
         /** @var \App\Models\User */
         $user = auth('sanctum')->user();
