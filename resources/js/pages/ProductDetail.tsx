@@ -31,6 +31,7 @@ import CommentForm from "../components/CommentForm";
 import ConfirmModal from "../components/ConfirmModal";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import { getAllBlogs } from "../services/BlogService";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -93,6 +94,8 @@ const ProductDetail = () => {
     const canScrollRelated = useScrollable(relatedListId, 4, relatedProducts);
     useHorizontalScroll(relatedListId, canScrollRelated, 0.5);
 
+    const [blogList, setBlogList] = useState([]);
+
     const scrollVouchers = useCallback(
         (direction: "left" | "right") => {
             const container = document.getElementById(voucherListId);
@@ -126,6 +129,18 @@ const ProductDetail = () => {
             behavior: 'smooth'
         });
     }, []);
+
+    const getBlogList = async() =>{
+        try {
+            const res = await getAllBlogs();
+            if (res && res.data){
+                setBlogList(res.data.data);
+                console.log(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
@@ -415,6 +430,7 @@ const ProductDetail = () => {
 
     useEffect(() => {
         getAllVouchers();
+        getBlogList();
     }, []);
 
     return (
@@ -865,7 +881,7 @@ const ProductDetail = () => {
                         </form>
                     </div>
                     <div className="container mt-4">
-                        <h3 className="text-center mb-4">Danh sách Bình luận ({product?.total_comments})</h3>
+                        <h3 className="text-center mb-4">Danh sách Bình luận {product?.total_comments ? '(' + product?.total_comments + ')' : ''}</h3>
                         <div className="row justify-content-start">
                             <div className="col-lg-12">
                                 {commentList.map((comment: any, index: any) => (
@@ -1055,9 +1071,9 @@ const ProductDetail = () => {
                         Tin mới nhất
                     </span>
                     <div className="blog-list d-flex flex-column gap-4">
-                        <Blog display={"column"} backgroundSize={"contain"} />
-                        <Blog display={"column"} backgroundSize={"contain"} />
-                        <Blog display={"column"} backgroundSize={"contain"} />
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]}/>
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]}/>
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]}/>
                     </div>
                 </div>
             </div>

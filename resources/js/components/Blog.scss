@@ -13,6 +13,7 @@
     -webkit-line-clamp: 2;
     word-wrap: break-word;         
     overflow-wrap: break-word;
+    font-size: 0.8rem;
   }
   .content img,
   .content video,
@@ -30,13 +31,14 @@
 
 .title{
     -webkit-line-clamp: 1;
+    font-size: 1.1rem;
 }
 
 img{
     border-radius: 12px;
 }
 .date{
-    font-size: 0.85rem;
+    font-size: 0.7rem;
 }
 
 .blog-image{

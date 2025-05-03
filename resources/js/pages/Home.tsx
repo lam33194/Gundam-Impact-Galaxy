@@ -37,16 +37,15 @@ function Home() {
             const res = await getAllBlogs();
             if (res && res.data) {
                 setBlogList(res.data.data);
-                console.log(res.data.data);
+                console.log("uei", res.data.data);
             }
-        } catch (error) {
+        } catch (error) {}
+    };
 
-        }
-    }
 
     useEffect(() => {
         getBlogList();
-    }, [])
+    }, []);
 
     const getAllProducts = async () => {
         try {
@@ -202,31 +201,32 @@ function Home() {
             </div>
 
             <div className="blog-list-home">
-                <h4 className="fw-bold text-uppercase fs-5" onClick={() => nav('/blog-list')}>BLOG TIN TỨC</h4>
+                <h4
+                    className="fw-bold text-uppercase fs-5"
+                    style={{cursor: 'pointer'}}
+                    onClick={() => window.location.href = ("/blog-list")}
+                >
+                    BLOG TIN TỨC
+                </h4>
                 <div className="list row">
                     <div className="col-6">
                         <Blog
                             display={"column"}
                             backgroundSize="100% 100%"
-                            blog={blogList[0]}
+                            blog={blogList[1]}
                         />
                     </div>
                     <div className="d-flex flex-column gap-2 col-6">
-                        <Blog
-                            display={"column"}
-                            backgroundSize="100% 100%"
-                            blog={blogList[1]}
-                        />
-                        <Blog
-                            display={"column"}
-                            backgroundSize="100% 100%"
-                            blog={blogList[1]}
-                        />
-                        <Blog
-                            display={"column"}
-                            backgroundSize="100% 100%"
-                            blog={blogList[1]}
-                        />
+                        {blogList &&
+                            blogList.map((b: any, index: any) => {
+                                return (
+                                    <Blog
+                                        display={"column"}
+                                        backgroundSize="100% 100%"
+                                        blog={b}
+                                    />
+                                );
+                            })}
                     </div>
                 </div>
             </div>

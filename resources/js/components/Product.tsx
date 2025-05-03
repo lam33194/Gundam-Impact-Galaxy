@@ -13,7 +13,7 @@ interface ProductProps {
 
 const Product = ({ p }: ProductProps) => {
   return (
-    <div className="product d-flex flex-column gap-2">
+    <div className="product d-flex flex-column gap-2" onClick={() => window.location.href= "/product/" + p?.slug}>
       <div className="product-image">
         <div
           className="image"

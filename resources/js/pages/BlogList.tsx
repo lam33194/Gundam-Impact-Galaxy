@@ -4,8 +4,10 @@ import Product from "../components/Product";
 import "./BlogList.scss";
 import { getAllBlogs } from "../services/BlogService";
 import { useNavigate } from "react-router-dom";
+import { getTopRevenue } from "../services/ProductService";
 
 function BlogList() {
+    const [topRevenue, setTopRevenue] = useState<any>();
     const [blogList, setBlogList] = useState([]);
     const nav = useNavigate();
 
@@ -17,12 +19,23 @@ function BlogList() {
                 console.log(res.data.data);
             }
         } catch (error) {
-            
+            console.log(error);
+        }
+    }
+    const getTopRevenueProducts = async() =>{
+        try {
+            const res = await getTopRevenue();
+            if (res && res.data){
+                setTopRevenue(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
         }
     }
 
     useEffect(() =>{
         getBlogList();
+        getTopRevenueProducts();
     },[])
     return (
         <div className="container">
@@ -41,9 +54,9 @@ function BlogList() {
                     <div className="blog-list">
                     {blogList &&
                             blogList.length > 0 &&
-                            blogList.map((b: any) => {
+                            blogList.map((b: any, index: any) => {
                                 return (
-                                    <div key={b.id} className="blog-item">
+                                    <div key={index} className="blog-item">
                                         <Blog
                                             display={"column"}
                                             backgroundSize="100% 100%"
@@ -92,10 +105,11 @@ function BlogList() {
 
                     <h4>SẢN PHẨM NỔI BẬT</h4>
                     <div className="outstanding-products d-flex flex-column gap-3">
-                        <Product />
-                        <Product />
-                        <Product />
-                        <Product />
+                        {topRevenue && topRevenue.map((p: any) =>{
+                            return (
+                                <Product key={p.id} p={p}/>
+                            )
+                        })}
                     </div>
                 </div>
             </div>
