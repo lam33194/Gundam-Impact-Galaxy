@@ -218,7 +218,6 @@ function Search() {
                 selectedTags?: string[];
             };
 
-            // Clear all filters if requested
             if (state?.clearFilters) {
                 setKeyword('');
                 setPriceRange({ min: '', max: '' });
@@ -233,7 +232,6 @@ function Search() {
                 });
             }
 
-            // Apply new filter
             if (state?.selectedCategory) {
                 setSelectedType(state.selectedCategory);
                 const params = { category: state.selectedCategory };
