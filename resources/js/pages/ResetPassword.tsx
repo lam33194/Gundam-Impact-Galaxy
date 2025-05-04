@@ -44,8 +44,8 @@ function ResetPassword() {
             return;
         }
 
-        if (formData.password.length < 6) {
-            setError("Mật khẩu phải có ít nhất 6 ký tự");
+        if (formData.password.length < 8) {
+            setError("Mật khẩu phải có ít nhất 8 ký tự");
             return;
         }
 

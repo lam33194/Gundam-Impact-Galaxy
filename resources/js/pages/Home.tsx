@@ -138,8 +138,27 @@ function Home() {
             </Carousel>
 
             <div className="best-seller">
+                <h4 className="fw-bold text-uppercase fs-5">
+                    Danh sách sản phẩm
+                </h4>
+                <div className="product-list">
+                    {products &&
+                        products.map((p, index) => {
+                            return (
+                                <div
+                                    className=""
+                                    onClick={() => redirectToDetail(p.slug)}
+                                >
+                                    <Product key={index} p={p} />
+                                </div>
+                            );
+                        })}
+                </div>
+            </div>
+
+            <div className="best-seller">
                 <h4 className="fw-bold text-uppercase fs-5 mb-3">
-                    Sản phẩm bán chạy
+                    Sản phẩm yêu thích
                 </h4>
                 <div className="product-list">
                     {sellingProducts &&
@@ -200,6 +219,7 @@ function Home() {
                 )}
             </div>
 
+
             <div className="blog-list-home">
                 <h4
                     className="fw-bold text-uppercase fs-5"
@@ -230,13 +250,14 @@ function Home() {
                     </div>
                 </div>
             </div>
+            
             <div className="best-seller">
-                <h4 className="fw-bold text-uppercase fs-5">
-                    CÓ THỂ BẠN THÍCH
+                <h4 className="fw-bold text-uppercase fs-5 mb-3">
+                    Sản phẩm bán chạy
                 </h4>
                 <div className="product-list">
-                    {products &&
-                        products.map((p, index) => {
+                    {sellingProducts &&
+                        sellingProducts.map((p, index) => {
                             return (
                                 <div
                                     className=""
@@ -248,6 +269,8 @@ function Home() {
                         })}
                 </div>
             </div>
+
+            
             <div className="service-info row">
                 <div className="service p-2 col-lg-3 col-sm-12 d-flex gap-3 align-items-center">
                     <img

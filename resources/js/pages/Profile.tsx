@@ -287,8 +287,13 @@ function Profile() {
                                 disabled={address.is_primary === 1 || isSettingDefault}
                                 title="Đặt làm địa chỉ mặc định"
                             >
-                                <i className={`fas fa-star ${isSettingDefault ? 'fa-spin' : ''}`}></i>
+                                {address.is_primary === 1 ? (
+                                    <i className="fas fa-star"></i>
+                                ) : (
+                                    <i className="fa-regular fa-star"></i>
+                                )}
                             </button>
+
                             <button
                                 className="btn btn-link text-danger p-1"
                                 onClick={() => handleDeleteClick(address.id)}
