@@ -36,6 +36,8 @@ export const deleteAddress = (id: number): Promise<any> => {
     return customizeAxios.delete(`/api/v1/addresses/${id}`);
 };
 
-export const setPrimaryAddress = (id: number): Promise<any> => {
-    return customizeAxios.put(`/api/v1/addresses/${id}/primary`);
+export const setDefaultAddress = (id: number): Promise<any> => {
+    return customizeAxios.put(`/api/v1/addresses/${id}/set-default`, {
+        is_primary: true
+    });
 };

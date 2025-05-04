@@ -6,7 +6,7 @@ import { UserData } from '../interfaces/UserData';
 import InfoField from '../components/InfoField';
 import { STORAGE_URL } from '../utils/constants';
 import { toast } from 'react-toastify';
-import { getAddresses, deleteAddress, setPrimaryAddress } from '../services/AddressService';
+import { getAddresses, deleteAddress, setDefaultAddress } from '../services/AddressService';
 import type { Address } from '../services/AddressService';
 import AddressModal from '../components/AddressModal';
 import ConfirmModal from '../components/ConfirmModal';
@@ -34,6 +34,7 @@ function Profile() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [selectedDeleteId, setSelectedDeleteId] = useState<number | null>(null);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isSettingDefault, setIsSettingDefault] = useState(false);
 
     const setUserFormData = (userData: UserData) => {
         return {
@@ -225,6 +226,24 @@ function Profile() {
         }
     };
 
+    const handleSetDefault = async (addressId: number) => {
+        setIsSettingDefault(true);
+        try {
+            await setDefaultAddress(addressId);
+            toast.success('Thay đổi địa chỉ mặc định thành công');
+            const response = await getAddresses();
+            if (response.data?.data) {
+                setAddresses(response.data.data);
+            }
+        } catch (error: any) {
+            console.error('Failed to set default address:', error);
+            const errorMessage = error.response?.data?.message || 'Không thể đặt địa chỉ mặc định. Vui lòng thử lại.';
+            toast.error(errorMessage);
+        } finally {
+            setIsSettingDefault(false);
+        }
+    };
+
     const getAvatarUrl = (avatarPath: string | null) => {
         if (!avatarPath) return "/assets/default-avatar.png";
         return `${STORAGE_URL}/${avatarPath}`;
@@ -264,10 +283,11 @@ function Profile() {
                         <div className="action-buttons position-absolute top-50 end-0 translate-middle-y me-3 d-flex gap-2">
                             <button
                                 className="btn btn-link text-primary p-1"
-                                disabled={address.is_primary === 1}
+                                onClick={() => handleSetDefault(address.id)}
+                                disabled={address.is_primary === 1 || isSettingDefault}
                                 title="Đặt làm địa chỉ mặc định"
                             >
-                                <i className="fas fa-star"></i>
+                                <i className={`fas fa-star ${isSettingDefault ? 'fa-spin' : ''}`}></i>
                             </button>
                             <button
                                 className="btn btn-link text-danger p-1"
