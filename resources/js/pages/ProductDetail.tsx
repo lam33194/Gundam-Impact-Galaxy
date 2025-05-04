@@ -130,10 +130,10 @@ const ProductDetail = () => {
         });
     }, []);
 
-    const getBlogList = async() =>{
+    const getBlogList = async () => {
         try {
             const res = await getAllBlogs();
-            if (res && res.data){
+            if (res && res.data) {
                 setBlogList(res.data.data);
                 console.log(res.data.data);
             }
@@ -145,7 +145,7 @@ const ProductDetail = () => {
     const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
         if (files.length + images.length > 5) {
-            alert("Tối đa 5 ảnh được phép tải lên");
+            toast.error("Tối đa 5 ảnh được phép tải lên");
             return;
         }
 
@@ -1071,9 +1071,9 @@ const ProductDetail = () => {
                         Tin mới nhất
                     </span>
                     <div className="blog-list d-flex flex-column gap-4">
-                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]}/>
-                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]}/>
-                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]}/>
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]} />
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]} />
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]} />
                     </div>
                 </div>
             </div>

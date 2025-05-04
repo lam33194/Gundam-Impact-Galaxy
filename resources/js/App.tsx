@@ -21,11 +21,11 @@ import ForgetPassword from './pages/ForgetPassword';
 import ResetPassword from './pages/ResetPassword';
 import { LoginSuccess } from './pages/LoginSuccess';
 import { CartProvider } from './context/CartContext';
+import './App.scss';
 
 function App() {
     return (
         <div>
-            <ToastContainer />
             <BrowserRouter>
                 <AuthProvider>
                     <CartProvider>
@@ -93,6 +93,18 @@ function App() {
                     </CartProvider>
                 </AuthProvider>
             </BrowserRouter>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     );
 }

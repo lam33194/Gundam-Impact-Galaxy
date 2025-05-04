@@ -5,6 +5,7 @@ import './Header.scss';
 import { useState, useEffect } from 'react';
 import ConfirmModal from '../components/ConfirmModal';
 import { getAllCategories, getAllTags } from '../services/ProductService';
+import { toast } from 'react-toastify';
 
 function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -44,6 +45,7 @@ function Header() {
     logout();
     setShowLogoutModal(false);
     navigate('/');
+    toast.success('Đăng xuất thành công!');
   };
 
   const formatName = (name: string) => {
