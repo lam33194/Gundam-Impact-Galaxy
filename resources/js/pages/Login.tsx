@@ -4,6 +4,7 @@ import "./Login.scss";
 import { useEffect, useState } from "react";
 import { authenticate, loginByGoogle } from "../services/AuthService";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 interface LoginResponse {
   0: {
@@ -48,22 +49,20 @@ const Login = () => {
       const response = await authenticate(formData);
       const data = response.data as LoginResponse;
 
-      // Lưu URL trước khi login
       const redirectUrl = prevUrl ? decodeURIComponent(prevUrl) : '/';
 
-      // Login và đợi hoàn thành
       await login(data[0], data[1]);
+      toast.success('Đăng nhập thành công');
 
-      // Thêm setTimeout để đảm bảo state đã được cập nhật
       setTimeout(() => {
         navigate(redirectUrl);
       }, 100);
 
     } catch (error: any) {
       if (error.response?.status === 401) {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        alert('Có lỗi xảy ra, vui lòng thử lại sau');
+        toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
       }
     }
   };

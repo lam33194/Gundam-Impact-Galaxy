@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { STORAGE_URL } from '../utils/constants';
+import { toast } from 'react-toastify';
 
-const CommentForm = ({ isOpen, onCloseForm, comment, onUpdateComment } : any) => {
+const CommentForm = ({ isOpen, onCloseForm, comment, onUpdateComment }: any) => {
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [content, setContent] = useState('');
@@ -44,8 +45,8 @@ const CommentForm = ({ isOpen, onCloseForm, comment, onUpdateComment } : any) =>
   const handleImageUpload = (e: any) => {
     const files = Array.from(e.target.files);
     if (files.length + images.length > 5) {
-        alert("Tối đa 5 ảnh được phép tải lên");
-        return;
+      toast.error("Tối đa 5 ảnh được phép tải lên");
+      return;
     }
 
     const newImages = [...images, ...files];
@@ -54,9 +55,9 @@ const CommentForm = ({ isOpen, onCloseForm, comment, onUpdateComment } : any) =>
     // Tạo preview
     const previews = files.map((file: any) => URL.createObjectURL(file));
     setImagePreviews([...imagePreviews, ...previews].slice(0, 5));
-};
+  };
 
-const removeImage = (index: any) => {
+  const removeImage = (index: any) => {
     const newImages = [...images];
     newImages.splice(index, 1);
     setImages(newImages);
@@ -65,11 +66,11 @@ const removeImage = (index: any) => {
     URL.revokeObjectURL(newPreviews[index]);
     newPreviews.splice(index, 1);
     setImagePreviews(newPreviews);
-};
+  };
   const handleSubmitComment = (event: any) => {
     event.preventDefault();
     onUpdateComment(content, rating, images);
-    onCloseForm(); 
+    onCloseForm();
   };
 
   return (
@@ -97,7 +98,7 @@ const removeImage = (index: any) => {
                         className="fa-solid fa-star"
                         style={{
                           color: star <= (hoverRating || rating) ? "#ffc107" : "#ddd",
-                          fontSize: '1.5rem', 
+                          fontSize: '1.5rem',
                         }}
                       ></i>
                     </button>
@@ -113,7 +114,7 @@ const removeImage = (index: any) => {
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Nội dung bình luận"
                   className="form-control border border-secondary rounded"
-                  style={{ resize: 'none' }} 
+                  style={{ resize: 'none' }}
                 />
               </div>
 

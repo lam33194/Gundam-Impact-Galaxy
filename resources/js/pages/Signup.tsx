@@ -28,10 +28,7 @@ function Signup() {
     try {
       const response = await signup(formData);
       console.log("Đăng ký thành công:", response.data);
-      alert("Đăng ký thành công!");
-      // login
-      // const from = location.state?.from?.pathname || '/';
-      // navigate(from);
+      toast.success("Đăng ký thành công!");
       navigate('/login', {
         state: {
           email: formData.email,
@@ -39,7 +36,6 @@ function Signup() {
         }
       });
     } catch (error: any) {
-      // console.error("Đăng ký thất bại:", error);
       toast.error(error.response.data.message);
     }
   };
