@@ -76,9 +76,9 @@
                                     <td>{{ number_format($voucher->discount, 0, ',', '.') }} VNĐ</td>
                                     <td>{{ \Carbon\Carbon::parse($voucher->start_date_time)->format('d/m/Y H:i:s') }}</td>
                                     <td>{{ \Carbon\Carbon::parse($voucher->end_date_time)->format('d/m/Y H:i:s') }}</td>
-                                    <td>min-order</td>
-                                    <td>used count</td>
-                                    <td>max usage</td>
+                                    <td>{{ number_format($voucher->min_order_amount) }}</td>
+                                    <td>{{ $voucher->used_count }}</td>
+                                    <td>{{ $voucher->max_usage }}</td>
                                     <td>
                                     <form action="{{ route('admin.vouchers.toggle', $voucher->id) }}"
                                           class="form-check form-switch form-switch-success" 

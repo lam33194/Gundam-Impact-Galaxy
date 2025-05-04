@@ -73,7 +73,8 @@ class VoucherController extends Controller
             $data = $request->all();
                $data['discount'] = (int) str_replace(',','', $request->input('discount'));
                $voucher -> update($data);
-               return redirect()->route('admin.vouchers.index')->with('success','cập nhật mã giảm giá thành công');
+               return redirect()->back()->with('success','cập nhật mã giảm giá thành công');
+            //    return redirect()->route('admin.vouchers.index')->with('success','cập nhật mã giảm giá thành công');
         } catch (\Throwable $th) {
            return redirect()->back()->with('errror','da xay ra loi'. $th->getMessage());
         }

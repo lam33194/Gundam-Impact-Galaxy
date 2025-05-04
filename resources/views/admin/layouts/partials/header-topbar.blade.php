@@ -28,12 +28,12 @@
         <!-- App Search-->
         <form class="app-search d-none d-lg-block">
             <div class="position-relative">
-                <input type="text" class="form-control" placeholder="Search...">
+                <input type="text" class="form-control" placeholder="Tìm kiếm...">
                 <span class="bx bx-search-alt"></span>
             </div>
         </form>
 
-        <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
+        <!-- <div class="dropdown dropdown-mega d-none d-lg-block ms-2">
             <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="false"
                 aria-expanded="false">
                 <span key="t-megamenu">Mega Menu</span>
@@ -166,11 +166,12 @@
                 </div>
 
             </div>
-        </div>
+        </div> -->
     </div>
 
     <div class="d-flex">
 
+        <!-- 
         <div class="dropdown d-inline-block d-lg-none ms-2">
             <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-search-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -199,39 +200,33 @@
                 <img id="header-lang-img" src="{{ asset('assets/theme/admin/images/flags/us.jpg') }}" alt="Header Language" height="16">
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-
-                <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="en">
                     <img src="{{ asset('assets/theme/admin/images/flags/us.jpg') }}" alt="user-image" class="me-1" height="12"> <span
                         class="align-middle">English</span>
                 </a>
-                <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="sp">
                     <img src="{{ asset('assets/theme/admin/images/flags/spain.jpg') }}" alt="user-image" class="me-1" height="12">
                     <span class="align-middle">Spanish</span>
                 </a>
 
-                <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="gr">
                     <img src="{{ asset('assets/theme/admin/images/flags/germany.jpg') }}" alt="user-image" class="me-1" height="12">
                     <span class="align-middle">German</span>
                 </a>
 
-                <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="it">
                     <img src="{{ asset('assets/theme/admin/images/flags/italy.jpg') }}" alt="user-image" class="me-1" height="12">
                     <span class="align-middle">Italian</span>
                 </a>
-
-                <!-- item-->
                 <a href="javascript:void(0);" class="dropdown-item notify-item language" data-lang="ru">
                     <img src="{{ asset('assets/theme/admin/images/flags/russia.jpg') }}" alt="user-image" class="me-1" height="12">
                     <span class="align-middle">Russian</span>
                 </a>
             </div>
         </div>
+        -->
 
-        <div class="dropdown d-none d-lg-inline-block ms-1">
+        <!-- <div class="dropdown d-none d-lg-inline-block ms-1">
             <button type="button" class="btn header-item noti-icon waves-effect" data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false">
                 <i class="bx bx-customize"></i>
@@ -281,7 +276,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="dropdown d-none d-lg-inline-block ms-1">
             <button type="button" class="btn header-item noti-icon waves-effect" data-bs-toggle="fullscreen">
@@ -289,7 +284,7 @@
             </button>
         </div>
 
-        <div class="dropdown d-inline-block">
+        <!-- <div class="dropdown d-inline-block">
             <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="bx bx-bell bx-tada"></i>
@@ -383,19 +378,17 @@
                     </a>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div class="dropdown d-inline-block">
             <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img class="rounded-circle header-profile-user" src="{{ asset('assets/theme/admin/images/users/avatar-1.jpg') }}"
-                    alt="Header Avatar">
-                <span class="d-none d-xl-inline-block ms-1" key="t-henry">gundam</span>
+                <img class="rounded-circle header-profile-user" src="{{ asset('assets\default-avatar.png') }}" alt="Header Avatar">
+                <span class="d-none d-xl-inline-block ms-1" key="t-henry">{{ auth()->user()->name }}</span>
                 <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-end">
-                <!-- item-->
-                <a class="dropdown-item" href="dashboard-job.html#"><i
+                <!-- <a class="dropdown-item" href="dashboard-job.html#"><i
                         class="bx bx-user font-size-16 align-middle me-1"></i> <span key="t-profile">Profile</span></a>
                 <a class="dropdown-item" href="dashboard-job.html#"><i
                         class="bx bx-wallet font-size-16 align-middle me-1"></i> <span key="t-my-wallet">My
@@ -407,10 +400,11 @@
                 <a class="dropdown-item" href="dashboard-job.html#"><i
                         class="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Lock
                         screen</span></a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item text-danger" href="dashboard-job.html#"><i
-                        class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span
-                        key="t-logout">Logout</span></a>
+                <div class="dropdown-divider"></div> -->
+                <a class="dropdown-item text-danger" href="{{ route('admin.login') }}">
+                    <i class="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i>
+                    <span key="t-logout">Đăng xuất</span>
+                </a>
             </div>
         </div>
 

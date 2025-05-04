@@ -3,9 +3,9 @@ export const getAll = (params?: any): Promise<any> => {
     return customizeAxios.get('/api/v1/products', { params });
 };
 
-export const getAllByCategory = (category_slug: any): Promise<any> => {
-    return customizeAxios.get(`/api/v1/categories/${category_slug}/products`);
-};
+export const getAllCategories = () => {
+    return customizeAxios.get('/api/v1/categories');
+}
 
 
 export const getDetail = (slug: any): Promise<any> => {
@@ -29,7 +29,28 @@ export const addCommentForProduct = (data: any, productSlug: any): Promise<any> 
     });
 }
 
+export const updateCommentForProduct = (data: any, productSlug: any, commentId: any): Promise<any> => {
+    return customizeAxios.post(`/api/v1/products/${productSlug}/comments/${commentId}`, data, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            'Accept': 'application/json'
+        },
+    });
+}
+
 export const getCommentForProduct = (productSlug: any): Promise<any> => {
     return customizeAxios.get(`/api/v1/products/${productSlug}/comments`);
+}
+
+export const deleteCommentOfProduct = (commentId: any): Promise<any> => {
+    return customizeAxios.delete(`/api/v1/comments/${commentId}`);
+}
+
+export const getRelatedProducts = (slug: string): Promise<any> => {
+    return customizeAxios.get(`/api/v1/products/${slug}/related`);
+};
+
+export const getAllTags = (): Promise<any> => {
+    return customizeAxios.get('/api/v1/tags');
 }
 

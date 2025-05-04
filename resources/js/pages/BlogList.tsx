@@ -1,8 +1,42 @@
+import { useEffect, useState } from "react";
 import Blog from "../components/Blog";
 import Product from "../components/Product";
 import "./BlogList.scss";
+import { getAllBlogs } from "../services/BlogService";
+import { useNavigate } from "react-router-dom";
+import { getTopRevenue } from "../services/ProductService";
 
 function BlogList() {
+    const [topRevenue, setTopRevenue] = useState<any>();
+    const [blogList, setBlogList] = useState([]);
+    const nav = useNavigate();
+
+    const getBlogList = async() =>{
+        try {
+            const res = await getAllBlogs();
+            if (res && res.data){
+                setBlogList(res.data.data);
+                console.log(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const getTopRevenueProducts = async() =>{
+        try {
+            const res = await getTopRevenue();
+            if (res && res.data){
+                setTopRevenue(res.data.data);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() =>{
+        getBlogList();
+        getTopRevenueProducts();
+    },[])
     return (
         <div className="container">
             <div className="nav d-flex align-items-center mb-2">
@@ -18,13 +52,19 @@ function BlogList() {
                 <div className="left col-9">
                     <h4 className="fw-bold my-3">TIN TỨC</h4>
                     <div className="blog-list">
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
-                        <Blog display={"column"} backgroundSize="100% 100%" />
+                    {blogList &&
+                            blogList.length > 0 &&
+                            blogList.map((b: any, index: any) => {
+                                return (
+                                    <div key={index} className="blog-item">
+                                        <Blog
+                                            display={"column"}
+                                            backgroundSize="100% 100%"
+                                            blog={b}
+                                        />
+                                    </div>
+                                );
+                            })}
                     </div>
                 </div>
 
@@ -65,10 +105,11 @@ function BlogList() {
 
                     <h4>SẢN PHẨM NỔI BẬT</h4>
                     <div className="outstanding-products d-flex flex-column gap-3">
-                        <Product />
-                        <Product />
-                        <Product />
-                        <Product />
+                        {topRevenue && topRevenue.map((p: any) =>{
+                            return (
+                                <Product key={p.id} p={p}/>
+                            )
+                        })}
                     </div>
                 </div>
             </div>

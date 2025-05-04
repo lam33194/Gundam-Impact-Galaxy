@@ -14,7 +14,9 @@ class PostController extends Controller
 
     public function index()
     {
-        return response()->json(Post::with('user')->get());
+        $posts = Post::with('user')->latest()->get();
+
+        return $this->ok('Lấy danh sách bài viết thành công', $posts);
     }
 
     public function show(string $slug)
@@ -23,6 +25,6 @@ class PostController extends Controller
 
         if (!$post) return $this->not_found('Bài đăng không tồn tại');
 
-        return response()->json($post->load('user'));
+        return $this->ok('Lấy chi tiết bài viết thành công', $post->load('user'));
     }
 }

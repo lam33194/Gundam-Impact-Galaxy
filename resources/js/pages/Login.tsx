@@ -2,8 +2,9 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./Login.scss";
 import { useEffect, useState } from "react";
-import { authenticate } from "../services/AuthService";
+import { authenticate, loginByGoogle } from "../services/AuthService";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 interface LoginResponse {
   0: {
@@ -21,11 +22,14 @@ interface LoginResponse {
   1: string;
 }
 
-function Login() {
+const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { login } = useAuth();
+
+  const searchParams = new URLSearchParams(location.search);
+  const prevUrl = searchParams.get('prevUrl');
+
   const [formData, setFormData] = useState({
     email: location.state?.email || "",
     password: location.state?.password || ""
@@ -45,15 +49,37 @@ function Login() {
       const response = await authenticate(formData);
       const data = response.data as LoginResponse;
 
-      login(data[0], data[1]);
+      const redirectUrl = prevUrl ? decodeURIComponent(prevUrl) : '/';
 
-      navigate('/');
+      await login(data[0], data[1]);
+      toast.success('Đăng nhập thành công');
+
+      setTimeout(() => {
+        navigate(redirectUrl);
+      }, 100);
+
     } catch (error: any) {
       if (error.response?.status === 401) {
-        alert(error.response.data.message);
+        toast.error(error.response.data.message);
       } else {
-        alert('Có lỗi xảy ra, vui lòng thử lại sau');
+        toast.error('Có lỗi xảy ra, vui lòng thử lại sau');
       }
+    }
+  };
+
+  const loginGoogle = async () => {
+    try {
+      const res = await loginByGoogle();
+      if (res && res.data) {
+        const redirectUrl = res.data.data;
+        if (prevUrl) {
+          window.location.href = `${redirectUrl}&state=${encodeURIComponent(prevUrl)}`;
+        } else {
+          window.location.href = redirectUrl;
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -67,7 +93,6 @@ function Login() {
   }, [location]);
 
   return (
-
     <div className="login-container d-flex m-auto row col-lg-8">
       <div className="left d-flex flex-column col-lg-8 p-5 gap-3">
         <form onSubmit={handleSubmit}>
@@ -117,14 +142,12 @@ function Login() {
             <i className="fab fa-facebook-f me-2"></i> <span>Facebook</span>
           </button>
 
-
-          <button className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
+          <button onClick={loginGoogle} className="btn btn-lg btn-danger btn-block col-md-3 col-sm-6 mb-2 d-flex align-items-center justify-content-center">
             <i className="fab fa-google me-2"></i> <span>Google</span>
           </button>
-
         </div>
         <h6 className="text-center">
-          Bạn quên mật khẩu nhấn <a href="">vào đây</a>
+          Bạn quên mật khẩu nhấn <a href="/forget-password">vào đây</a>
         </h6>
       </div>
 
@@ -148,7 +171,7 @@ function Login() {
             trình hội viên, bạn có thể <a href="">xem tại đây</a>
           </li>
         </ul>
-        <button className="btn btn-lg col-7"><a href="/signup" style={{ 'color': '#fff' }}>Đăng ký</a></button>
+        <button className="btn btn-lg col-7" onClick={() => navigate('/signup')}>Đăng ký</button>
       </div>
     </div>
   );

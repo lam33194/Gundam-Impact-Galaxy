@@ -67,6 +67,11 @@ class UserController extends Controller
         return $this->ok('Cập nhật thông tin thành công', $user);
     }
 
+    public function getCurrentUser()
+    {
+        return $this->ok('Lấy thông tin người dùng đăng nhập thành công', auth('sanctum')->user());
+    }
+
     private function loadSubRelations($user, bool $isInstance = false)
     {
         $getMethod = $isInstance ? 'getRelations' : 'getEagerLoads';

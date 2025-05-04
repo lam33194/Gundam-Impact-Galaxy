@@ -27,7 +27,7 @@ class Product extends Model
         'is_show_home'
     ];
 
-    protected $appends = ['average_rating', 'total_comments', 'total_ratings'];
+    protected $appends = ['average_rating', 'total_ratings'];
 
     protected $casts = [
         'is_active' => 'boolean',
@@ -45,22 +45,32 @@ class Product extends Model
         'is_show_home' => 0,
     ];
 
+    protected function loadCommentStats()
+    {
+        if (!isset($this->commentStats)) {
+            $this->commentStats = $this->comments()
+                ->selectRaw('
+                    ROUND(AVG(CASE WHEN rating IS NOT NULL THEN rating END), 2) as average_rating,
+                    COUNT(CASE WHEN rating IS NOT NULL THEN 1 END) as total_ratings
+                ')
+                ->first([
+                    'average_rating',
+                    'total_ratings'
+                ]);
+        }
+        return $this->commentStats;
+    }
+
     // Accessor cho trung bình rating
     public function getAverageRatingAttribute(): float
     {
-        return round($this->comments()->whereNotNull('rating')->avg('rating'), 2) ?? 0;
+        return $this->loadCommentStats()->average_rating ?? 0;
     }
 
     // Accessor cho tổng lượt đánh giá
     public function getTotalRatingsAttribute(): int
     {
-        return $this->comments()->whereNotNull('rating')->count();
-    }
-
-    // Accessor cho tổng số bình luận
-    public function getTotalCommentsAttribute(): int
-    {
-        return $this->comments()->whereNotNull('content')->count();
+        return $this->loadCommentStats()->total_ratings ?? 0;
     }
 
     public function variants()
@@ -89,6 +99,10 @@ class Product extends Model
     }
 
     // Scope
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
     public function scopeNameFilter($query, $name)
     {
         return $query->where('name', 'LIKE', "%$name%");
@@ -101,14 +115,40 @@ class Product extends Model
     {
         return $query->where('sku', $sku);
     }
+    public function scopeTagFilter($query, array $tags)
+    {
+        // Giả sử tags được gửi dưới dạng slug hoặc tên, cần lấy ID của tags
+        $tagIds = Tag::whereIn('id', $tags)
+            ->orWhereIn('name', $tags)
+            ->pluck('id')->toArray();
+
+        if (empty($tagIds)) {
+            return $query;
+        }
+
+        // Lọc sản phẩm có tất cả các tag được yêu cầu
+        $query->whereHas('tags', function ($q) use ($tagIds) {
+            $q->whereIn('tags.id', $tagIds);
+        }, '=', count($tagIds));
+    }
     public function scopePriceRangeFilter($query, $minPrice, $maxPrice)
     {
-        if ($minPrice !== null) {
-            $query->where('price_regular', '>=', $minPrice);
-        }
-        if ($maxPrice !== null) {
-            $query->where('price_regular', '<=', $maxPrice);
-        }
+        $query->whereRaw(
+            '(CASE WHEN price_sale IS NOT NULL AND price_sale != 0 THEN price_sale ELSE price_regular END) BETWEEN ? AND ?',
+            [$minPrice ?? 0, $maxPrice ?? PHP_INT_MAX]
+        );
         return $query;
     }
+
+    // Mutator đặt is_good_deal và is_hot_deal
+    // public function setPriceSaleAttribute($value)
+    // {
+    //     $this->attributes['price_sale'] = $value;
+
+    //     if ($this->price_regular > 0 && $value > 0) {
+    //         $discount = (($this->price_regular - $value) / $this->price_regular) * 100;
+    //         $this->attributes['is_hot_deal'] = $discount >= 30;
+    //         $this->attributes['is_good_deal'] = $discount >= 10 && $discount < 30;
+    //     }
+    // }
 }

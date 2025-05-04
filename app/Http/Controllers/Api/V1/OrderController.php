@@ -113,7 +113,7 @@ class OrderController extends Controller
 
                 // Kiểm tra tồn kho
                 if ($cartItem->quantity > $variant->quantity) {
-                    throw new \Exception("Sản phẩm {$product->name} ({$product->sku}) hiện đã hết hàng số lượng tồn kho.");
+                    throw new \Exception("Sản phẩm {$product->name} ({$product->sku}) hiện đã hết số lượng tồn kho.");
                 }
 
                 $orderItemsData[] = [
@@ -141,6 +141,12 @@ class OrderController extends Controller
             foreach ($cartItems as $cartItem) {
                 $cartItem->variant->decrement('quantity', $cartItem->quantity);
             }
+
+            // Nếu PTTT là vnpay, thêm đường dẫn thanh toán khi tạo đơn
+            if ($data['type_payment'] == Order::TYPE_PAYMENT_VNPAY) {
+                $payment_url = new PaymentController();
+                $order->payment_url = $payment_url->createPayment(request(), $order->id)->getData()->data;
+            };
 
             return $this->ok('Đơn hàng của bạn đã được tạo', $order);
         });

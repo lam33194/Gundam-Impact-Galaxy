@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\AddressStoreRequest;
+use App\Http\Requests\V1\AddressUpdateRequest;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -57,15 +58,15 @@ class UserAddressController extends Controller
 
         if (!$address) return $this->not_found('Địa chỉ không tồn tại');
 
-        $data = $request->validated();
+        // $data = $request->validated();
 
-        if ($data['is_primary']) {
-            $user->addresses()->update([
-                'is_primary' => false,
-            ]);
-        }
+        // if ($data['is_primary']) {
+        //     $user->addresses()->update([
+        //         'is_primary' => false,
+        //     ]);
+        // }
 
-        $address->update($data);
+        $address->update($request->validated());
 
         return $this->ok('Cập nhật địa chỉ giao hàng thành công', $address);
     }
@@ -82,5 +83,31 @@ class UserAddressController extends Controller
         $address->delete();
 
         return $this->no_content();
+    }
+
+    public function setDefaultAddress(Request $request, string $id) 
+    {
+        // validate
+        $data = $request->validate([
+            'is_primary' => 'required|boolean'
+        ]);
+
+        // User info
+        /** @var \App\Models\User */
+        $user = auth('sanctum')->user();
+        $address = $user->addresses()->find($id);
+        if (!$address) return $this->not_found('Địa chỉ không tồn tại');
+
+        // Set is_primary to false
+        if ($data['is_primary']) {
+            $user->addresses()->update([
+                'is_primary' => false,
+            ]);
+        }
+
+        // Set default
+        $address->update($data);
+
+        return $this->ok('Đặt địa chỉ giao hàng mặc định thành công', $address);
     }
 }

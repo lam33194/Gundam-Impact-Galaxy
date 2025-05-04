@@ -97,14 +97,52 @@
             </div>
 
             <div class="card">
-                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người dùng</h4>
+                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người đặt</h4>
                 <div class="card-body">
-
                     <div class="table-responsive">
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
                                     <th>Avatar</th>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    @if($order->same_as_buyer)
+                                    <th>Địa chỉ</th>
+                                    @endif
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @if($order->user->avatar && Storage::exists($order->user->avatar))
+                                        <img src="{{ Storage::url($order->user->avatar) }}" width="70" alt="user_avatar">        
+                                        @else
+                                        <span>defaul user avatar</span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $order->user_name }}</td>
+                                    <td>{{ $order->user_email }}</td>
+                                    <td>{{ $order->user_phone }}</td>
+                                    @if($order->same_as_buyer)
+                                    <td>{{ $order->user_address }}</td>
+                                    @endif
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            @if(!$order->same_as_buyer)
+            <div class="card">
+                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người nhận</h4>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
+                            <thead class="table-light">
+                                <tr>
                                     <th>Tên</th>
                                     <th>Email</th>
                                     <th>Số điện thoại</th>
@@ -114,17 +152,17 @@
 
                             <tbody>
                                 <tr>
-                                    <td><img src="{{ Storage::url($order->user->avatar) }}" alt="user_avatar"></td>
-                                    <td>{{ $order->user_name }}</td>
-                                    <td>{{ $order->user_email }}</td>
-                                    <td>{{ $order->user_phone }}</td>
-                                    <td>{{ $order->user_address }}</td>
+                                    <td>{{ $order->ship_user_name }}</td>
+                                    <td>{{ $order->ship_user_email }}</td>
+                                    <td>{{ $order->ship_user_phone }}</td>
+                                    <td>{{ $order->ship_user_address }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+            @endif
 
             <div class="card">
                 <h4 class="mb-sm-0 font-size-18 card-header">Chi tiết đơn hàng</h4>
@@ -134,8 +172,9 @@
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
                                 <tr>
+                                    <th>ID</th>
                                     <th>Ảnh</th>
-                                    <th>Tên</th>
+                                    <th>Sản phẩm gốc</th>
                                     <th>Giá</th>
                                     <th>Số lượng</th>
                                     <th>Màu</th>
@@ -148,11 +187,21 @@
                                 @foreach ($order->orderItems as $orderItem)
                                     <tr>
                                         <td>
-                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_thumbnail) }}" width="70" alt="variant_image">        
+                                            {{ $orderItem->id }}
                                         </td>
 
                                         <td>
-                                            {{ limitTextLeng($orderItem->product_name, 45) }}
+                                            @if($orderItem->variant->image ?? $orderItem->product_img_thumbnail && Storage::exists($orderItem->variant->image ?? $orderItem->product_img_thumbnail))
+                                            <img src="{{ Storage::url($orderItem->variant->image ?? $orderItem->product_img_thumbnail) }}" width="70" alt="variant_image">        
+                                            @else
+                                            <span>Defaul variant image</span>
+                                            @endif
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ route('admin.products.show', $orderItem->variant->product->id) }}">
+                                                {{ limitTextLeng($orderItem->product_name, 45) }}
+                                            </a>
                                         </td>
 
                                         <td>

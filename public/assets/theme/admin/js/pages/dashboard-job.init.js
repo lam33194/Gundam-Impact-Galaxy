@@ -240,4 +240,156 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const topProductChart = new ApexCharts(document.querySelector("#topProductChart"), productOptions);
     topProductChart.render();
+
+    // Lọc doanh thu ===================================================
+
+    const fromDateInput = document.getElementById('from_date');
+    const toDateInput = document.getElementById('to_date');
+    const form = document.getElementById('dateRangeForm');
+    const fromDateFeedback = document.getElementById('fromDateFeedback');
+    const toDateFeedback = document.getElementById('toDateFeedback');
+
+    // Set max date to today for both inputs
+    const today = new Date().toISOString().split('T')[0];
+    fromDateInput.setAttribute('max', today);
+    toDateInput.setAttribute('max', today);
+
+    // Validate dates on input change
+    fromDateInput.addEventListener('change', validateDates);
+    toDateInput.addEventListener('change', validateDates);
+
+    // Validate on form submit
+    form.addEventListener('submit', function (e) {
+        if (!validateDates()) {
+            e.preventDefault();
+        }
+    });
+
+    function validateDates() {
+        const fromDate = fromDateInput.value;
+        const toDate = toDateInput.value;
+        let isValid = true;
+
+        // Reset validation states
+        fromDateInput.classList.remove('is-invalid');
+        toDateInput.classList.remove('is-invalid');
+        fromDateFeedback.style.display = 'none';
+        toDateFeedback.style.display = 'none';
+
+        // Check if both dates are selected
+        if (fromDate && toDate) {
+            // Compare dates
+            if (fromDate > toDate) {
+                toDateInput.classList.add('is-invalid');
+                toDateFeedback.style.display = 'block';
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
 })
+
+// Thống kê doanh thu ===================================================
+
+let options = {
+    series: [{
+        name: "Doanh thu",
+        type: "column",
+        data: revenueChartData.day.revenue
+    }],
+    chart: {
+        height: 350,
+        type: "bar",
+        toolbar: { show: true }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: false,
+            columnWidth: '50%',
+            endingShape: 'rounded'
+        }
+    },
+    dataLabels: {
+        enabled: false,
+        style: {
+            colors: ['#000000'],
+        },
+    },
+    stroke: { show: true, width: 2, colors: ['transparent'] },
+    xaxis: {
+        categories: revenueChartData.day.labels,
+        title: { text: 'Thời gian (Ngày)' }
+    },
+    yaxis: {
+        title: {
+            text: 'Doanh thu (VNĐ)',
+            offsetX: 5,
+        }
+    },
+    fill: { opacity: 1 },
+    tooltip: {
+        y: {
+            formatter: function (val) {
+                return val.toLocaleString() + " VNĐ";
+            }
+        }
+    },
+    colors: ['#556EE6'],
+    title: {
+        text: new Intl.NumberFormat('vi-VN').format(revenueChartData.day.total) + ' VNĐ'
+    }
+};
+
+// Khởi tạo biểu đồ
+const revenueChart = new ApexCharts(document.querySelector("#revenueChart"), options);
+revenueChart.render();
+
+// Hàm cập nhật biểu đồ
+function updateChart(timeUnit) {
+    const newData = revenueChartData[timeUnit];
+
+    let timeTitle;
+
+    switch (timeUnit) {
+        case 'day': {
+            timeTitle = 'Thời gian (Ngày)';
+            break;
+        }
+
+        case 'week': {
+            timeTitle = 'Thời gian (Tuần)';
+            break;
+        }
+
+        case 'month': {
+            timeTitle = 'Thời gian (Tháng)';
+            break;
+        }
+
+        case 'year': {
+            timeTitle = 'Thời gian (Năm)';
+            break;
+        }
+    }
+
+    revenueChart.updateOptions({
+        xaxis: {
+            categories: newData.labels,
+            title: { text: timeTitle }
+        },
+        series: [{ data: newData.revenue }],
+        title: {
+            // 
+        }
+    });
+
+    // Cập nhật active class
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+        // if (link.textContent.toLowerCase() === timeUnit) {
+        if (link.getAttribute('data-time') === timeUnit) {
+            link.classList.add('active');
+        }
+    });
+}

@@ -67,6 +67,11 @@
                                                             id="is_show_home" value="1" {{ request('is_show_home') ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="is_show_home">Hiển thị trang chủ</label>
                                                     </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="is_sale"
+                                                            id="is_sale" value="1" {{ request('is_sale') ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="is_sale">Đang giảm giá</label>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -141,15 +146,13 @@
                                                 </td> --}}
                                                 <td>{{$product->id}}</td>
                                                 <td>
+                                                    <a href="{{ route('admin.products.show', $product->id) }}">
                                                     @if ($product->thumb_image && Storage::exists($product->thumb_image))
-                                                        <a href="{{ route('admin.products.show', $product->id) }}">
-                                                            <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}"
-                                                                width="50" height="auto">
-                                                        </a>
+                                                        <img src="{{ Storage::url($product->thumb_image) }}" alt="{{ $product->name }}" width="50" height="auto">
                                                     @else
-                                                        <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" width="50"
-                                                            height="auto">
+                                                        <img src="https://laravel.com/img/logomark.min.svg" alt="avatar default" width="50" height="auto">
                                                     @endif
+                                                    </a>
                                                 </td>
                                                 <td>{{ Str::length($product->name) > 20 ? Str::limit($product->name, 20, '...') : $product->name }}
                                                 </td>
@@ -183,14 +186,12 @@
                                                             <i class="mdi mdi-dots-horizontal font-size-18"></i>
                                                         </a>
                                                         <ul class="dropdown-menu dropdown-menu-end">
-                                                            <li>
                                                                 <a href="{{ route('admin.products.edit', $product->id) }}"
                                                                     class="dropdown-item edit-list">
                                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                                     </i>
                                                                     Sửa
                                                                 </a>
-                                                            </li>
                                                             <li>
                                                                 <form method="POST"
                                                                     action="{{ route('admin.products.destroy', $product->id) }}"

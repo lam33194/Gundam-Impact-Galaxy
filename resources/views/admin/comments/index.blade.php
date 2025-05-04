@@ -42,10 +42,10 @@
                                 <tr>
                                     <th>STT</th>
                                     <th>Avatar</th>
-                                    <th>Name</th>
-                                    <th>Product</th>
-                                    <th>Content</th>
-                                    <th>Rating</th>
+                                    <th>Tên</th>
+                                    <th>Sản phẩm</th>
+                                    <th>Nội dung</th>
+                                    <th>Đánh giá</th>
                                     <th>Hành động</th>
 
                                 </tr>

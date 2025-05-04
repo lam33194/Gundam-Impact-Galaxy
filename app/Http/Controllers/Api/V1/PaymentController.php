@@ -17,7 +17,7 @@ class PaymentController extends Controller
 
         if (!$order) return $this->not_found('Đơn hàng không tồn tại');
         
-        if ($order->user->id != $request->user()->id) return $this->forbidden('Bạn không có quyền thực hiện chức năng này');
+        if ($order->user->id != auth('sanctum')->id()) return $this->forbidden('Bạn không có quyền thực hiện chức năng này');
 
         // Kiểm tra trạng thái thanh toán (nếu đã thanh toán thì không xử lý lại)
         if ($order->status_payment === Order::STATUS_PAYMENT_PAID) {
@@ -26,7 +26,7 @@ class PaymentController extends Controller
 
         // Kiểm tra trạng thái đơn hàng (chỉ cho phép thanh toán khi đơn hàng ở trạng thái phù hợp)
         if (!in_array($order->status_order, [Order::STATUS_ORDER_PENDING, Order::STATUS_ORDER_CONFIRMED])) {
-            return $this->error('Đơn hàng này đã được xử lú');
+            return $this->error('Đơn hàng này đã được xử lý');
         }
 
         switch ($order->type_payment) {
@@ -36,10 +36,6 @@ class PaymentController extends Controller
                     'total'     => $order->total_price,
                 ]));
             return $this->ok('Tạo URL thanh toán VNPAY thành công', $paymentUrl);
-
-            case Order::TYPE_PAYMENT_MOMO:
-                // 
-            return;
 
             case Order::TYPE_PAYMENT_COD:
                 // Với COD, không cần URL thanh toán, có thể cập nhật trạng thái trực tiếp nếu cần
@@ -67,6 +63,9 @@ class PaymentController extends Controller
         $vnp_Locale = 'vn';
         $vnp_IpAddr = $request->ip();
         $vnp_BankCode = $request->input('bank_code', '');
+        // Tạo thời gian hết hạn (n phút sau)
+        // $expire_After = 15;
+        // $expire = date('YmdHis', strtotime("+$expire_After minutes", strtotime(date("YmdHis"))));
 
         // Dữ liệu gửi sang VNPAY
         $inputData = [
@@ -82,6 +81,7 @@ class PaymentController extends Controller
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_ReturnUrl,
             "vnp_TxnRef" => $vnp_TxnRef,
+            // "vnp_ExpireDate" => $expire,
         ];
 
         if (isset($vnp_BankCode) && $vnp_BankCode != "") {
@@ -113,9 +113,6 @@ class PaymentController extends Controller
 
         // Kiểm tra tính hợp lệ của dữ liệu trả về
         if ($computedHash !== $vnp_SecureHash) return $this->error('Dữ liệu trả về không hợp lệ');
-        // if ($computedHash !== $vnp_SecureHash) {
-        //     return redirect()->away(config('payment.frontend.payment_failed_url') . '?error=' . urlencode('Dữ liệu trả về không hợp lệ'));
-        // }
 
         // Lấy order_sku từ vnp_TxnRef
         $orderSku = $vnp_ReturnData['vnp_TxnRef'];
@@ -124,7 +121,8 @@ class PaymentController extends Controller
         if (!$order) return $this->not_found('Đơn hàng không tồn tại');
 
         // Kiểm tra trạng thái giao dịch từ VNPAY
-        $responseCode = $vnp_ReturnData['vnp_ResponseCode'];
+        $responseCode = $vnp_ReturnData['vnp_ResponseCode'] ?? null;
+
         if ($responseCode === '00') {
             // Thanh toán thành công
             $order->update([
@@ -132,24 +130,22 @@ class PaymentController extends Controller
                 'status_order'   => Order::STATUS_ORDER_CONFIRMED,
             ]);
 
-            // return $this->ok('Thanh toán thành công!', $order);
             return redirect()->away(config('payment.frontend.payment_success_url') . '?' . $hashData);
         } else {
             // Thanh toán thất bại
             $order->update([
-                'status_payment' => Order::STATUS_PAYMENT_UNPAID,
-                'status_order'   => Order::STATUS_ORDER_PENDING,
+                'status_payment' => Order::STATUS_PAYMENT_FAILED,
+                'status_order'   => Order::STATUS_ORDER_CANCELED,
             ]);
 
-            // return $this->error('Thanh toán thất bại. Vui lòng thử lại sau', 400, [
-            //     'response_code' => $responseCode,
-            // ]);
+            // Tăng lại số lượng tồn kho trong product_variants
+            $orderItems = $order->orderItems()->with('variant')->get();
+
+            foreach ($orderItems as $orderItem) {
+                $orderItem->variant->increment('quantity', $orderItem->quantity);
+            }
+
             return redirect()->away(config('payment.frontend.payment_failed_url') . '?' . $hashData);
         }
-    }
-
-    public function createMomoPaymentUrl(Request $request)
-    {
-        // 
     }
 }

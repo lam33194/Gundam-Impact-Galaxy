@@ -47,7 +47,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
                                     <label for="code" class="form-label">
                                         <span class="required">*</span> Mã voucher (Tự động)
@@ -65,7 +65,41 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
+                                <div class="mb-3">
+                                    <label for="start_date_time" class="form-label">
+                                        <span class="required">*</span> Ngày bắt đầu
+                                    </label>
+                                    <input type="datetime-local" name="start_date_time" id="start_date_time"
+                                        class="form-control {{ $errors->has('start_date_time') ? 'is-invalid' : (old('start_date_time') ? 'is-valid' : '') }}"
+                                        value="{{ old('start_date_time') }}">
+                                    <div
+                                        class="{{ $errors->has('start_date_time') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('start_date_time'))
+                                            {{ $errors->first('start_date_time') }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <div class="mb-3">
+                                    <label for="end_date_time" class="form-label">
+                                        <span class="required">*</span> Ngày kết thúc
+                                    </label>
+                                    <input type="datetime-local" name="end_date_time" id="end_date_time"
+                                        class="form-control {{ $errors->has('end_date_time') ? 'is-invalid' : (old('end_date_time') ? 'is-valid' : '') }}"
+                                        value="{{ old('end_date_time') }}">
+                                    <div
+                                        class="{{ $errors->has('end_date_time') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('end_date_time'))
+                                            {{ $errors->first('end_date_time') }}
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
                                 <div class="mb-3">
 
                                     <label for="formatted_discount" class="form-label">
@@ -86,40 +120,40 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label for="start_date_time" class="form-label">
-                                        <span class="required">*</span> Ngày bắt đầu
+                                    <label for="min_order_amount" class="form-label">
+                                        Đơn hàng tối thiểu
                                     </label>
-                                    <input type="datetime-local" name="start_date_time" id="start_date_time"
-                                        class="form-control {{ $errors->has('start_date_time') ? 'is-invalid' : (old('start_date_time') ? 'is-valid' : '') }}"
-                                        value="{{ old('start_date_time') }}">
+                                    <input type="number" name="min_order_amount" id="min_order_amount"
+                                        class="form-control {{ $errors->has('min_order_amount') ? 'is-invalid' : (old('min_order_amount') ? 'is-valid' : '') }}"
+                                        value="{{ old('min_order_amount') }}">
                                     <div
-                                        class="{{ $errors->has('start_date_time') ? 'invalid-feedback' : 'valid-feedback' }}">
-                                        @if ($errors->has('start_date_time'))
-                                            {{ $errors->first('start_date_time') }}
+                                        class="{{ $errors->has('min_order_amount') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('min_order_amount'))
+                                            {{ $errors->first('min_order_amount') }}
                                         @endif
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-6">
+                            <div class="col-lg-4">
                                 <div class="mb-3">
-                                    <label for="end_date_time" class="form-label">
-                                        <span class="required">*</span> Ngày kết thúc
+                                    <label for="max_usage" class="form-label">
+                                        <!-- <span class="required">*</span> -->
+                                        Số lần sử dụng tối đa
                                     </label>
-                                    <input type="datetime-local" name="end_date_time" id="end_date_time"
-                                        class="form-control {{ $errors->has('end_date_time') ? 'is-invalid' : (old('end_date_time') ? 'is-valid' : '') }}"
-                                        value="{{ old('end_date_time') }}">
+                                    <input type="number" name="max_usage" id="max_usage"
+                                        class="form-control {{ $errors->has('max_usage') ? 'is-invalid' : (old('max_usage') ? 'is-valid' : '') }}"
+                                        value="{{ old('max_usage') }}">
                                     <div
-                                        class="{{ $errors->has('end_date_time') ? 'invalid-feedback' : 'valid-feedback' }}">
-                                        @if ($errors->has('end_date_time'))
-                                            {{ $errors->first('end_date_time') }}
+                                        class="{{ $errors->has('max_usage') ? 'invalid-feedback' : 'valid-feedback' }}">
+                                        @if ($errors->has('max_usage'))
+                                            {{ $errors->first('max_usage') }}
                                         @endif
                                     </div>
                                 </div>
                             </div>
-
 
                             <div class="col-lg-12">
                                 <div class="mb-3">

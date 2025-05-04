@@ -17,57 +17,94 @@ import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute, AuthRoute } from './components/ProtectedRoute';
 import OrderHistory from './pages/OrderHistory';
 import ChangePassword from './pages/ChangePassword';
+import ForgetPassword from './pages/ForgetPassword';
+import ResetPassword from './pages/ResetPassword';
+import { LoginSuccess } from './pages/LoginSuccess';
+import { CartProvider } from './context/CartContext';
+import './App.scss';
 
 function App() {
     return (
         <div>
-            <ToastContainer />
             <BrowserRouter>
                 <AuthProvider>
-                    <Routes>
-                        {/* Public routes */}
-                        <Route path="/" element={<Layout />}>
-                            <Route index element={<Home />} />
-                            <Route path="/home" element={<Navigate to="/" replace />} />
-                            <Route path="/product/:slug" element={<ProductDetail />} />
-                            <Route path="/blog-detail" element={<BlogDetail />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path='/login' element={
-                                <AuthRoute>
-                                    <Login />
-                                </AuthRoute>
-                            } />
-                            <Route path='/signup' element={
-                                <AuthRoute>
-                                    <Signup />
-                                </AuthRoute>
-                            } />
-                            <Route path='/checkout' element={
-                                <ProtectedRoute>
-                                    <Checkout />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/blog-list' element={<BlogList />} />
-                            <Route path='/search' element={<Search />} />
-                            <Route path='/order-history' element={
-                                <ProtectedRoute>
-                                    <OrderHistory />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/profile' element={
-                                <ProtectedRoute>
-                                    <Profile />
-                                </ProtectedRoute>
-                            } />
-                            <Route path='/change-password' element={
-                                <ProtectedRoute>
-                                    <ChangePassword />
-                                </ProtectedRoute>
-                            } />
-                        </Route>
-                    </Routes>
+                    <CartProvider>
+                        <Routes>
+                            <Route path="/" element={<Layout />}>
+                                <Route index element={<Home />} />
+                                <Route path="/home" element={<Navigate to="/" replace />} />
+                                <Route path="/product/:slug" element={<ProductDetail />} />
+                                <Route path="/blog-detail/:id" element={<BlogDetail />} />
+                                <Route path='/login' element={
+                                    <AuthRoute>
+                                        <Login />
+                                    </AuthRoute>
+                                } />
+
+                                <Route path='/login-success' element={
+                                    <AuthRoute>
+                                        <LoginSuccess />
+                                    </AuthRoute>
+                                } />
+                                <Route path='/signup' element={
+                                    <AuthRoute>
+                                        <Signup />
+                                    </AuthRoute>
+                                } />
+                                <Route path="/cart" element={
+                                    <ProtectedRoute>
+                                        <Cart />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/checkout' element={
+                                    <ProtectedRoute>
+                                        <Checkout />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/blog-list' element={<BlogList />} />
+                                <Route path='/search' element={<Search />} />
+                                <Route path='/order-history' element={
+                                    <ProtectedRoute>
+                                        <OrderHistory />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/profile' element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/change-password' element={
+                                    <ProtectedRoute>
+                                        <ChangePassword />
+                                    </ProtectedRoute>
+                                } />
+                                <Route path='/forget-password' element={
+                                    <AuthRoute>
+                                        <ForgetPassword />
+                                    </AuthRoute>
+                                } />
+                                <Route path='/reset-password' element={
+                                    <AuthRoute>
+                                        <ResetPassword />
+                                    </AuthRoute>
+                                } />
+                            </Route>
+                        </Routes>
+                    </CartProvider>
                 </AuthProvider>
-            </BrowserRouter >
+            </BrowserRouter>
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     );
 }

@@ -9,7 +9,7 @@
                 <div class="page-title-right">
                     <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item">
-                            <a href="{{ route('admin.products.index') }}">Danh sách</a>
+                            <a href="{{ route('admin.products.index') }}">Chi tiết sản phẩm</a>
                         </li>
                         <li class="breadcrumb-item active">{{ $product->sku }}</li>
                     </ol>
@@ -50,7 +50,11 @@
                                             </tr>
                                             <tr>
                                                 <th>Slug</th>
-                                                <td>{{ $product->slug }}</td>
+                                                <td>
+                                                    <a target="_blank" href="{{ env('APP_URL')."/product/$product->slug" }}">
+                                                        {{ $product->slug }}
+                                                    </a>
+                                                </td>
                                             </tr>
                                             <tr>
                                                 <th>Danh mục</th>
@@ -76,10 +80,10 @@
                                                 <th>Giá khuyến mãi</th>
                                                 <td>{{ number_format($product->price_sale) }} đ</td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <th>Lượt xem</th>
                                                 <td>{{ number_format($product->views) }}</td>
-                                            </tr>
+                                            </tr> -->
                                         </tbody>
                                     </table>
                                 </div>
@@ -151,52 +155,6 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- description -->
-            <div class="card">
-                <h4 class="mb-sm-0 font-size-18 card-header">Mô tả</h4>
-                <div class="card-body">
-                    <!-- Product Description -->
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0 font-size-15">Mô tả ngắn</h5>
-                                </div>
-                                <div class="card-body">
-                                    @if($product->description)
-                                        <div class="border p-3 rounded">
-                                            {!! $product->description !!}
-                                        </div>
-                                    @else
-                                        <div class="alert alert-info mb-0">Chưa có mô tả</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Product Content -->
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="mb-0 font-size-15">Nội dung chi tiết</h5>
-                                </div>
-                                <div class="card-body">
-                                    @if($product->content)
-                                        <div class="border p-3 rounded">
-                                            <p>{!! $product->content !!}</p>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-info mb-0">Chưa có nội dung chi tiết</div>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -292,7 +250,7 @@
 
                                         <td>
                                             @if($variant->image && Storage::exists($variant->image))
-                                            <img src="{{ Storage::url($variant->image) }}" width="70"
+                                            <img src="{{ Storage::url($variant->image) }}" width="120"
                                                 alt="variant_image">
                                             @else
                                             <span>defaul image</span>
@@ -302,6 +260,52 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- description -->
+            <div class="card">
+                <h4 class="mb-sm-0 font-size-18 card-header">Mô tả</h4>
+                <div class="card-body">
+                    <!-- Product Description -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 font-size-15">Mô tả ngắn</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if($product->description)
+                                        <div class="border p-3 rounded">
+                                            {!! $product->description !!}
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info mb-0">Chưa có mô tả</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Content -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0 font-size-15">Nội dung chi tiết</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if($product->content)
+                                        <div class="border p-3 rounded">
+                                            <p>{!! $product->content !!}</p>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info mb-0">Chưa có nội dung chi tiết</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

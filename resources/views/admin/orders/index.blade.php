@@ -140,10 +140,10 @@
 
                                                         <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_CONFIRMED }}" class="dropdown-item">Xác nhận</button>
 
-                                                        {{-- <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_PREPARING }}" class="dropdown-item">Chuẩn bị hàng</button>
+                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_PREPARING }}" class="dropdown-item">Chuẩn bị hàng</button>
                                                         <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_SHIPPING }}" class="dropdown-item">Đang giao hàng</button>
                                                         <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_DELIVERED }}" class="dropdown-item">Đã giao hàng</button>
-                                                        <button type="submit" name="action" value="{{ \App\Models\Order::STATUS_ORDER_CANCELED }}" class="dropdown-item">Hủy đơn</button> --}}
+                                                        <button type="submit" name="action" onclick="return confirm('Are you shore')"  value="{{ \App\Models\Order::STATUS_ORDER_CANCELED }}" class="dropdown-item">Hủy đơn</button>
                                                     </form>
                                                 </li>
                                             </ul>

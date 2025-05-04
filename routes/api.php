@@ -10,7 +10,9 @@ use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\PaymentController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\VoucherController;
-use App\Http\Controllers\UserAddressController;
+use App\Http\Controllers\Api\V1\UserAddressController;
+use App\Http\Controllers\Api\V1\SocialAuthController;
+use App\Http\Controllers\Api\V1\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,12 +30,12 @@ Route::prefix('v1')->group(function () {
         Route::get('products',       'index');
         // Product detail
         Route::get('products/{slug}', 'show');
-        // Lấy danh sách product theo category
-        Route::get('categories/{slug}/products', 'getByCategory');
         // Sản phẩm top doanh thu
         Route::get('getTopRevenueProducts', 'getTopRevenueProducts');
         // Sản phẩm bán chạy
         Route::get('getTopSellingProducts', 'getTopSellingProducts');
+        // Sản phẩm liên quan
+        Route::get('products/{slug}/related', 'getRelatedProducts');
     });
 
     Route::controller(CommentController::class)->group(function () {
@@ -85,6 +87,8 @@ Route::prefix('v1')->group(function () {
         Route::get('users/{id}', 'show');
         // Cập nhật thông tin user
         Route::put('users',      'update')->middleware('auth:sanctum');
+        // Get Current Login User
+        Route::get('current-user', 'getCurrentUser')->middleware('auth:sanctum');
     });
 
     Route::controller(UserAddressController::class)->group(function () {
@@ -99,12 +103,16 @@ Route::prefix('v1')->group(function () {
             Route::put('addresses/{id}', 'update');
             // Xóa địa chỉ
             Route::delete('addresses/{id}', 'destroy');
+            // Đặt làm mặc định
+            Route::put('addresses/{id}/set-default', 'setDefaultAddress');
         });
     });
 
     Route::controller(VoucherController::class)->group(function () {
         // Lấy tất cả user
         Route::get('vouchers', 'index');
+        // Chi tiết voucher
+        Route::get('vouchers/{code}', 'show');
     });
 
     Route::controller(PaymentController::class)->group(function(){
@@ -120,6 +128,9 @@ Route::prefix('v1')->group(function () {
         Route::get('posts/{id}', 'show');
     });
 
+    // Lấy tất cả thẻ
+    Route::get('tags', [TagController::class, 'index']);
+
     Route::prefix('auth')->group(function () {
         // Đăng ký
         Route::post('register', [AuthController::class, 'register']);   
@@ -131,6 +142,10 @@ Route::prefix('v1')->group(function () {
             // Đổi mật khẩu
             Route::post('change-password', [AuthController::class, 'changePassword']);
         });
+
+        // Đăng nhập bên thứ 3
+        Route::get('google-login',    [SocialAuthController::class, 'googleLogin']);
+        Route::get('google-callback', [SocialAuthController::class, 'googleCallback']);
 
         // Quên mật khẩu
         Route::post('forgot-password', [AuthController::class, 'forgotPassword']);

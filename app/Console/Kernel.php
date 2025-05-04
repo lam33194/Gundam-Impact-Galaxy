@@ -13,6 +13,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        $schedule->command('app:cancel-expired-vnpay-orders')->everyFiveMinutes();
+
+        // $schedule->command('orders:send-reminders')->hourly(); // Hoặc ->cron('0 * * * *') để chạy vào phút 00 của mỗi giờ
     }
 
     /**

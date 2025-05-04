@@ -18,13 +18,17 @@ class VoucherController extends Controller
 
     public function index(Request $request)
     {
-        $vouchers = Voucher::latest()->get();
+        $vouchers = Voucher::latest()->where('is_active', 1)->get();
 
         return $this->ok('Lấy danh sách vouchers thành công', $vouchers);
     }
 
-    public function show(string $slug)
+    public function show(string $code)
     {
-        // 
+        $voucher = Voucher::where('code', $code)->first();
+
+        if (!$voucher) return $this->not_found('Không tìm thấy voucher');
+
+        return $this->ok('Lấy chi tiết voucher thành công', $voucher);
     }
 }

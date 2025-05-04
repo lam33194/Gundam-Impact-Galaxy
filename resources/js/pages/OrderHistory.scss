@@ -1,0 +1,48 @@
+.card {
+    .btn-danger {
+        transition: all 0.2s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    }
+
+    .btn-outline-dark {
+        padding: 0.5rem 1rem;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border-color: #343a40;
+        color: #343a40;
+
+        &:hover {
+            transform: translateY(-2px);
+            background-color: #343a40;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+            i {
+                color: white;
+            }
+        }
+
+        i {
+            font-size: 0.9rem;
+        }
+    }
+
+    .badge {
+        &.bg-success {
+            background-color: #28a745 !important;
+        }
+
+        &.bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529;
+        }
+
+        &.bg-danger {
+            background-color: #dc3545 !important;
+        }
+    }
+}
