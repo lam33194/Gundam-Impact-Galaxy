@@ -18,7 +18,7 @@ class VoucherController extends Controller
 
     public function index(Request $request)
     {
-        $vouchers = Voucher::latest()->get();
+        $vouchers = Voucher::latest()->where('is_active', 1)->get();
 
         return $this->ok('Lấy danh sách vouchers thành công', $vouchers);
     }
