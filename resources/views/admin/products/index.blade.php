@@ -181,18 +181,18 @@
                                                 </td> --}}
                                                 <td>
                                                     <div class="dropdown">
-                                                        {{-- <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown"
+                                                        <a href="#" class="dropdown-toggle card-drop" data-bs-toggle="dropdown"
                                                             aria-expanded="false">
                                                             <i class="mdi mdi-dots-horizontal font-size-18"></i>
-                                                        </a> --}}
-                                                        {{-- <ul class="dropdown-menu dropdown-menu-end"> --}}
+                                                        </a>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
                                                                 <a href="{{ route('admin.products.edit', $product->id) }}"
                                                                     class="dropdown-item edit-list">
                                                                     <i class="mdi mdi-pencil font-size-16 text-success me-1">
                                                                     </i>
                                                                     Sửa
                                                                 </a>
-                                                            {{-- <li>
+                                                            <li>
                                                                 <form method="POST"
                                                                     action="{{ route('admin.products.destroy', $product->id) }}"
                                                                     class="d-inline-block">
@@ -204,8 +204,8 @@
                                                                         Xóa
                                                                     </button>
                                                                 </form>
-                                                            </li> --}}
-                                                        {{-- </ul> --}}
+                                                            </li>
+                                                        </ul>
                                                     </div>
                                                 </td>
                                             </tr>

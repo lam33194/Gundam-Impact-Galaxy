@@ -130,24 +130,71 @@ class OrderController extends Controller
 
                     return redirect()->back()->with('success', 'Xác nhận '.$orders->count().' đơn hàng thành công');
                 }
-            return redirect()->back()->with('error', 'Không có đơn hàng nào được xác nhận');
+            return redirect()->back()->with('error', 'Không có đơn hàng nào được cập nhật');
 
-            // case Order::STATUS_ORDER_PREPARING:
-            //     // ...
-            // return redirect()->back()->with('error', 'Không có đơn hàng nào được xác nhận');
+            case Order::STATUS_ORDER_PREPARING:
+                // Chỉ lấy những đơn đã xác nhận
+                $query = Order::statusOrderFilter(Order::STATUS_ORDER_CONFIRMED)->whereIn('id', $ids);
 
-            // case Order::STATUS_ORDER_SHIPPING:
-            //     // ...
-            // return redirect()->back()->with('error', 'Không có đơn hàng nào được xác nhận');
+                if ($query->exists()) {
+                    $orders = $query->get();
 
-            // case Order::STATUS_ORDER_DELIVERED:
-            //     // ...
-            // return redirect()->back()->with('error', 'Không có đơn hàng nào được xác nhận');
+                    foreach ($orders as $order) {
+                        $order->update(['status_order' => Order::STATUS_ORDER_PREPARING]);
+                    }
 
-            // case Order::STATUS_ORDER_CANCELED:
-            //     // ...
-            // return redirect()->back()->with('error', 'Không có đơn hàng nào được xác nhận');
+                    return redirect()->back()->with('success', 'Cập nhật '.$orders->count().' đơn hàng thành công');
+                }
+            return redirect()->back()->with('error', 'Không có đơn hàng nào được cập nhật');
 
+            case Order::STATUS_ORDER_SHIPPING:
+                // Chỉ lấy những đơn đã xác nhận
+                $query = Order::statusOrderFilter(Order::STATUS_ORDER_PREPARING)->whereIn('id', $ids);
+
+                if ($query->exists()) {
+                    $orders = $query->get();
+
+                    foreach ($orders as $order) {
+                        $order->update(['status_order' => Order::STATUS_ORDER_SHIPPING]);
+                    }
+
+                    return redirect()->back()->with('success', 'Cập nhật '.$orders->count().' đơn hàng thành công');
+                }
+            return redirect()->back()->with('error', 'Không có đơn hàng nào được cập nhật');
+
+            case Order::STATUS_ORDER_DELIVERED:
+                // Chỉ lấy những đơn đã xác nhận
+                $query = Order::statusOrderFilter(Order::STATUS_ORDER_SHIPPING)->whereIn('id', $ids);
+
+                if ($query->exists()) {
+                    $orders = $query->get();
+
+                    foreach ($orders as $order) {
+                        $order->update(['status_order' => Order::STATUS_ORDER_DELIVERED]);
+                    }
+
+                    return redirect()->back()->with('success', 'Cập nhật '.$orders->count().' đơn hàng thành công');
+                }
+            return redirect()->back()->with('error', 'Không có đơn hàng nào được cập nhật');
+
+            case Order::STATUS_ORDER_CANCELED:
+                // Chỉ lấy những đơn ở trạng thái pending hoặc confirmed
+                $query = Order::whereIn('id', $ids)->whereIn('status_order', [
+                    Order::STATUS_ORDER_PENDING,
+                    Order::STATUS_ORDER_CONFIRMED
+                ]);
+    
+                if ($query->exists()) {
+                    $orders = $query->get();
+    
+                    foreach ($orders as $order) {
+                        $order->update(['status_order' => Order::STATUS_ORDER_CANCELED]);
+                    }
+    
+                    return redirect()->back()->with('success', 'Hủy '.$orders->count().' đơn hàng thành công');
+                }
+            return redirect()->back()->with('error', 'Không có đơn hàng nào bị hủy');
+            
             default: return redirect()->back()->with('error', 'Thao tác không hợp lệ');
         };
     }

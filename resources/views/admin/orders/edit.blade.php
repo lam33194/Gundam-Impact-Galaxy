@@ -97,9 +97,8 @@
             </div>
 
             <div class="card">
-                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người dùng</h4>
+                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người đặt</h4>
                 <div class="card-body">
-
                     <div class="table-responsive">
                         <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
                             <thead class="table-light">
@@ -108,7 +107,9 @@
                                     <th>Tên</th>
                                     <th>Email</th>
                                     <th>Số điện thoại</th>
+                                    @if($order->same_as_buyer)
                                     <th>Địa chỉ</th>
+                                    @endif
                                 </tr>
                             </thead>
 
@@ -124,13 +125,44 @@
                                     <td>{{ $order->user_name }}</td>
                                     <td>{{ $order->user_email }}</td>
                                     <td>{{ $order->user_phone }}</td>
+                                    @if($order->same_as_buyer)
                                     <td>{{ $order->user_address }}</td>
+                                    @endif
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
+            @if(!$order->same_as_buyer)
+            <div class="card">
+                <h4 class="mb-sm-0 font-size-18 card-header">Thông tin người nhận</h4>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table align-middle table-nowrap dt-responsive nowrap w-100">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Email</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Địa chỉ</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr>
+                                    <td>{{ $order->ship_user_name }}</td>
+                                    <td>{{ $order->ship_user_email }}</td>
+                                    <td>{{ $order->ship_user_phone }}</td>
+                                    <td>{{ $order->ship_user_address }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            @endif
 
             <div class="card">
                 <h4 class="mb-sm-0 font-size-18 card-header">Chi tiết đơn hàng</h4>

@@ -30,6 +30,7 @@ class ProductUpdateRequest extends FormRequest
             'product.content' => 'nullable|string',
             'product.category_id' => 'required|exists:categories,id',
             'product.thumb_image' => 'nullable|image|max:4096',
+            'product.is_active' => 'nullable|boolean',
             'colors' => 'required|array',
             'colors.*' => 'exists:product_colors,id',
             'sizes' => 'required|array',

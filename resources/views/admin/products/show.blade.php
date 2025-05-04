@@ -51,7 +51,7 @@
                                             <tr>
                                                 <th>Slug</th>
                                                 <td>
-                                                    <a target="_blank" href="{{ env('APP_URL')."/$product->slug" }}">
+                                                    <a target="_blank" href="{{ env('APP_URL')."/product/$product->slug" }}">
                                                         {{ $product->slug }}
                                                     </a>
                                                 </td>
@@ -80,10 +80,10 @@
                                                 <th>Giá khuyến mãi</th>
                                                 <td>{{ number_format($product->price_sale) }} đ</td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <th>Lượt xem</th>
                                                 <td>{{ number_format($product->views) }}</td>
-                                            </tr>
+                                            </tr> -->
                                         </tbody>
                                     </table>
                                 </div>

@@ -113,7 +113,7 @@ class OrderController extends Controller
 
                 // Kiểm tra tồn kho
                 if ($cartItem->quantity > $variant->quantity) {
-                    throw new \Exception("Sản phẩm {$product->name} ({$product->sku}) hiện đã hết hàng số lượng tồn kho.");
+                    throw new \Exception("Sản phẩm {$product->name} ({$product->sku}) hiện đã hết số lượng tồn kho.");
                 }
 
                 $orderItemsData[] = [
