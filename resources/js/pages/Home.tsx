@@ -39,7 +39,7 @@ function Home() {
                 setBlogList(res.data.data);
                 console.log("uei", res.data.data);
             }
-        } catch (error) {}
+        } catch (error) { }
     };
 
 
@@ -156,24 +156,6 @@ function Home() {
                 </div>
             </div>
 
-            <div className="best-seller">
-                <h4 className="fw-bold text-uppercase fs-5 mb-3">
-                    Sản phẩm yêu thích
-                </h4>
-                <div className="product-list">
-                    {sellingProducts &&
-                        sellingProducts.map((p, index) => {
-                            return (
-                                <div
-                                    className=""
-                                    onClick={() => redirectToDetail(p.slug)}
-                                >
-                                    <Product key={index} p={p} />
-                                </div>
-                            );
-                        })}
-                </div>
-            </div>
             <div className="banner row ">
                 <img
                     className="col-6"
@@ -186,6 +168,7 @@ function Home() {
                     src="https://bizweb.dktcdn.net/100/456/060/themes/962001/assets/imgbanner2.jpg?1740630578329"
                 />
             </div>
+
             <div className="voucher-section position-relative">
                 {canScroll && (
                     <div
@@ -219,38 +202,6 @@ function Home() {
                 )}
             </div>
 
-
-            <div className="blog-list-home">
-                <h4
-                    className="fw-bold text-uppercase fs-5"
-                    style={{cursor: 'pointer'}}
-                    onClick={() => window.location.href = ("/blog-list")}
-                >
-                    BLOG TIN TỨC
-                </h4>
-                <div className="list row">
-                    <div className="col-6">
-                        <Blog
-                            display={"column"}
-                            backgroundSize="100% 100%"
-                            blog={blogList[1]}
-                        />
-                    </div>
-                    <div className="d-flex flex-column gap-2 col-6">
-                        {blogList &&
-                            blogList.map((b: any, index: any) => {
-                                return (
-                                    <Blog
-                                        display={"column"}
-                                        backgroundSize="100% 100%"
-                                        blog={b}
-                                    />
-                                );
-                            })}
-                    </div>
-                </div>
-            </div>
-            
             <div className="best-seller">
                 <h4 className="fw-bold text-uppercase fs-5 mb-3">
                     Sản phẩm bán chạy
@@ -270,7 +221,31 @@ function Home() {
                 </div>
             </div>
 
-            
+            <div className="blog-list-home">
+                <h4
+                    className="fw-bold text-uppercase fs-5"
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => window.location.href = ("/blog-list")}
+                >
+                    BLOG TIN TỨC
+                </h4>
+
+                <div className="list row">
+                    {blogList &&
+                        blogList.map((b: any, index: any) => {
+                            return (
+                                <div className="col-3 mb-3" key={index}>
+                                    <Blog
+                                        display={"column"}
+                                        backgroundSize="cover"
+                                        blog={b}
+                                    />
+                                </div>
+                            );
+                    })}
+                </div>
+            </div>
+
             <div className="service-info row">
                 <div className="service p-2 col-lg-3 col-sm-12 d-flex gap-3 align-items-center">
                     <img

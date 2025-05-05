@@ -67,6 +67,25 @@ class OrderController extends Controller
             'variant.color:id,name,code'
         ])->get();
 
+        // Lọc ra các sản phẩm không hợp lệ (is_active = false)
+        $inactiveProducts = $cartItems->filter(function ($cartItem) {
+            return !$cartItem->variant->product->is_active;
+        })->pluck('variant.product.name');
+
+        // Tạo thông báo với danh sách tên sản phẩm không hợp lệ
+        if ($inactiveProducts->isNotEmpty()) {
+            $productNames = $inactiveProducts->implode(', ');
+            return $this->error("Sản phẩm {$productNames} không hợp lệ. Vui lòng kiểm tra lại giỏ hàng");
+        }
+
+        // Kiểm tra xem có sản phẩm nào trong giỏ hàng có is_active = false không
+        // $hasInactiveProduct = $cartItems->contains(function ($cartItem) {
+        //     return !$cartItem->variant->product->is_active;
+        // });
+
+        // if ($hasInactiveProduct) 
+        //     return $this->error("Có sản phẩm không hợp lệ, vui lòng kiểm tra lại giỏ hàng");
+
         // Bắt đầu transaction
         return DB::transaction(function () use ($user, $data, $cartItems) {
             $totalPrice = $user->total_price;
@@ -82,15 +101,6 @@ class OrderController extends Controller
                 if ($voucher->max_usage !== null && $voucher->used_count >= $voucher->max_usage) {
                     $voucher->update(['is_active' => false]);
                 }
-
-                // (Tùy chọn) Cập nhật user_vouchers nếu là voucher cá nhân hóa
-                // if (\App\Models\UserVoucher::where('user_id', $user->id)->where('voucher_id', $voucher->id)->exists()) {
-                    // $userVoucher = \App\Models\UserVoucher::where('user_id', $user->id)
-                        // ->where('voucher_id', $voucher->id)
-                        // ->first();
-                    // $userVoucher->increment('usage_count');
-                    // $userVoucher->update(['is_used' => true]); // Đánh dấu đã dùng
-                // }
             }
 
             // tạo order

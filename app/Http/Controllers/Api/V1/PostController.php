@@ -14,7 +14,7 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = Post::with('user')->latest()->get();
+        $posts = Post::with('user')->latest()->limit(request()->input('per_page', 10))->get();
 
         return $this->ok('Lấy danh sách bài viết thành công', $posts);
     }

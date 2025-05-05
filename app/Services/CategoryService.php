@@ -12,7 +12,7 @@ class CategoryService
         return Category::query()
             ->withCount('products')
             ->latest('id')
-            ->where('is_active', true)
+            // ->where('is_active', true)
             ->paginate($prePage);
     }
 

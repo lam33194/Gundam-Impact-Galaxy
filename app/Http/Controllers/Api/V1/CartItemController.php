@@ -38,6 +38,10 @@ class CartItemController extends Controller
             'product_variant_id' => $data['product_variant_id']
         ])->first();
 
+        $variant = ProductVariant::find($data['product_variant_id']);
+
+        if (!$variant->product->is_active) return $this->error('Sản phẩm không có sẵn');
+
         // Nếu sản phẩm đã tồn tại, tăng quantity sp đó trong giỏ hàng
         if ($cartItem) {
             if ($cartItem->quantity + $data['quantity'] > $cartItem->variant->quantity)
@@ -51,8 +55,6 @@ class CartItemController extends Controller
             
             return $this->created('Thêm vào giỏ hàng thành công');
         }
-
-        $variant = ProductVariant::find($data['product_variant_id']);
 
         if ($data['quantity'] > $variant->quantity)
             return $this->failed_validation('Số lượng sản phẩm không được vượt quá số lượng tồn kho');
@@ -73,6 +75,11 @@ class CartItemController extends Controller
         ]);
         
         $cartItem = $request->user()->cartItems()->find($id);
+
+        if (!$cartItem->variant->product->is_active) {
+            $cartItem->delete();
+            return $this->error('Sản phẩm không có sẵn');
+        }
 
         if (!$cartItem) return $this->not_found('Không tìm thấy sản phẩm trong giỏ hàng');
 

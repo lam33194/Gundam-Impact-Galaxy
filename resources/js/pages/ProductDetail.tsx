@@ -18,7 +18,7 @@ import Slider from "react-slick";
 import { FormatCurrency } from "../utils/FormatCurrency";
 import { useHorizontalScroll } from "../hooks/useHorizontalScroll";
 import { useScrollable } from "../hooks/useScrollable";
-import Voucher from "../components/Voucher";
+// import Voucher from "../components/Voucher";
 import { getVouchers } from "../services/VoucherService";
 import { FormatDate } from "../utils/FormatDate";
 import { STORAGE_URL } from "../utils/constants";
@@ -31,7 +31,8 @@ import CommentForm from "../components/CommentForm";
 import ConfirmModal from "../components/ConfirmModal";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
-import { getAllBlogs } from "../services/BlogService";
+import { getAllBlogs, getThreeBlogs } from "../services/BlogService";
+import DOMPurify from "dompurify";
 
 const ProductDetail = () => {
     const nav = useNavigate();
@@ -40,6 +41,7 @@ const ProductDetail = () => {
     const [showLoginModal, setShowLoginModal] = useState(false);
     const [pendingAction, setPendingAction] = useState<'buy' | 'cart' | null>(null);
 
+    const [cleanHtml, setCleanHtml] = useState<any>();
     const [showDropdown, setShowDropdown] = useState(false);
 
     const settings = {
@@ -132,7 +134,7 @@ const ProductDetail = () => {
 
     const getBlogList = async () => {
         try {
-            const res = await getAllBlogs();
+            const res = await getThreeBlogs();
             if (res && res.data) {
                 setBlogList(res.data.data);
                 console.log(res.data.data);
@@ -330,9 +332,12 @@ const ProductDetail = () => {
             const res = await getDetail(slug);
             if (res && res.data) {
                 setProduct(res.data);
+                setCleanHtml(DOMPurify.sanitize(res.data.content || ""));
             }
         } catch (error) {
             console.log(error);
+            // navigate to 404
+            nav('/404');
         } finally {
             setIsLoading(false);
         }
@@ -448,24 +453,23 @@ const ProductDetail = () => {
                         <div className="col-lg-10">
                             <Slider {...settings}>
                                 {product?.variants.map((variant: any) => (
-                                    <div
+                                    (variant.image != null) ? (
+                                        <div
                                         key={variant.id}
                                         className="product-variant"
                                     >
                                         <img
-                                            src={
-                                                variant.image == null
-                                                    ? "https://bizweb.dktcdn.net/thumb/large/100/456/060/products/3fce7911-d633-4417-b263-a30ba273c623.jpg?v=1732162521390"
-                                                    : STORAGE_URL + variant.image
-                                            }
+                                            src={STORAGE_URL + variant.image}
                                             alt={`Variant ${variant.id}`}
                                             className="w-100 h-100 object-fit-cover"
                                             onClick={() =>
                                                 setProductVariant(variant)
                                             }
                                         />
-
                                     </div>
+                                    ) : (
+                                        null
+                                    )
                                 ))}
 
                                 {product?.galleries.map((gallery: any) => (
@@ -529,15 +533,17 @@ const ProductDetail = () => {
                                 {product !== null ? product.sku : ""}
                             </span>
                         </div>
-                        <span className="price">
-                            {product !== null
-                                ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular)
-                                : ""}
-                            đ
-                        </span>
-                        {/* (Đánh giá: {product?.average_rating}) */}
-                        {/* (Lượt đánh giá {product?.total_ratings}) */}
-                        <div className="line mb-2 mt-1"></div>
+                        <div className="d-flex justify-content-between align-items-center">
+                            <span className="price">
+                                {product !== null
+                                    ? FormatCurrency(product.price_sale != 0 ? product.price_sale : product.price_regular)
+                                    : ""}
+                                đ
+                            </span>
+
+                            <span><b>{product?.average_rating}</b>⭐⭐⭐⭐⭐({product?.total_ratings} lượt đánh giá)</span>
+                        </div>
+                        {/* <div className="line mb-2 mt-1"></div>
                         <span>{validVouchers.length} Mã Giảm Giá</span>
                         <div className="voucher-section position-relative">
                             {canScrollVouchers && (
@@ -572,7 +578,7 @@ const ProductDetail = () => {
                                     <i className="fas fa-chevron-right"></i>
                                 </div>
                             )}
-                        </div>
+                        </div> */}
                         <div className="line mb-2 mt-2"></div>
 
                         {/* Size Selection */}
@@ -719,6 +725,14 @@ const ProductDetail = () => {
                                 <i className="fa-brands fa-twitter"></i> Chia sẻ
                             </button>
                         </div>
+                    </div>
+
+                    <div>
+                        <h5 className="mb-4">Mô tả sản phẩm</h5>
+                        <div
+                            className="blog-content "
+                            dangerouslySetInnerHTML={{ __html: cleanHtml }}
+                        />
                     </div>
 
                     {/* Related Products Section */}
@@ -1071,9 +1085,12 @@ const ProductDetail = () => {
                         Tin mới nhất
                     </span>
                     <div className="blog-list d-flex flex-column gap-4">
-                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]} />
+                        {blogList.map((blog, index) => (
+                            <Blog display={"column"} backgroundSize={"contain"} blog={blog} key={index} />
+                        ))}
+                        {/* <Blog display={"column"} backgroundSize={"contain"} blog={blogList[0]} />
                         <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]} />
-                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]} />
+                        <Blog display={"column"} backgroundSize={"contain"} blog={blogList[1]} /> */}
                     </div>
                 </div>
             </div>

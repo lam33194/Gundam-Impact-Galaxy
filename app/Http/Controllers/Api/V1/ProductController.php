@@ -56,7 +56,7 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::whereSlug($slug)->first();
+        $product = Product::active()->whereSlug($slug)->first();
 
         if(!$product) return $this->not_found('Sản phẩm không tồn tại');
 

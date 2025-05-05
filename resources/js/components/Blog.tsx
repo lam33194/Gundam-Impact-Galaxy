@@ -30,7 +30,7 @@ function Blog({ display, backgroundSize = "cover", blog }) {
                         height:
                             display === "column"
                                 ? backgroundSize === "cover"
-                                    ? "250px"
+                                    ? "200px"
                                     : "150px"
                                 : "95px",
                     }}

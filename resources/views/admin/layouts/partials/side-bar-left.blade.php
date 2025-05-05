@@ -55,7 +55,14 @@
                 </a>
             </li>
 
-            <li>
+            <li class="{{ activeMenuLi('admin/vouchers') }}">
+                <a href="{{ route('admin.vouchers.index') }}" class="waves-effect {{ activeMenu('admin/vouchers') }}">
+                    <i class="fas fa-receipt"></i>
+                    <span key="t-multi-level">Mã giảm giá</span>
+                </a>
+            </li>
+
+            <!-- <li>
                 <a href="javascript: void(0);" class="has-arrow waves-effect">
                     <i class="fas fa-receipt"></i>
                     <span key="t-multi-level">Mã giảm giá</span>
@@ -72,7 +79,7 @@
                         </a>
                     </li>
                 </ul>
-            </li>
+            </li> -->
 
             <li>
                 {{-- <a href="{{ activeMenuLi('admin/tags') }}" class="waves-effect"> --}}
