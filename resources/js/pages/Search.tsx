@@ -30,12 +30,23 @@ function Search() {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // Pagination states
+    const [currentPage, setCurrentPage] = useState(1)
+    const [totalPages, setTotalPages] = useState(1)
+    const [perPage, setPerPage] = useState(12)
+    const [totalItems, setTotalItems] = useState(0)
+
     const getAllProducts = async () => {
         try {
-            const res = await getAll();
-            if (res.data && res.data.data) {
-                console.log(res.data.data);
-                setProducts(res.data.data);
+            const params = {
+                page: currentPage,
+                per_page: perPage,
+            }
+            const res = await getAll(params)
+            if (res.data) {
+                setProducts(res.data.data)
+                setTotalPages(res.data.last_page || 1)
+                setTotalItems(res.data.total || 0)
             }
         } catch (error) {
             console.log("Detected error:", error);
@@ -79,13 +90,17 @@ function Search() {
         setSelectedType(type);
         const updatedParams = {
             ...activeFilters,
-            category: type
+            category: type,
+            page: 1, // Reset to first page when changing filters
         };
 
         try {
             const res = await getAll(updatedParams);
-            if (res.data?.data) {
+            if (res.data) {
                 setProducts(res.data.data);
+                setTotalPages(res.data.last_page || 1);
+                setTotalItems(res.data.total || 0);
+                setCurrentPage(1);
                 setActiveFilters(updatedParams);
             }
         } catch (error) {
@@ -99,7 +114,11 @@ function Search() {
                 ? prev.filter(id => id !== tagId)
                 : [...prev, tagId];
 
-            const params: any = { ...activeFilters };
+            const params: any = {
+                ...activeFilters,
+                page: 1, // Reset to first page when changing filters
+            }
+
             if (newTags.length > 0) {
                 params.tags = newTags.join(',');
             } else {
@@ -107,8 +126,11 @@ function Search() {
             }
 
             getAll(params).then(res => {
-                if (res.data?.data) {
+                if (res.data) {
                     setProducts(res.data.data);
+                    setTotalPages(res.data.last_page || 1);
+                    setTotalItems(res.data.total || 0);
+                    setCurrentPage(1);
                     setActiveFilters(prev => ({
                         ...prev,
                         tags: newTags.join(',')
@@ -125,11 +147,15 @@ function Search() {
     const search = async () => {
         try {
             const params = {
-                search: keyword
+                search: keyword,
+                page: 1, // Reset to first page when searching
             };
             const res = await getAll(params);
-            if (res.data && res.data.data) {
+            if (res.data) {
                 setProducts(res.data.data);
+                setTotalPages(res.data.last_page || 1);
+                setTotalItems(res.data.total || 0);
+                setCurrentPage(1);
                 setActiveFilters(prev => ({
                     ...prev,
                     search: keyword
@@ -141,7 +167,9 @@ function Search() {
     };
 
     const applyFilters = async () => {
-        const params: any = {};
+        const params: any = {
+            page: 1, // Reset to first page when applying filters
+        }
 
         if (keyword) params.search = keyword;
         if (priceRange.min) params.min_price = priceRange.min;
@@ -150,9 +178,12 @@ function Search() {
         if (selectedTags.length > 0) params.tags = selectedTags.join(',');
 
         try {
-            const res = await getAll(params);
-            if (res.data?.data) {
-                setProducts(res.data.data);
+            const res = await getAll(params)
+            if (res.data) {
+                setProducts(res.data.data)
+                setTotalPages(res.data.last_page || 1);
+                setTotalItems(res.data.total || 0);
+                setCurrentPage(1);
                 setActiveFilters({
                     search: keyword || '',
                     min_price: priceRange.min || '',
@@ -167,7 +198,10 @@ function Search() {
     };
 
     const removeFilter = async (filterType: 'search' | 'min_price' | 'max_price' | 'category' | 'tags') => {
-        let updatedParams: any = { ...activeFilters };
+        const updatedParams: any = {
+            ...activeFilters,
+            page: 1, // Reset to first page when removing filters
+        }
 
         switch (filterType) {
             case 'search':
@@ -201,13 +235,125 @@ function Search() {
 
         try {
             const res = await getAll(updatedParams);
-            if (res.data?.data) {
+            if (res.data) {
                 setProducts(res.data.data);
+                setTotalPages(res.data.last_page || 1);
+                setTotalItems(res.data.total || 0);
+                setCurrentPage(1);
             }
         } catch (error) {
             console.log("Detected error:", error);
         }
     };
+
+    // Handle page change
+    const handlePageChange = async (page: number) => {
+        if (page < 1 || page > totalPages || page === currentPage) return
+
+        setCurrentPage(page)
+
+        const params = {
+            ...activeFilters,
+            page: page,
+            per_page: perPage,
+        }
+
+        try {
+            const res = await getAll(params)
+            if (res.data) {
+                setProducts(res.data.data)
+                setTotalPages(res.data.last_page || 1)
+                setTotalItems(res.data.total || 0)
+            }
+        } catch (error) {
+            console.log("Detected error:", error)
+        }
+    }
+
+    // Generate pagination items
+    const renderPaginationItems = () => {
+        const items = []
+        const maxVisiblePages = 5
+
+        // Always show first page
+        items.push(
+            <li key="first" className={`page-item ${currentPage === 1 ? "active" : ""}`}>
+                <button className="page-link" onClick={() => handlePageChange(1)}>
+                    1
+                </button>
+            </li>,
+        )
+
+        // Calculate range of pages to show
+        const startPage = Math.max(2, currentPage - Math.floor(maxVisiblePages / 2))
+        const endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 3)
+
+        if (startPage > 2) {
+            items.push(
+                <li key="ellipsis1" className="page-item disabled">
+                    <span className="page-link">...</span>
+                </li>,
+            )
+        }
+
+        // Add middle pages
+        for (let i = startPage; i <= endPage; i++) {
+            items.push(
+                <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
+                    <button className="page-link" onClick={() => handlePageChange(i)}>
+                        {i}
+                    </button>
+                </li>,
+            )
+        }
+
+        // Add ellipsis if needed
+        if (endPage < totalPages - 1) {
+            items.push(
+                <li key="ellipsis2" className="page-item disabled">
+                    <span className="page-link">...</span>
+                </li>,
+            )
+        }
+
+        // Always show last page if there's more than one page
+        if (totalPages > 1) {
+            items.push(
+                <li key="last" className={`page-item ${currentPage === totalPages ? "active" : ""}`}>
+                    <button className="page-link" onClick={() => handlePageChange(totalPages)}>
+                        {totalPages}
+                    </button>
+                </li>,
+            )
+        }
+
+        return items
+    }
+
+    // Handle per page change
+    const handlePerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newPerPage = Number.parseInt(e.target.value)
+        setPerPage(newPerPage)
+        setCurrentPage(1) // Reset to first page when changing items per page
+
+        const params = {
+            ...activeFilters,
+            page: 1,
+            per_page: newPerPage,
+        }
+
+        getAll(params)
+            .then((res) => {
+                if (res.data) {
+                    setProducts(res.data.data)
+                    setTotalPages(res.data.last_page || 1)
+                    setTotalItems(res.data.total || 0)
+                }
+            })
+            .catch((error) => {
+                console.log("Detected error:", error)
+            })
+    }
 
     useEffect(() => {
         const performInitialSearch = async () => {
@@ -232,13 +378,20 @@ function Search() {
                 });
             }
 
+            const params: any = {
+                page: currentPage,
+                per_page: perPage,
+            }
+
             if (state?.selectedCategory) {
-                setSelectedType(state.selectedCategory);
-                const params = { category: state.selectedCategory };
+                setSelectedType(state.selectedCategory)
+                params.category = state.selectedCategory
                 try {
-                    const res = await getAll(params);
-                    if (res.data?.data) {
+                    const res = await getAll(params)
+                    if (res.data) {
                         setProducts(res.data.data);
+                        setTotalPages(res.data.last_page || 1);
+                        setTotalItems(res.data.total || 0);
                         setActiveFilters((prev: any) => ({
                             ...prev,
                             category: state.selectedCategory
@@ -249,11 +402,13 @@ function Search() {
                 }
             } else if (state?.selectedTags) {
                 setSelectedTags(state.selectedTags);
-                const params = { tags: state.selectedTags.join(',') };
+                params.tags = state.selectedTags.join(',');
                 try {
                     const res = await getAll(params);
-                    if (res.data?.data) {
+                    if (res.data) {
                         setProducts(res.data.data);
+                        setTotalPages(res.data.last_page || 1)
+                        setTotalItems(res.data.total || 0)
                         setActiveFilters(prev => ({
                             ...prev,
                             tags: (state.selectedTags ?? []).join(',')
@@ -264,13 +419,13 @@ function Search() {
                 }
             } else if (state?.initialKeyword) {
                 setKeyword(state.initialKeyword);
+                params.search = state.initialKeyword
                 try {
-                    const params = {
-                        search: state.initialKeyword
-                    };
                     const res = await getAll(params);
-                    if (res.data && res.data.data) {
+                    if (res.data) {
                         setProducts(res.data.data);
+                        setTotalPages(res.data.last_page || 1);
+                        setTotalItems(res.data.total || 0);
                         setActiveFilters((prev: any) => ({
                             ...prev,
                             search: state.initialKeyword
@@ -455,7 +610,8 @@ function Search() {
                         )}
                         {activeFilters.tags && selectedTags.length > 0 && (
                             <span className="badge bg-primary d-flex align-items-center">
-                                Tags: {tags
+                                Tags:{" "}
+                                {tags
                                     .filter(t => selectedTags.includes(t.id.toString()))
                                     .map(t => t.name)
                                     .join(', ')}
@@ -467,11 +623,42 @@ function Search() {
                             </span>
                         )}
                     </div>
+
+                    {/* Items per page selector */}
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                        <div className="d-flex align-items-center">
+                            <span className="me-2">Hiển thị:</span>
+                            <select
+                                className="form-select form-select-sm"
+                                style={{ width: "auto" }}
+                                value={perPage}
+                                onChange={handlePerPageChange}
+                            >
+                                <option value="12">12</option>
+                                <option value="24">24</option>
+                                <option value="48">48</option>
+                            </select>
+                            <span className="ms-2">sản phẩm mỗi trang</span>
+                        </div>
+
+                        {totalItems > 0 && (
+                            <div>
+                                <span>
+                                    Hiển thị {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, totalItems)} trên{" "}
+                                    {totalItems} sản phẩm
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
                     {products.length === 0 ? (
                         <div className="mt-3 fw-semibold fst-italic">
                             <span>Không tìm thấy Sản phẩm thỏa mãn!</span>
                         </div>
-                    ) : ''}
+                    ) : (
+                        ""
+                    )}
+
                     <ul className="list-group mt-3">
                         {products &&
                             products.map((p, index) => (
@@ -484,6 +671,27 @@ function Search() {
                                 </li>
                             ))}
                     </ul>
+
+                    {/* Pagination */}
+                    {totalPages > 1 && (
+                        <nav aria-label="Product pagination" className="mt-4">
+                            <ul className="pagination justify-content-center">
+                                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                    <button className="page-link" onClick={() => handlePageChange(currentPage - 1)} aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </button>
+                                </li>
+
+                                {renderPaginationItems()}
+
+                                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                                    <button className="page-link" onClick={() => handlePageChange(currentPage + 1)} aria-label="Next">
+                                        <span aria-hidden="true">&raquo;</span>
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    )}
                 </div>
             </div>
         </div>
