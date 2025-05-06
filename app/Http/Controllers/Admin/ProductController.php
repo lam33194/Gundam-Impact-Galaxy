@@ -96,62 +96,99 @@ class ProductController extends Controller
 
     public function store(ProductStoreRequest $request)
     {
-        $data = $request->validated();
-        $uploadedFiles = []; // Lưu trữ đường dẫn ảnh để xóa nếu thất bại
-        DB::beginTransaction();
+        // dd($request->all());
+
+        [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries] = $this->handleData($request);
+
         try {
-            // Add Product
-            $productData = $data['product'];
-            if ($request->hasFile('product.thumb_image')) {
-                $productData['thumb_image'] = $request->file('product.thumb_image')->store('products');
-                $uploadedFiles[] = $productData['thumb_image']; // Lưu đường dẫn
-            }
-            $productData['slug'] = Str::slug($productData['name']) . '-' . Str::ulid();
-            $product = Product::create($productData);
+            DB::beginTransaction();
 
-            // Attach tags
-            $tagsData = $data['tags'] ?? [];
-            $product->tags()->attach($tagsData);
+            $product = Product::query()->create($dataProduct);
 
-            // Add product galleries
-            $galleriesData = [];
-            foreach ($data['product_galleries'] as $gallery) {
-                $imagePath = $gallery->store('product_galleries');
-                $uploadedFiles[] = $imagePath; // Lưu đường dẫn
-                $galleriesData[] = ['image' => $imagePath];
+            foreach ($dataProductVariants as $item) {
+                $item += ['product_id' => $product->id];
+                ProductVariant::query()->create($item);
             }
-            $product->galleries()->createMany($galleriesData);
 
-            // Add variants
-            $variantsData = [];
-            foreach ($data['product_variants'] as $key => $variant) {
-                $key = explode('-', $key);
-                $imagePath = !empty($variant['image']) ? $variant['image']->store('product_variants') : null;
-                if ($imagePath) {
-                    $uploadedFiles[] = $imagePath; // Lưu đường dẫn
-                }
-                $variantsData[] = [
-                    'product_color_id' => $key[0],
-                    'product_size_id'  => $key[1],
-                    'quantity'         => $variant['quantity'],
-                    'image'            => $imagePath,
-                ];
+            $product->tags()->attach($dataProductTags);
+
+            foreach ($dataProductGalleries as $item) {
+                $item += ['product_id' => $product->id];
+                ProductGallery::create($item);
             }
-            $product->variants()->createMany($variantsData);
 
             DB::commit();
 
             return redirect()->route('admin.products.index')->with('success', 'Tạo sản phẩm thành công');
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
 
-            // Xóa các ảnh đã upload
-            foreach ($uploadedFiles as $file) {
-                Storage::delete($file);
+            if (!empty($dataProduct['thumb_image']) && Storage::exists($dataProduct['thumb_image'])) {
+                Storage::delete($dataProduct['thumb_image']);
+            }
+            ;
+
+            foreach (array_merge($dataProductVariants, $dataProductGalleries) as $item) {
+                if (!empty($item['image']) && Storage::exists($item['image'])) {
+                    Storage::delete($item['image']);
+                }
             }
 
+            Log::error($e->getMessage());
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    private function handleData(Request $request)
+    {
+        $dataProduct = $request->product;
+
+        $dataProduct['is_active'] ??= 0;
+        $dataProduct['is_hot_deal'] ??= 0;
+        $dataProduct['is_good_deal'] ??= 0;
+        $dataProduct['is_new'] ??= 0;
+        $dataProduct['is_show_home'] ??= 0;
+        $dataProduct['slug'] = Str::slug($dataProduct['name']) . '-' . Str::ulid();
+        $dataProduct['price_sale'] ??= 0;
+
+        if ($request->hasFile('product.thumb_image')) {
+            $dataProduct['thumb_image'] = Storage::put('products', $dataProduct['thumb_image']);
+        }
+
+        $dataProductVariantsTmp = $request->product_variants;
+        $dataProductVariants = [];
+
+        foreach ($dataProductVariantsTmp as $key => $item) {
+            $tmp = explode('-', $key);
+
+            $dataProductVariants[] = [
+                'product_color_id' => $tmp[0],
+                'product_size_id' => $tmp[1],
+                'quantity' => $item['quantity'],
+                'image' => !empty($item['image']) ? Storage::put('product_variants', $item['image']) : null
+            ];
+        }
+
+
+        // handle product galleries
+
+        $dataProductGalleriesTmp = $request->product_galleries ?: [];
+        $dataProductGalleries = [];
+
+        foreach ($dataProductGalleriesTmp as $image) {
+            if (!empty($image)) {
+                $dataProductGalleries[] = [
+                    'image' => Storage::put('product_galleries', $image)
+                ];
+            }
+        }
+
+
+        // end product galleries
+
+        $dataProductTags = $request->tags;
+
+        return [$dataProduct, $dataProductVariants, $dataProductTags, $dataProductGalleries];
     }
 
     public function update(ProductUpdateRequest $request, Product $product)
